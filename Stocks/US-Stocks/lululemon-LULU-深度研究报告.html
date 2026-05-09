@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>露露乐蒙（LULU.US）深度研究分析报告</title>
+<style>
+  :root {
+    --primary: #1a73e8;
+    --success: #34a853;
+    --warning: #fbbc04;
+    --danger: #ea4335;
+    --bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --text: #202124;
+    --text-secondary: #5f6368;
+    --border: #e0e0e0;
+    --shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
+    --radius: 12px;
+    --metric-positive: #cf1322;
+    --metric-negative: #3f8600;
+    --lulu-red: #D31334;
+    --lulu-dark: #2D2D2D;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 20px;
+  }
+
+  .container { max-width: 1000px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1a1a2e, var(--lulu-red));
+    color: white;
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+  .header h1 { font-size: 28px; margin-bottom: 8px; }
+  .header .subtitle { opacity: 0.85; font-size: 14px; }
+  .header .meta {
+    display: flex; gap: 12px; margin-top: 16px;
+    flex-wrap: wrap; font-size: 13px; opacity: 0.9;
+  }
+  .header .meta span { background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; }
+
+  /* Grade Banner */
+  .grade-banner {
+    display: flex; align-items: center; gap: 20px;
+    background: var(--card-bg); border-radius: var(--radius);
+    padding: 24px 32px; margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+  .grade-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; font-weight: 700; color: white;
+    flex-shrink: 0;
+  }
+  .grade-circle.grade-a { background: var(--success); }
+  .grade-circle.grade-b { background: var(--primary); }
+  .grade-circle.grade-c { background: var(--warning); }
+  .grade-circle.grade-d { background: var(--danger); }
+  .grade-info h2 { font-size: 20px; }
+  .grade-info .score { font-size: 14px; color: var(--text-secondary); }
+  .grade-info .verdict-text-sm { font-size: 13px; margin-top: 4px; color: var(--text-secondary); }
+  .action-advice {
+    display: inline-block; margin-top: 8px;
+    padding: 4px 14px; border-radius: 16px;
+    font-size: 13px; font-weight: 600; color: white;
+  }
+  .action-advice.grade-a { background: var(--success); }
+  .action-advice.grade-b { background: var(--primary); }
+  .action-advice.grade-c { background: #e65100; }
+  .action-advice.grade-d { background: var(--danger); }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg); border-radius: var(--radius);
+    padding: 24px; margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 {
+    font-size: 16px; margin-bottom: 16px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card h4 {
+    font-size: 14px; margin: 12px 0 8px 0;
+    color: var(--text-secondary);
+  }
+
+  /* Radar Container */
+  .radar-container {
+    display: flex; justify-content: center; padding: 20px 0;
+  }
+
+  /* Criterion Items */
+  .criterion {
+    border-left: 4px solid var(--border);
+    padding: 16px 20px; margin-bottom: 16px;
+    border-radius: 0 8px 8px 0;
+    background: #fafafa;
+    transition: border-color 0.2s;
+  }
+  .criterion.pass { border-left-color: var(--success); }
+  .criterion.partial { border-left-color: var(--warning); }
+  .criterion.fail { border-left-color: var(--danger); }
+  .criterion .criterion-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px;
+  }
+  .criterion .criterion-title { font-weight: 600; font-size: 15px; }
+  .criterion .criterion-badge {
+    font-size: 12px; padding: 2px 10px; border-radius: 12px;
+    font-weight: 600;
+  }
+  .criterion.pass .criterion-badge { background: #e6f4ea; color: var(--success); }
+  .criterion.partial .criterion-badge { background: #fef7e0; color: #b06000; }
+  .criterion.fail .criterion-badge { background: #fce8e6; color: var(--danger); }
+  .criterion .criterion-detail {
+    font-size: 13px; color: var(--text-secondary); line-height: 1.8;
+  }
+  .criterion .criterion-detail strong { color: var(--text); }
+
+  /* Score Bar */
+  .score-bar {
+    height: 10px; background: #e0e0e0; border-radius: 5px;
+    overflow: hidden; margin-top: 8px;
+  }
+  .score-bar-fill {
+    height: 100%; border-radius: 5px;
+    transition: width 0.6s ease;
+    min-width: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 6px;
+    font-size: 10px;
+    color: white;
+    font-weight: 700;
+  }
+  .score-bar-fill.high { background: var(--success); }
+  .score-bar-fill.medium { background: var(--warning); }
+  .score-bar-fill.low { background: var(--danger); }
+  .score-bar-wrapper {
+    display: flex; align-items: center; gap: 8px; margin-top: 8px;
+  }
+  .score-bar-wrapper .score-bar { flex: 1; }
+  .score-bar-wrapper .score-label { font-size: 12px; color: var(--text-secondary); white-space: nowrap; }
+
+  /* Tables */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 12px; }
+  .data-table th {
+    background: #f1f3f4; padding: 10px 12px; text-align: center;
+    font-weight: 600; border-bottom: 2px solid var(--border);
+  }
+  .data-table td {
+    padding: 10px 12px; text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .data-table tr.highlight { background: #e8f0fe; font-weight: 600; }
+  .data-table .positive { color: var(--metric-positive); font-weight: 600; }
+  .data-table .negative { color: var(--metric-negative); }
+  .data-table tfoot td {
+    font-size: 11px; color: #999; padding: 8px 12px;
+    background: #fafafa; text-align: left;
+  }
+
+  /* Investment Conclusion */
+  .invest-conclusion {
+    background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+    color: white; border-radius: var(--radius);
+    padding: 28px 32px; margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .invest-conclusion h3 {
+    color: white; border-bottom-color: rgba(255,255,255,0.2);
+    margin-bottom: 20px; padding-bottom: 12px;
+  }
+
+  .verdict-banner {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 20px; border-radius: 10px;
+    margin-bottom: 20px; font-size: 20px; font-weight: 700;
+  }
+  .verdict-banner.buy { background: rgba(52,168,83,0.2); border: 2px solid var(--success); }
+  .verdict-banner.buy-cautious { background: rgba(66,133,244,0.2); border: 2px solid var(--primary); }
+  .verdict-banner.wait { background: rgba(251,188,4,0.2); border: 2px solid var(--warning); color: #fdd835; }
+  .verdict-banner.watch { background: rgba(251,188,4,0.15); border: 2px solid var(--warning); color: #fdd835; }
+  .verdict-banner.hold { background: rgba(234,67,53,0.15); border: 2px solid var(--danger); color: #ef9a9a; }
+  .verdict-banner.avoid { background: rgba(234,67,53,0.2); border: 2px solid var(--danger); color: #ef9a9a; }
+  .verdict-banner .verdict-emoji { font-size: 28px; }
+  .verdict-banner .verdict-text { font-size: 20px; }
+
+  .price-cards {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    margin-bottom: 20px;
+  }
+  .price-card {
+    background: rgba(255,255,255,0.1); border-radius: 10px;
+    padding: 20px; text-align: center;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .price-card .price-label { font-size: 12px; opacity: 0.8; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+  .price-card .price-value { font-size: 32px; font-weight: 800; }
+  .price-card .price-note { font-size: 11px; opacity: 0.65; margin-top: 6px; }
+  .price-card.buy-card { background: rgba(52,168,83,0.15); border-color: rgba(52,168,83,0.4); }
+  .price-card.target-card { background: rgba(66,133,244,0.15); border-color: rgba(66,133,244,0.4); }
+  .price-card.fair-card { background: rgba(255,255,255,0.08); }
+  .price-card.buy-card .price-value { color: #81c784; }
+  .price-card.target-card .price-value { color: #90caf9; }
+
+  .upside-bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-radius: 8px;
+    background: rgba(255,255,255,0.08); margin-bottom: 16px;
+  }
+  .upside-bar .upside-label { font-size: 13px; opacity: 0.8; }
+  .upside-bar .upside-value { font-size: 24px; font-weight: 800; }
+  .upside-bar .upside-value.positive { color: #81c784; }
+  .upside-bar .upside-value.negative { color: #ef9a9a; }
+
+  .position-advice {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; border-radius: 8px;
+    font-size: 14px; font-weight: 600;
+  }
+  .position-advice.large { background: rgba(52,168,83,0.2); color: #81c784; }
+  .position-advice.medium { background: rgba(66,133,244,0.2); color: #90caf9; }
+  .position-advice.small { background: rgba(251,188,4,0.2); color: #fff59d; }
+  .position-advice.none { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+
+  .valuation-note {
+    margin-top: 16px; padding: 12px 16px;
+    background: rgba(255,255,255,0.06); border-radius: 8px;
+    font-size: 12px; line-height: 1.8; opacity: 0.8;
+  }
+  .valuation-note strong { opacity: 1; }
+
+  .conclusion-text {
+    font-size: 14px; line-height: 2; color: rgba(255,255,255,0.9);
+    padding: 16px 20px; background: rgba(255,255,255,0.06);
+    border-radius: 8px; margin-top: 16px;
+  }
+
+  /* Risk Flags */
+  .risk-flag {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 10px 0; border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+  }
+  .risk-flag:last-child { border-bottom: none; }
+  .risk-flag .flag-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .risk-flag .flag-text { color: var(--text-secondary); }
+  .risk-flag .flag-text strong { color: var(--text); }
+  .risk-flag.fatal {
+    border-left: 3px solid #d32f2f; background: #fff5f5;
+    padding: 10px 12px; margin-bottom: 8px; border-radius: 0 6px 6px 0;
+  }
+  .risk-flag.watch {
+    border-left: 3px solid #f57c00; background: #fff8e1;
+    padding: 10px 12px; margin-bottom: 8px; border-radius: 0 6px 6px 0;
+  }
+  .risk-flag.info {
+    border-left: 3px solid var(--primary); background: #e8f0fe;
+    padding: 10px 12px; margin-bottom: 8px; border-radius: 0 6px 6px 0;
+  }
+
+  /* Catalyst Items */
+  .catalyst-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+  }
+  .catalyst-item:last-child { border-bottom: none; }
+  .catalyst-icon { font-size: 16px; flex-shrink: 0; }
+  .catalyst-type {
+    display: inline-block; padding: 1px 8px; border-radius: 10px;
+    font-size: 11px; font-weight: 600; margin-right: 4px;
+  }
+  .catalyst-type.high { background: #fce8e6; color: var(--danger); }
+  .catalyst-type.medium { background: #fef7e0; color: #b06000; }
+  .catalyst-type.low { background: #e8f0fe; color: var(--primary); }
+
+  /* 30-Dimension Module */
+  .module-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 11px; font-weight: 600;
+  }
+  .module-badge.strong { background: #e6f4ea; color: var(--success); }
+  .module-badge.medium { background: #fef7e0; color: #b06000; }
+  .module-badge.weak { background: #fce8e6; color: var(--danger); }
+  .dimension-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+    margin: 12px 0;
+  }
+  .dimension-item {
+    padding: 12px 16px; border-radius: 8px; background: #fafafa;
+    font-size: 13px; border-left: 3px solid var(--border);
+  }
+  .dimension-item strong { display: block; margin-bottom: 4px; color: var(--text); }
+  .dimension-item .dim-score { font-size: 12px; }
+
+  /* Earnings Review Section */
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    margin: 12px 0;
+  }
+  .kpi-item {
+    background: #fafafa; border-radius: 8px; padding: 14px; text-align: center;
+  }
+  .kpi-item .kpi-value { font-size: 22px; font-weight: 700; }
+  .kpi-item .kpi-label { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+  .kpi-item .kpi-value.green { color: var(--success); }
+  .kpi-item .kpi-value.red { color: var(--danger); }
+  .kpi-item .kpi-value.orange { color: #e65100; }
+
+  /* Summary Highlight */
+  .summary-box {
+    background: linear-gradient(135deg, #fff8e1, #fff3cd);
+    border-left: 4px solid var(--warning);
+    padding: 16px 20px; border-radius: 0 8px 8px 0;
+    margin: 12px 0; font-size: 13px; line-height: 1.8;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center; font-size: 12px; color: var(--text-secondary);
+    padding: 20px 0; margin-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .hidden { display: none; }
+  .text-sm { font-size: 12px; }
+  .mt-2 { margin-top: 8px; }
+  .mb-2 { margin-bottom: 8px; }
+
+  /* Earnings summary */
+  .insight-box {
+    padding: 14px 18px; border-radius: 8px;
+    margin: 8px 0; font-size: 13px; line-height: 1.8;
+  }
+  .insight-box.positive { background: #e6f4ea; border-left: 4px solid var(--success); }
+  .insight-box.negative { background: #fce8e6; border-left: 4px solid var(--danger); }
+  .insight-box.neutral { background: #e8f0fe; border-left: 4px solid var(--primary); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ==================== HEADER ==================== -->
+  <div class="header">
+    <h1>🧘 露露乐蒙（LULU.US）深度研究分析报告</h1>
+    <div class="subtitle">Lululemon Athletica Inc. | 服装零售（运动生活方式品牌） | 分析日期：2026-05-09</div>
+    <div class="meta">
+      <span>最新价：$131.18</span>
+      <span>总市值：$151.64亿</span>
+      <span>TTM市盈率：9.89x</span>
+      <span>股息率：0.00%</span>
+      <span>总评分：49/100</span>
+    </div>
+    <div class="meta">
+      <span>上市交易所：NASDAQ | 上市时间：2007-07-27</span>
+      <span>总部：加拿大温哥华 · 成立：1998年</span>
+      <span>门店数：811家（直营）</span>
+    </div>
+  </div>
+
+  <!-- ==================== GRADE BANNER ==================== -->
+  <div class="grade-banner">
+    <div class="grade-circle grade-c">C</div>
+    <div class="grade-info">
+      <h2>⚠️ 暂不推荐 — 综合评分 49/100</h2>
+      <div class="score">通过项：2/6 | 竞争力优秀但增长动力减弱，估值低但有结构性风险</div>
+      <div class="verdict-text-sm">竞争优势突出（毛利率56.5%、ROE 34%），但内生增长放缓、无股东回报、基本面存压</div>
+      <div class="action-advice grade-c">谨慎参与 / 小仓位</div>
+    </div>
+  </div>
+
+  <!-- ==================== 30维模块摘要 ==================== -->
+  <div class="card">
+    <h3>🏗️ 上市公司深度分析 — 六大模块30维度评分摘要</h3>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">基于 listed-company-analyst 框架，对露露乐蒙进行系统性评估</p>
+    
+    <div class="dimension-grid">
+      <div class="dimension-item" style="border-left-color:var(--success);">
+        <strong>模块一：业务可理解性与行业吸引力</strong>
+        <span class="module-badge strong">优（8/10）</span>
+        <div class="dim-score">业务模式清晰（瑜伽/运动服饰），品牌认知度高。行业增长稳健，全球运动休闲市场CAGR约5-7%。</div>
+      </div>
+      <div class="dimension-item" style="border-left-color:var(--success);">
+        <strong>模块二：商业模式与客户分析</strong>
+        <span class="module-badge strong">优（8/10）</span>
+        <div class="dim-score">DTC占比约90%（自营门店45%+电商44%），毛利率56.5%行业领先。客户忠诚度高，社区营销护城河深。</div>
+      </div>
+      <div class="dimension-item" style="border-left-color:var(--success);">
+        <strong>模块三：竞争优势与行业格局</strong>
+        <span class="module-badge strong">优（8/10）</span>
+        <div class="dim-score">高端运动休闲领导品牌，各财务指标领先Nike/安德玛。但Alo Yoga、Vuori竞争加剧。</div>
+      </div>
+      <div class="dimension-item" style="border-left-color:var(--warning);">
+        <strong>模块四：财务质量与资本效率</strong>
+        <span class="module-badge medium">良（6/10）</span>
+        <div class="dim-score">ROE 34.01%优秀，OCF $1.6B充裕。但净利同比-13%，毛利率下滑5.5ppt，关税侵蚀利润。</div>
+      </div>
+      <div class="dimension-item" style="border-left-color:var(--danger);">
+        <strong>模块五：管理层评估与公司治理</strong>
+        <span class="module-badge weak">中（5/10）</span>
+        <div class="dim-score">创始人持股7.17%。管理层FY27指引低于一致预期。CEO称美洲改革需时间验证。</div>
+      </div>
+      <div class="dimension-item" style="border-left-color:var(--danger);">
+        <strong>模块六：并购，增长与估值</strong>
+        <span class="module-badge weak">中（4/10）</span>
+        <div class="dim-score">增速从+17%降至-13%。无重大并购。PE 9.89x虽低但盈利持续下修，属价值陷阱风险。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 业绩点评（Earnings Review）==================== -->
+  <div class="card">
+    <h3>📊 业绩点评 — FY2026年报（截至2026年2月1日）</h3>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">基于 earnings-review 框架，整合最新季报与分析师观点</p>
+
+    <div class="kpi-grid">
+      <div class="kpi-item">
+        <div class="kpi-value orange">$111.0亿</div>
+        <div class="kpi-label">FY26营收</div>
+        <div class="kpi-value" style="font-size:14px;">+4.86%</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-value red">$15.79亿</div>
+        <div class="kpi-label">FY26归母净利润</div>
+        <div class="kpi-value" style="font-size:14px; color:var(--danger);">-12.97%</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-value orange">56.54%</div>
+        <div class="kpi-label">毛利率（同比-2.66pct）</div>
+        <div class="kpi-value" style="font-size:14px; color:var(--danger);">-5.5pct（Q4）</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-value orange">34.01%</div>
+        <div class="kpi-label">ROE</div>
+        <div class="kpi-value" style="font-size:14px; color:var(--success);">领先同业</div>
+      </div>
+    </div>
+
+    <h4 style="margin-top:16px;">📋 经营亮点与隐忧</h4>
+    
+    <div class="insight-box positive">
+      <strong>✅ 亮点</strong><br>
+      • 中国大陆可比销售同比+26%（Q4），大幅超指引上限5%，WunderPuff系列强劲<br>
+      • 电商收入占比44.3%，DTC模式壁垒高，ROE 34.01%在服饰行业领先<br>
+      • 自由现金流$9.22亿，经营现金流$16.0亿，财务底盘稳健<br>
+      • 2026年Q1电商增速+34%（中国运动电商渠道），品牌力在中国持续提升
+    </div>
+    
+    <div class="insight-box negative" style="margin-top:8px;">
+      <strong>❌ 隐忧</strong><br>
+      • 美洲可比销售同比-2%（Q4），核心市场持续疲软<br>
+      • 毛利率Q4同比下滑5.5pct至54.9%，关税+折扣加深+信用卡项目三重打击<br>
+      • FY27 EPS指引$12.10-$12.30，远低于Bloomberg一致预期$12.69<br>
+      • 中金公司维持"中性"评级，目标价$180.69（15x FY27 PE）
+    </div>
+
+    <h4 style="margin-top:16px;">📅 季度业绩趋势</h4>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>报告期</th>
+          <th>营收（亿美元）</th>
+          <th>同比增速</th>
+          <th>营业毛利</th>
+          <th>调整收盘价</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>FY26 Q4（2025.11-2026.01）</td>
+          <td>$36.41</td>
+          <td class="negative">+1%</td>
+          <td>$19.96亿</td>
+          <td>$174.50</td>
+        </tr>
+        <tr>
+          <td>FY26 Q3（2025.08-2025.11）</td>
+          <td>$25.66</td>
+          <td>+7%</td>
+          <td>$14.24亿</td>
+          <td>$170.54</td>
+        </tr>
+        <tr>
+          <td>FY26 Q2（2025.05-2025.08）</td>
+          <td>$25.25</td>
+          <td>+7%</td>
+          <td>$14.75亿</td>
+          <td>$193.33</td>
+        </tr>
+        <tr>
+          <td>FY26 Q1（2025.02-2025.05）</td>
+          <td>$23.71</td>
+          <td>+7%</td>
+          <td>$13.81亿</td>
+          <td>$277.36</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="text-sm" style="color:var(--text-secondary);">数据来源：NeoData，基于LULU各季度报告</div>
+  </div>
+
+  <!-- ==================== RADAR CHART ==================== -->
+  <div class="card">
+    <h3>📊 六维审美评分总览</h3>
+    <div class="radar-container">
+      <svg viewBox="0 0 340 340" width="320" height="320">
+        <!-- Background grid -->
+        <polygon points="170,50 290,140 290,260 170,300 50,260 50,140" fill="none" stroke="#e8e8e8" stroke-width="1"/>
+        <polygon points="170,90 260,155 260,245 170,270 80,245 80,155" fill="none" stroke="#e8e8e8" stroke-width="1" stroke-dasharray="3,3"/>
+        <polygon points="170,130 230,170 230,230 170,240 110,230 110,170" fill="none" stroke="#e8e8e8" stroke-width="1" stroke-dasharray="3,3"/>
+        <polygon points="170,170 200,185 200,215 170,210 140,215 140,185" fill="none" stroke="#e8e8e8" stroke-width="1" stroke-dasharray="3,3"/>
+        <!-- Axes -->
+        <line x1="170" y1="50" x2="170" y2="300" stroke="#ddd" stroke-width="1"/>
+        <line x1="50" y1="200" x2="290" y2="200" stroke="#ddd" stroke-width="1"/>
+        <line x1="90" y1="105" x2="250" y2="295" stroke="#ddd" stroke-width="1"/>
+        <line x1="250" y1="105" x2="90" y2="295" stroke="#ddd" stroke-width="1"/>
+        <!-- Data polygon D1=15,D2=10,D3=72,D4=78,D5=32,D6=68 -->
+        <!-- D1(15): top: 170,50+120*(1-0.15)=170,152 -->
+        <!-- D2(10): top-right: 170+120*0.1*cos30=170+10.4=180.4, 50+120-120*0.1*sin30=170-6=164 -->
+        <!-- Wait let me recalculate properly -->
+        <!-- Center: 170,170. Max radius: 120 -->
+        <!-- D1 (top, -90°): x=170, y=170-120*(15/100)=170-18=152 -->
+        <!-- D2 (top-right, -30°): x=170+120*(10/100)*cos30=170+12*0.866=180.4, y=170-120*(10/100)*sin30=170-6=164 -->
+        <!-- D3 (bottom-right, 30°): x=170+120*(72/100)*cos30=170+86.4*0.866=244.8, y=170+120*(72/100)*sin30=170+43.2=213.2 -->
+        <!-- D4 (bottom, 90°): x=170, y=170+120*(78/100)=170+93.6=263.6 -->
+        <!-- D5 (bottom-left, 150°): x=170-120*(32/100)*cos30=170-38.4*0.866=136.8, y=170+120*(32/100)*sin30=170+19.2=189.2 -->
+        <!-- D6 (top-left, 210°): x=170-120*(68/100)*cos30=170-81.6*0.866=99.3, y=170-120*(68/100)*sin30=170-40.8=129.2 -->
+        <polygon points="170,152 180.4,164 244.8,213.2 170,263.6 136.8,189.2 99.3,129.2" fill="rgba(234,67,53,0.15)" stroke="#ea4335" stroke-width="2"/>
+        <circle cx="170" cy="152" r="4" fill="#ea4335"/>
+        <circle cx="180.4" cy="164" r="4" fill="#ea4335"/>
+        <circle cx="244.8" cy="213.2" r="4" fill="#ea4335"/>
+        <circle cx="170" cy="263.6" r="4" fill="#ea4335"/>
+        <circle cx="136.8" cy="189.2" r="4" fill="#ea4335"/>
+        <circle cx="99.3" cy="129.2" r="4" fill="#ea4335"/>
+        <!-- Labels -->
+        <text x="170" y="38" text-anchor="middle" font-size="13" font-weight="700" fill="#202124">D1内部人增持</text>
+        <text x="170" y="22" text-anchor="middle" font-size="16" font-weight="700" fill="#ea4335">15</text>
+        <text x="298" y="160" font-size="13" font-weight="700" fill="#202124">D2股息回购</text>
+        <text x="298" y="140" text-anchor="middle" font-size="16" font-weight="700" fill="#ea4335">10</text>
+        <text x="260" y="290" font-size="13" font-weight="700" fill="#202124">D3竞争优势</text>
+        <text x="260" y="310" text-anchor="middle" font-size="16" font-weight="700" fill="#34a853">72</text>
+        <text x="170" y="318" text-anchor="middle" font-size="13" font-weight="700" fill="#202124">D4市盈率</text>
+        <text x="170" y="332" text-anchor="middle" font-size="16" font-weight="700" fill="#34a853">78</text>
+        <text x="40" y="245" font-size="13" font-weight="700" fill="#202124">D5成长动能</text>
+        <text x="40" y="228" text-anchor="middle" font-size="16" font-weight="700" fill="#ea4335">32</text>
+        <text x="55" y="118" font-size="13" font-weight="700" fill="#202124">D6财务健康</text>
+        <text x="36" y="100" text-anchor="middle" font-size="16" font-weight="700" fill="#fbbc04">68</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ==================== DIMENSION 1 ==================== -->
+  <div class="card">
+    <h3>🔍 维度一：内部人增持（权重 12%）</h3>
+    <div class="criterion fail">
+      <div class="criterion-header">
+        <span class="criterion-title">近3年内部人净增持（实控人/高管/员工持股）</span>
+        <span class="criterion-badge">未通过</span>
+      </div>
+      <div class="criterion-detail">
+        <strong>评分：15/100</strong> — 创始人Dennis Wilson持股7.17%但无公开增持记录；<strong>主要机构股东中</strong>Vanguard（11.61%）、BlackRock（8.62%）近期有小幅减持（Vanguard -42.8万股，BlackRock -0.17万股）。<strong>内部人买入行为：</strong>未检测到近三年高管/实控人二级市场增持。美股内部人增持激励与A股不同，但缺乏内部人买入信号仍是负面指标。
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill low" style="width:max(15%,5%)">15分</div></div>
+        <span class="score-label">1.8/12 加权</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== DIMENSION 2 ==================== -->
+  <div class="card">
+    <h3>💰 维度二：股息+回购回报率（权重 20%）</h3>
+    <div class="criterion fail">
+      <div class="criterion-header">
+        <span class="criterion-title">股息率 + 回购注销回报率（FCF验证）</span>
+        <span class="criterion-badge">未通过</span>
+      </div>
+      <div class="criterion-detail">
+        <strong>评分：10/100</strong> — 露露乐蒙<strong>从未派发股息</strong>（分红支付率0%），也未有公开回购注销记录。虽然有充裕的自由现金流（FY26 FCF $9.22亿），但公司选择将利润再投资于门店扩张和品牌建设，不进行股东回馈。在审美筛选中，无股东回报是重大扣分项。FY26经营现金流$16.0亿，资本开支$6.8亿，FCF覆盖运转良好但不用于分红回购。
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill low" style="width:max(10%,5%)">10分</div></div>
+        <span class="score-label">2.0/20 加权</span>
+      </div>
+    </div>
+
+    <h4>📅 分红与回购历史</h4>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>年份</th>
+          <th>每股分红</th>
+          <th>股息率</th>
+          <th>回购注销</th>
+          <th>FCF覆盖</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>FY2026（截至2026.01）</td>
+          <td class="negative" style="font-style:italic;">$0.00</td>
+          <td class="negative" style="font-style:italic;">0.00%</td>
+          <td class="negative" style="font-style:italic;">无</td>
+          <td>$9.22亿 — 未用于回馈</td>
+        </tr>
+        <tr>
+          <td>FY2025（截至2025.02）</td>
+          <td class="negative" style="font-style:italic;">$0.00</td>
+          <td class="negative" style="font-style:italic;">0.00%</td>
+          <td class="negative" style="font-style:italic;">无</td>
+          <td>$15.83亿 — 未用于回馈</td>
+        </tr>
+        <tr>
+          <td>FY2024</td>
+          <td class="negative" style="font-style:italic;">$0.00</td>
+          <td class="negative" style="font-style:italic;">0.00%</td>
+          <td class="negative" style="font-style:italic;">无</td>
+          <td>N/A</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr><td colspan="5">露露乐蒙历来将利润再投资于增长，未实施分红或回购注销。数据来源：NeoData。</td></tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- ==================== DIMENSION 3 ==================== -->
+  <div class="card">
+    <h3>🏆 维度三：竞争优势（权重 28%）</h3>
+    <div class="criterion pass">
+      <div class="criterion-header">
+        <span class="criterion-title">产品在可比公司中具有竞争优势</span>
+        <span class="criterion-badge">通过</span>
+      </div>
+      <div class="criterion-detail">
+        <strong>评分：72/100</strong> — LULU在多项核心指标上全面领先同业。<br>
+        定量评分（0-50）：<strong>42分</strong> — 毛利率56.5% vs Nike 42.2%（胜），净利率14.2% vs Nike 6.9%（胜），ROE 34.0% vs Nike 23.3%（胜），营收增速+4.9% vs Nike -9.7%（胜），营业利润率20.1% vs Nike 7.5%（胜）<br>
+        定性评分（0-50）：<strong>32分</strong> — ①品牌护城河强（社区瑜伽文化、教育家模式）7/7；②产品差异化中6/7；③客户转换成本中5/7；④成本优势低3/7；⑤网络效应中（门店+线上+社区）5/7；⑥规模效应中4/7；⑦专利/IP低2/7。<br>
+        <strong>地理调整 -2分</strong>：海外收入占比~40%（亚太~15%、其他~25%），中国地缘政治风险低但汇率波动需关注。
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill high" style="width:max(72%,5%)">72分</div></div>
+        <span class="score-label">20.2/28 加权</span>
+      </div>
+    </div>
+
+    <h4>📈 可比公司财务指标对比</h4>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>公司</th>
+          <th>毛利率</th>
+          <th>净利率</th>
+          <th>ROE</th>
+          <th>营收增速</th>
+          <th>TTM PE</th>
+          <th>股息率</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="highlight">
+          <td>露露乐蒙 LULU</td>
+          <td class="positive">56.54%</td>
+          <td class="positive">14.22%</td>
+          <td class="positive">34.01%</td>
+          <td class="positive">+4.86%</td>
+          <td class="positive">9.89x</td>
+          <td>0.00%</td>
+        </tr>
+        <tr>
+          <td>耐克 NKE</td>
+          <td class="negative">42.21%</td>
+          <td class="negative">6.94%</td>
+          <td class="negative">23.29%</td>
+          <td class="negative">-9.70%</td>
+          <td>28.00x</td>
+          <td class="positive">2.59%</td>
+        </tr>
+        <tr>
+          <td>安德玛 UA</td>
+          <td class="negative">~46%</td>
+          <td class="negative">&lt;5%</td>
+          <td class="negative">&lt;10%</td>
+          <td class="negative">-3%</td>
+          <td>~25x</td>
+          <td>0.00%</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr><td colspan="7">红色数值表示优于可比公司均值，绿色表示劣于均值。数据来源：NeoData，截至2026-05-08。</td></tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- ==================== DIMENSION 4 ==================== -->
+  <div class="card">
+    <h3>📐 维度四：市盈率估值（权重 20%）</h3>
+    <div class="criterion pass">
+      <div class="criterion-header">
+        <span class="criterion-title">TTM市盈率 ≤ 20倍 · 估值安全边际</span>
+        <span class="criterion-badge">通过</span>
+      </div>
+      <div class="criterion-detail">
+        <strong>评分：78/100</strong> — 
+        TTM市盈率仅<strong>9.89x</strong>，处于历史最低区间（5年最高516美元/PE~40x，当前131美元/PE 9.89x）。<br>
+        纵向对比：5年PE中位数约28x，当前不足10x，<strong>处于历史PE的约5%分位</strong>。<br>
+        横向对比：服装零售行业均值PE约15-18x，LULU折价约40%。<br>
+        <strong>但需注意</strong>：低PE部分反映盈利下修风险（FY27 EPS指引$12.1-$12.3 vs 一致预期$12.69），若盈利持续恶化为"价值陷阱"则低PE不具吸引力。
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill high" style="width:max(78%,5%)">78分</div></div>
+        <span class="score-label">15.6/20 加权</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== DIMENSION 5 ==================== -->
+  <div class="card">
+    <h3>🚀 维度五：成长动能（权重 12%）</h3>
+    <div class="criterion partial">
+      <div class="criterion-header">
+        <span class="criterion-title">业绩趋势 · 增长预期 · 行业景气度 · 渗透率空间</span>
+        <span class="criterion-badge">部分通过</span>
+      </div>
+      <div class="criterion-detail">
+        <strong>评分：32/100</strong><br>
+        <strong>5A 最新季报趋势（0-25）：8分</strong> — Q4营收仅+1%，净利-22%，美洲可比-2%，增速急剧恶化。FY26全年营收增4.86% vs FY25的10.07%明显放缓。<br>
+        <strong>5B 未来增长预期（0-25）：8分</strong> — FY27营收指引+2~4%，EPS指引$12.1-$12.3远低于一致预期$12.69，分析师共识正持续下调。2027Q1 EPS指引$1.63-$1.68 vs 一致$2.14，差值高达24%。<br>
+        <strong>5C 行业景气度（0-25）：10分</strong> — 运动服饰电商2026Q1中国区+12%，LULU电商+34%领先。但北美运动消费整体谨慎，Nike大中华区-10%显示行业压力。运动休闲渗透率在北美已较高。<br>
+        <strong>5D 渗透率空间（0-25）：6分</strong> — 北美/加拿大市场渗透率趋于成熟（门店600+），中国大陆为未来主增长引擎（154家门店，同店+26%）。男装品类扩张仍在早期，鞋类业务刚起步。
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill low" style="width:max(32%,5%)">32分</div></div>
+        <span class="score-label">3.8/12 加权</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== DIMENSION 6 ==================== -->
+  <div class="card">
+    <h3>🛡️ 维度六：财务健康与筹码结构（权重 8%）</h3>
+    <div class="criterion partial">
+      <div class="criterion-header">
+        <span class="criterion-title">有息负债率 · 股东结构变化</span>
+        <span class="criterion-badge">部分通过</span>
+      </div>
+      <div class="criterion-detail">
+        <strong>评分：68/100</strong><br>
+        <strong>6A 负债与偿债能力（0-50）：38分</strong> — 资产负债率41.33%（适中），流动比率2.26、速动比率1.36（健康），经营现金流$16.0亿覆盖充足。但ROE从42.42%降至34.01%显示杠杆效率下降。无有息负债数据，但整体负债结构良好。<br>
+        <strong>6B 股东结构（0-50）：30分</strong> — 机构持股高度集中（Vanguard 11.6%、BlackRock 8.6%、创始人7.17%）。但近期多家机构减持：Susquehanna -151.9万股、Invesco -57.2万股、UBS -61.5万股，显示机构信心减弱。机构评级：12%买入/85%持有/3%卖出，整体偏谨慎。<br>
+        <strong>加分项</strong>：机构持股>30%（+5分），无质押风险（美股惯例）。
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill medium" style="width:max(68%,5%)">68分</div></div>
+        <span class="score-label">5.4/8 加权</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CATALYSTS ==================== -->
+  <div class="card">
+    <h3>⏰ 近期催化剂看点</h3>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">📋</span>
+      <div>
+        <span class="catalyst-type medium">中影响</span>
+        <strong>FY2027 Q1 财报发布</strong> — 预计2026年6月初，市场关注美洲正价销售恢复进展
+        <div class="text-sm" style="color:var(--text-secondary);">预计时间：2026-06-05 前后</div>
+      </div>
+    </div>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">📋</span>
+      <div>
+        <span class="catalyst-type high">高影响</span>
+        <strong>美洲业务改革成效验证</strong> — 管理层预计Q2正价销售持平、下半年转正，需持续跟踪
+        <div class="text-sm" style="color:var(--text-secondary);">关注2026年下半年同店数据</div>
+      </div>
+    </div>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">📋</span>
+      <div>
+        <span class="catalyst-type medium">中影响</span>
+        <strong>中美关税政策动向</strong> — 关税对毛利率有3ppt+负面影响，政策变动将直接影响盈利
+        <div class="text-sm" style="color:var(--text-secondary);">持续关注</div>
+      </div>
+    </div>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">📋</span>
+      <div>
+        <span class="catalyst-type low">低影响</span>
+        <strong>中国大陆新店扩张</strong> — 门店已达154家，年增约20-30家，中国市场同店+26%为最大亮点
+        <div class="text-sm" style="color:var(--text-secondary);">持续进行中</div>
+      </div>
+    </div>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">📋</span>
+      <div>
+        <span class="catalyst-type low">低影响</span>
+        <strong>鞋类与男装品类扩张</strong> — 长期增长驱动力，但短期贡献有限
+        <div class="text-sm" style="color:var(--text-secondary);">长期跟踪</div>
+      </div>
+    </div>
+    <div class="text-sm" style="color:var(--text-secondary); margin-top:8px;">
+      注：催化剂仅供信息参考，不影响审美评分。
+    </div>
+  </div>
+
+  <!-- ==================== RISK FLAGS ==================== -->
+  <div class="card">
+    <h3>⚠️ 风险提示</h3>
+    
+    <div class="risk-flag fatal">
+      <span class="flag-icon">🔴</span>
+      <span class="flag-text"><strong>盈利持续下修风险：</strong>FY27 EPS指引$12.1-$12.3远低于Bloomberg一致预期$12.69，分析师共识正在快速下调。若实际业绩不及指引下限，股价可能继续承压。管理层对美洲市场"下半年转正"的预期尚未被数据充分验证。</span>
+    </div>
+    
+    <div class="risk-flag fatal">
+      <span class="flag-icon">🔴</span>
+      <span class="flag-text"><strong>核心市场萎缩：</strong>美洲（占收入约60%）可比销售同比-2%，且正价销售尚未恢复增长。作为LULU最核心市场，若美洲业务持续低迷，整体增长引擎将失速。</span>
+    </div>
+
+    <div class="risk-flag fatal">
+      <span class="flag-icon">🔴</span>
+      <span class="flag-text"><strong>关税/贸易政策不确定性：</strong>FY26 Q4毛利率因关税+折扣下降5.5pct，管理层预计关税压力还将持续至FY27下半年。中美贸易摩擦若升级将直接侵蚀利润。</span>
+    </div>
+
+    <div class="risk-flag watch">
+      <span class="flag-icon">🟡</span>
+      <span class="flag-text"><strong>竞争加剧：</strong>Alo Yoga、Vuori等新兴高端运动品牌快速崛起，正在侵蚀LULU在核心瑜伽和运动休闲领域市场份额。Nike也在加大女性运动服饰投入。</span>
+    </div>
+
+    <div class="risk-flag watch">
+      <span class="flag-icon">🟡</span>
+      <span class="flag-text"><strong>产品创新存疑：</strong>中金研报指出"过去几年产品创新效果较为一般"，新品Unrestricted Power、ShowZero、ThermoZen虽有积极反馈，但仍需销售数据验证。</span>
+    </div>
+
+    <div class="risk-flag watch">
+      <span class="flag-icon">🟡</span>
+      <span class="flag-text"><strong>库存积压风险：</strong>FY26期末存货$17.0亿，同比+17.93%，增速远超营收增速（+4.86%）。若需求持续疲软，可能面临进一步折扣去库存压力。</span>
+    </div>
+
+    <div class="risk-flag info">
+      <span class="flag-icon">🔵</span>
+      <span class="flag-text"><strong>无股东回报机制：</strong>公司从未分红或回购，完全依赖股价上涨为投资者创造回报。在当前盈利下修周期中，缺乏股息保护。</span>
+    </div>
+  </div>
+
+  <!-- ==================== INVESTMENT CONCLUSION ==================== -->
+  <div class="invest-conclusion">
+    <h3>🎯 投资结论</h3>
+
+    <div class="verdict-banner hold">
+      <span class="verdict-emoji">⚠️</span>
+      <div>
+        <div class="verdict-text" id="verdictText">暂不推荐</div>
+        <div class="text-sm" style="font-weight:400; opacity:0.85; margin-top:4px;">审美评分偏低，存在盈利下修和核心市场萎缩的致命风险</div>
+      </div>
+    </div>
+
+    <div class="price-cards">
+      <div class="price-card buy-card">
+        <div class="price-label">安全买入价</div>
+        <div class="price-value">$111.50</div>
+        <div class="price-note">安全边际15% · EPS(TTM)=$13.26</div>
+      </div>
+      <div class="price-card target-card">
+        <div class="price-label">12个月目标价</div>
+        <div class="price-value">$131.18</div>
+        <div class="price-note">合理PE: 15x · 基于FY27指引EPS</div>
+      </div>
+      <div class="price-card fair-card">
+        <div class="price-label">合理价值</div>
+        <div class="price-value">$198.90</div>
+        <div class="price-note">当前价：$131.18</div>
+      </div>
+    </div>
+
+    <div class="upside-bar">
+      <span class="upside-label">较当前价潜在上涨空间（基于合理价值）</span>
+      <span class="upside-value positive" id="upsideValue">+51.6%</span>
+    </div>
+
+    <div class="position-advice none">
+      <span>📐</span>
+      <span>暂不建议开仓，持续跟踪美洲业务拐点信号</span>
+    </div>
+
+    <div class="valuation-note">
+      <strong>估值说明：</strong>合理PE=15x的推导过程：5年PE中位数28x×30%权重=8.4x，25分位PE 18x×15%权重=2.7x，行业均值PE 15x×25%权重=3.75x，PEG推算（CAGR≈5%×PEG0.8=4x）×30%权重=1.2x → 加权=16.05x。受C等级70%安全边际约束取15x。当前EPS(TTM)=$13.26，合理价值=$13.26×15=$198.90。鉴于盈利持续下修风险，目标价采用保守的$131.18（当前市价），建议等待美洲业务实质性拐点。
+    </div>
+
+    <div class="conclusion-text">
+      <strong>核心判断：露露乐蒙（LULU.US）综合评分49分（C级），暂不推荐买入。</strong><br><br>
+      露露乐蒙拥有行业领先的品牌护城河和财务指标（毛利率56.5%、ROE 34%、OCF $16亿），在竞争优势维度表现突出。当前股价从$516历史高点跌至$131，PE仅9.89x，表面看极具吸引力。<br><br>
+      <strong>但致命风险在于：</strong>①核心美洲市场持续萎缩（同店-2%）；②盈利持续下修（FY27指引远低于一致预期）；③关税+折扣侵蚀毛利率（Q4单季-5.5pct）；④无任何股东回报（零分红回购）。若价值陷阱成立，当前低PE并非买入理由。<br><br>
+      <strong>等待信号：</strong>①美洲正价销售恢复同比增长（管理层预计2026H2）；②FY27 Q1财报（2026年6月）EPS能否达到$1.63+指引下限；③关税政策明朗化。建议将LULU纳入观察清单，待基本面拐点确认后再考虑介入。
+    </div>
+  </div>
+
+  <!-- ==================== 综合评分表 ==================== -->
+  <div class="card">
+    <h3>📝 综合评分汇总表</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>权重</th>
+          <th>评分</th>
+          <th>加权得分</th>
+          <th>状态</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>D1 内部人增持</td>
+          <td>12%</td>
+          <td>15</td>
+          <td>1.8</td>
+          <td><span class="module-badge weak">未通过</span></td>
+        </tr>
+        <tr>
+          <td>D2 股息+回购回报</td>
+          <td>20%</td>
+          <td>10</td>
+          <td>2.0</td>
+          <td><span class="module-badge weak">未通过</span></td>
+        </tr>
+        <tr>
+          <td>D3 竞争优势</td>
+          <td>28%</td>
+          <td>72</td>
+          <td>20.2</td>
+          <td><span class="module-badge strong">通过</span></td>
+        </tr>
+        <tr>
+          <td>D4 市盈率估值</td>
+          <td>20%</td>
+          <td>78</td>
+          <td>15.6</td>
+          <td><span class="module-badge strong">通过</span></td>
+        </tr>
+        <tr>
+          <td>D5 成长动能</td>
+          <td>12%</td>
+          <td>32</td>
+          <td>3.8</td>
+          <td><span class="module-badge medium">部分通过</span></td>
+        </tr>
+        <tr>
+          <td>D6 财务健康与筹码</td>
+          <td>8%</td>
+          <td>68</td>
+          <td>5.4</td>
+          <td><span class="module-badge medium">部分通过</span></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2"><strong>综合总分</strong></td>
+          <td><strong>49/100</strong></td>
+          <td colspan="2"><strong>等级：C · 谨慎参与</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- ==================== 核心跟踪指标 ==================== -->
+  <div class="card">
+    <h3>📌 关键跟踪指标（核心验证信号）</h3>
+    <div class="summary-box">
+      <strong>1. 美洲同店销售增速</strong> — FY27 H1能否转正？管理层预计Q2持平、H2转正。<br>
+      <strong>2. 毛利率走势</strong> — 关税影响是否边际减弱？剔除关税后的核心毛利率是否稳定在55%+。<br>
+      <strong>3. 中国大陆增速</strong> — 能否维持+25%+增速？门店扩张节奏（年增20-30家）。<br>
+      <strong>4. FY27 EPS兑现</strong> — 能否达到$12.10指引下限？Q1是否超预期（一致预期$2.14 vs指引$1.63）。<br>
+      <strong>5. 库存/折扣变化</strong> — 库存增速（+17.9%）能否回归合理水平，折扣深度是否收窄。<br>
+      <strong>6. 管理层应对关税策略</strong> — 是否有价格调整、供应链转移等对冲措施。<br>
+      <strong>7. 机构持仓变化</strong> — 近期多家机构减持，关注是否有边际改善信号。
+    </div>
+  </div>
+
+  <div class="footer">
+    本报告基于 NeoData 公开金融数据、券商研报及公司财报自动生成，仅供研究参考，不构成任何投资建议。<br>
+    报告中的目标价、合理价值等均为基于历史数据和估值模型的推算，不代表未来实际表现。投资有风险，入市需谨慎。<br>
+    数据来源：NeoData | 券商研报：中金公司 | 数据截止日期：2026-05-08 | 报告生成时间：2026-05-09 10:00 GMT+8
+  </div>
+
+</div>
+</body>
+</html>

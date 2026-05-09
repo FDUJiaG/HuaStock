@@ -1,0 +1,20 @@
+{
+  "siteTitle": "国仕无双 · 研究报告库",
+  "siteSubtitle": "HuaStock Research Reports",
+  "siteDescription": "研究覆盖 A 股、港股、美股 — 专业深度，价值发现",
+  "categories": {
+    "A-Shares": { "label": "A 股", "badge": "A股", "color": "#dc2626" },
+    "HK-Stocks": { "label": "港股", "badge": "港股", "color": "#2563eb" },
+    "US-Stocks": { "label": "美股", "badge": "美股", "color": "#059669" }
+  },
+  "namingConvention": {
+    "description": "将新报告放入 Stocks/{category}/ 目录下，建议文件名格式如下：",
+    "format": "{CompanyName}-{Ticker}-{ReportType}.html",
+    "examples": {
+      "A-Shares": "宁德时代-300750-深度研究.html",
+      "HK-Stocks": "Tencent-0700-财报点评.html",
+      "US-Stocks": "Nvidia-NVDA-行业分析.html"
+    },
+    "reportTypes": ["深度研究", "财报点评", "行业分析", "业绩点评", "估值模型", "专题报告"]
+  }
+}

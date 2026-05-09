@@ -1,0 +1,505 @@
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HKEX vs CME Group — 两大交易所巅峰对比分析</title>
+<style>
+  :root {
+    --primary: #1a237e; --success: #34a853; --warning: #f9a825; --danger: #ea4335;
+    --bg: #f5f6fa; --card-bg: #ffffff; --text: #1a1a2e; --text-secondary: #5f6368;
+    --border: #e0e0e0; --shadow: 0 2px 8px rgba(0,0,0,0.08);
+    --radius: 12px;
+    --positive: #cf1322; --negative: #3f8600;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; padding: 20px; overflow-x: hidden; }
+  .container { max-width: 1100px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+
+  .header { background: linear-gradient(135deg, #0d47a1, #1565c0, #1b5e20); color: white; border-radius: var(--radius); padding: 36px 40px; margin-bottom: 24px; box-shadow: var(--shadow); }
+  .header h1 { font-size: 26px; margin-bottom: 6px; font-weight: 600; }
+  .header .subtitle { opacity: 0.85; font-size: 14px; }
+  .header .meta { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; font-size: 12px; opacity: 0.9; }
+  .header .meta span { background: rgba(255,255,255,0.15); padding: 4px 14px; border-radius: 20px; }
+
+  .card { background: var(--card-bg); border-radius: var(--radius); padding: 28px 32px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); overflow-x: auto; }
+  .card h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #e3f2fd; color: #0d47a1; }
+  .card h4 { font-size: 14px; font-weight: 600; margin: 16px 0 8px; color: #1565c0; }
+  .card table { max-width: 100%; word-break: break-word; }
+
+  .section-divider { font-size: 18px; font-weight: 700; color: #0d47a1; padding: 20px 0 12px; border-bottom: 3px solid #1565c0; margin: 8px 0 16px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+
+  .comp-box { border: 1px solid var(--border); border-radius: 10px; padding: 20px; background: #fafbfe; }
+  .comp-box h4 { font-size: 15px; font-weight: 600; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid; }
+  .comp-box.hkex h4 { color: #e65100; border-color: #ffcc80; }
+  .comp-box.cme h4 { color: #1565c0; border-color: #90caf9; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+  th { background: #e3f2fd; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; color: #0d47a1; }
+  td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; }
+  tr:hover { background: #fafbfe; }
+  .positive { color: var(--positive); font-weight: 500; }
+  .negative { color: var(--negative); font-weight: 500; }
+  .best { background: #e8f5e9; font-weight: 500; }
+  .best td { background: #e8f5e9; }
+
+  .dim-item { margin: 12px 0; }
+  .dim-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .dim-label { font-size: 13px; font-weight: 500; }
+  .dim-score { font-size: 12px; font-weight: 600; }
+  .dim-bar { height: 8px; background: #e8eaf6; border-radius: 4px; overflow: hidden; margin-top: 2px; }
+  .dim-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+  .dim-bar-fill.high { background: #34a853; }
+  .dim-bar-fill.medium { background: #f9a825; }
+  .dim-bar-fill.low { background: #ea4335; }
+
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; color: white; margin-left: 6px; }
+  .badge-pass { background: #34a853; }
+  .badge-partial { background: #f9a825; color: #333; }
+  .badge-fail { background: #ea4335; }
+
+  .risk-flag { padding: 8px 12px; margin: 6px 0; border-radius: 6px; font-size: 13px; }
+  .risk-flag.fatal { background: #fce8e8; border-left: 3px solid var(--danger); }
+  .risk-flag.watch { background: #fff8e1; border-left: 3px solid var(--warning); }
+  .risk-flag.info { background: #e8f5e9; border-left: 3px solid var(--success); }
+
+  .conclusion-box { background: linear-gradient(135deg, #e3f2fd, #e8eaf6); border-radius: var(--radius); padding: 24px 28px; margin: 16px 0; border: 1px solid #c5cae9; }
+  .conclusion-box h3 { color: #0d47a1; border: none; margin-bottom: 12px; }
+
+  .vs-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; color: white; margin: 0 2px; white-space: nowrap; }
+  .vs-badge.win { background: #34a853; }
+  .vs-badge.draw { background: #f9a825; color: #333; }
+  .vs-badge.lose { background: #ea4335; }
+
+  .footnote { font-size: 11px; color: #9e9e9e; margin-top: 8px; }
+
+  .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+  .metric-box { background: #f5f8ff; border-radius: 8px; padding: 14px; text-align: center; border: 1px solid #e3f2fd; }
+  .metric-box .label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+  .metric-box .value { font-size: 18px; font-weight: 600; color: #0d47a1; }
+  .metric-box .sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+  .radar-container { text-align: center; padding: 10px 0; }
+  .radar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; justify-items: center; align-items: start; }
+  .radar-grid svg { width: 100%; height: auto; max-width: 380px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<div class="header">
+  <h1>香港交易所 vs CME Group — 两大全球交易所巅峰对比分析</h1>
+  <div class="subtitle">30维度深度分析 + 6维度审美评分 + 业绩点评 全方位比较</div>
+  <div class="meta">
+    <span>数据截至 2026-05-08</span>
+    <span>CME 代码: NASDAQ:CME</span>
+    <span>HKEX 代码: 00388.HK</span>
+  </div>
+</div>
+
+<!-- EXECUTIVE SUMMARY -->
+<div class="card">
+  <h3>第一章：两家公司概览</h3>
+  <div class="two-col">
+    <div class="comp-box hkex">
+      <h4>香港交易所 (00388.HK)</h4>
+      <table style="font-size:12px;margin:0;">
+        <tr><td style="width:130px">股价</td><td><strong>423.60 HKD</strong> (约$54.11 USD)</td></tr>
+        <tr><td>市值</td><td><strong>5,398亿 HKD</strong> (~$690亿 USD)</td></tr>
+        <tr><td>PE (TTM)</td><td><strong>28.70x</strong> / Forward 30.80x</td></tr>
+        <tr><td>EPS (TTM)</td><td>14.88 HKD (+33.2% YoY)</td></tr>
+        <tr><td>股息率</td><td>3.05% (13.04 HKD)</td></tr>
+        <tr><td>Beta</td><td>0.93</td></tr>
+        <tr><td>成立/上市</td><td>2000年合并成立</td></tr>
+      </table>
+    </div>
+    <div class="comp-box cme">
+      <h4>CME Group (CME)</h4>
+      <table style="font-size:12px;margin:0;">
+        <tr><td style="width:130px">股价</td><td><strong>$286.85 USD</strong></td></tr>
+        <tr><td>市值</td><td><strong>$1,039亿 USD</strong></td></tr>
+        <tr><td>PE (TTM)</td><td><strong>24.48x</strong> / Forward 23.43x</td></tr>
+        <tr><td>EPS (TTM)</td><td>$11.72 (+17.9% YoY)</td></tr>
+        <tr><td>股息率</td><td>3.96% ($11.35)</td></tr>
+        <tr><td>Beta</td><td>0.26</td></tr>
+        <tr><td>成立/上市</td><td>1848年(CME)·2002年上市</td></tr>
+  </table>
+    </div>
+  </div>
+</div>
+
+<!-- Q1 2026 PERFORMANCE -->
+<div class="card">
+  <h3>第二章：商业模式与竞争优势对比（30维度精简）</h3>
+  
+  <h4>护城河对比</h4>
+  <table>
+    <tr><th>护城河维度</th><th>香港交易所</th><th>CME Group</th><th>优胜</th></tr>
+    <tr><td>行政/监管垄断</td><td class="positive">香港唯一交易所，行政垄断</td><td>受监管但非行政垄断</td><td>HKEX</td></tr>
+    <tr><td>网络效应</td><td>强 — 中国资本出海唯一通道</td><td class="positive">极强 — 最深衍生品流动性池</td><td>CME</td></tr>
+    <tr><td>转换成本</td><td>高 — 上市审核、交易系统绑定</td><td class="positive">极高 — 清算会员、技术集成</td><td>CME</td></tr>
+    <tr><td>品牌/信任</td><td class="positive">中国唯一国际交易所</td><td>170年历史，全球最受信任</td><td>平手</td></tr>
+    <tr><td>成长动力</td><td class="positive">中国资本开放+IPO周期性</td><td>全球风险管理需求+加密</td><td>HKEX</td></tr>
+    <tr><td>客户/C端</td><td>股票现货为主(51%)</td><td class="positive">衍生品(100%)、六大资产类</td><td>CME</td></tr>
+    <tr><td>收入稳定性</td><td>市场情绪敏感、周期性更强</td><td class="positive">衍生品对冲需求更刚性</td><td>CME</td></tr>
+  </table>
+</div>
+
+<!-- AESTHETIC SCORING COMPARISON -->
+<div class="card">
+  <h3>第三章：2026年Q1业绩对比（业绩点评）</h3>
+  <div class="two-col">
+    <div class="comp-box hkex">
+      <h4>香港交易所 Q1 2026 <span style="font-size:11px;color:#e65100;">创历史新高</span></h4>
+      <table style="font-size:12px;margin:6px 0;">
+        <tr><td>收入及其他收益</td><td><strong>82.03亿 HKD</strong></td><td class="positive">+20% YoY</td></tr>
+        <tr><td>归母净利润</td><td><strong>51.88亿 HKD</strong></td><td class="positive">+27% YoY</td></tr>
+        <tr><td>EBITDA利润率</td><td><strong>80.4%</strong></td><td>+3.7pct</td></tr>
+        <tr><td>港股ADT</td><td><strong>2,767亿 HKD</strong></td><td class="positive">+14% YoY</td></tr>
+        <tr><td>IPO募资金额</td><td><strong>1,104亿 HKD</strong></td><td class="positive">+489% YoY</td></tr>
+        <tr><td>北向ADT</td><td>3,241亿 RMB</td><td class="positive">+70% YoY</td></tr>
+        <tr><td>LME日均成交量</td><td>87.7万手</td><td class="positive">+26% YoY</td></tr>
+        <tr><td>现货分部收入</td><td>41.59亿 HKD</td><td class="positive">+26% YoY</td></tr>
+      </table>
+      <div style="font-size:11px;color:#666;margin-top:6px;">
+        <strong>战略催化剂：</strong>T+1结算（2027Q4）| 下调最低上落价位 | ODP衍生品平台 | LME香港交割仓库
+      </div>
+    </div>
+    <div class="comp-box cme">
+      <h4>CME Group Q1 2026 <span style="font-size:11px;color:#1565c0;">创纪录季度</span></h4>
+      <table style="font-size:12px;margin:6px 0;">
+        <tr><td>总收入</td><td><strong>$18.8亿 USD</strong></td><td class="positive">+14% YoY</td></tr>
+        <tr><td>调整后净利润</td><td><strong>$12.2亿 USD</strong></td><td class="positive">+20% YoY</td></tr>
+        <tr><td>调整后运营利润率</td><td><strong>72.8%</strong></td><td>+1.7pct</td></tr>
+        <tr><td>日均交易量ADV</td><td><strong>3,623万合约</strong></td><td class="positive">+22% YoY</td></tr>
+        <tr><td>利率产品ADV</td><td>1,867万</td><td class="positive">+24% YoY</td></tr>
+        <tr><td>能源产品ADV</td><td>399万</td><td class="positive">+37% YoY</td></tr>
+        <tr><td>金属产品ADV</td><td>168万</td><td class="positive">+130% YoY</td></tr>
+        <tr><td>非美国ADV</td><td>1,140万</td><td class="positive">+30% YoY</td></tr>
+      </table>
+      <div style="font-size:11px;color:#666;margin-top:6px;">
+        <strong>战略催化剂：</strong>加密衍生品$3万亿/年 | CME Coin探索 | FICC跨保证金 | 零售市场拓展
+      </div>
+    </div>
+  </div>
+  <div class="footnote" style="margin-top:12px;">两交易所Q1均创历史新高。HKEX在IPO和互联互通驱动下增长更强劲(+27%净利润)；CME在六大产品线全面创纪录(+20%)，增长更全面均衡。</div>
+</div>
+
+<!-- BUSINESS MODEL COMPARISON -->
+<div class="card">
+  <h3>第四章：核心财务指标对比</h3>
+  <table>
+<tr><th style="width:200px">指标</th><th>香港交易所 (00388.HK)</th><th>CME Group (CME)</th><th style="width:90px">优胜</th></tr>
+<tr><td>市值</td><td>5,398亿 HKD (~690亿)</td><td>$1,039亿 USD</td><td><span class="vs-badge win">CME</span></td></tr>
+<tr><td>营业收入 (TTM)</td><td>302亿 HKD (~38.7亿)</td><td>$67.4亿 USD</td><td><span class="vs-badge win">CME</span></td></tr>
+<tr><td>净利润 (TTM)</td><td>188.7亿 HKD (~24.2亿)</td><td>$42.4亿 USD</td><td><span class="vs-badge win">CME</span></td></tr>
+<tr><td>净利率</td><td>~62.5%</td><td>~62.9%</td><td><span class="vs-badge draw">平手</span></td></tr>
+<tr><td>PE (TTM)</td><td>28.70x</td><td>24.48x</td><td><span class="vs-badge win">CME</span></td></tr>
+<tr><td>Foreward PE</td><td>30.80x</td><td>23.43x</td><td><span class="vs-badge win">CME</span></td></tr>
+<tr><td>EPS增长率 (YoY)</td><td>+33.2%</td><td>+17.9%</td><td><span class="vs-badge win">HKEX</span></td></tr>
+<tr><td>营收增长率 (YoY)</td><td>+26.3%</td><td>+7.5%</td><td><span class="vs-badge win">HKEX</span></td></tr>
+<tr><td>股息率</td><td>3.05%</td><td>3.96%</td><td><span class="vs-badge win">CME</span></td></tr>
+<tr><td>Beta (波动性)</td><td>0.93</td><td>0.26</td><td><span class="vs-badge win">CME</span></td></tr>
+<tr><td>52周价格区间</td><td>365-466 HKD</td><td>$257-329 USD</td><td><span class="vs-badge draw">—</span></td></tr>
+<tr><td>成立年份</td><td>2000年</td><td>1848年</td><td><span class="vs-badge win">CME</span></td></tr>
+<tr><td>主要市场</td><td>股票现货+衍生产品</td><td>期货+期权衍生品</td><td><span class="vs-badge draw">不同</span></td></tr>
+  </table>
+  <div class="footnote">CME在规模、估值、股息率、稳定性上领先；HKEX在增长动能上更胜一筹。净利率几乎相同，说明两家都是极高利润率的交易所生意。</div>
+</div>
+<div class="card">
+  <h3>第五章：6维度审美评分对比</h3>
+
+  <div class="radar-grid">
+    <svg viewBox="-40 -15 420 390" role="img" aria-label="HKEX Radar Chart">
+      <title>HKEX 审美雷达图</title>
+      <polygon points="170,118 215,144 215,196 170,222 125,196 125,144" fill="rgba(0,0,0,0.03)" stroke="#ddd" stroke-width="1"/>
+      <polygon points="170,79 248.8,124.5 248.8,215.5 170,261 91.2,215.5 91.2,124.5" fill="rgba(0,0,0,0.03)" stroke="#ddd" stroke-width="1"/>
+      <polygon points="170,40 282.6,105 282.6,235 170,300 57.4,235 57.4,105" fill="none" stroke="#ddd" stroke-width="1"/>
+      <polygon fill="rgba(230,81,0,0.12)" stroke="rgb(230,81,0)" stroke-width="2" points="170,105 235.3,132.3 262.3,223.3 170,241.5 77.7,223.3 102.5,131" />
+      <circle cx="170" cy="105" r="4" fill="rgb(230,81,0)"/>
+      <circle cx="235.3" cy="132.3" r="4" fill="rgb(230,81,0)"/>
+      <circle cx="262.3" cy="223.3" r="4" fill="rgb(230,81,0)"/>
+      <circle cx="170" cy="241.5" r="4" fill="rgb(230,81,0)"/>
+      <circle cx="77.7" cy="223.3" r="4" fill="rgb(230,81,0)"/>
+      <circle cx="102.5" cy="131" r="4" fill="rgb(230,81,0)"/>
+      <text x="170" y="25" text-anchor="middle" font-size="12" font-weight="500" fill="#333">D1 内部人增持</text>
+      <text x="170" y="38" text-anchor="middle" font-size="10" fill="#e65100">50分</text>
+      <text x="295" y="130" font-size="12" font-weight="500" fill="#333">D2 股息回购</text>
+      <text x="295" y="144" font-size="10" fill="#e65100">58分</text>
+      <text x="295" y="260" font-size="12" font-weight="500" fill="#333">D3 竞争优势</text>
+      <text x="295" y="274" font-size="10" fill="#e65100">82分</text>
+      <text x="170" y="320" text-anchor="middle" font-size="12" font-weight="500" fill="#333">D4 估值</text>
+      <text x="170" y="333" text-anchor="middle" font-size="10" fill="#e65100">55分</text>
+      <text x="42" y="260" text-anchor="end" font-size="12" font-weight="500" fill="#333">D5 成长动能</text>
+      <text x="42" y="274" text-anchor="end" font-size="10" fill="#e65100">82分</text>
+      <text x="50" y="130" text-anchor="end" font-size="12" font-weight="500" fill="#333">D6 财务健康</text>
+      <text x="50" y="144" text-anchor="end" font-size="10" fill="#e65100">60分</text>
+    </svg>
+
+    <svg viewBox="-40 -15 420 390" role="img" aria-label="CME Radar Chart">
+      <title>CME 审美雷达图</title>
+      <polygon points="170,118 215,144 215,196 170,222 125,196 125,144" fill="rgba(0,0,0,0.03)" stroke="#ddd" stroke-width="1"/>
+      <polygon points="170,79 248.8,124.5 248.8,215.5 170,261 91.2,215.5 91.2,124.5" fill="rgba(0,0,0,0.03)" stroke="#ddd" stroke-width="1"/>
+      <polygon points="170,40 282.6,105 282.6,235 170,300 57.4,235 57.4,105" fill="none" stroke="#ddd" stroke-width="1"/>
+      <polygon fill="rgba(21,101,192,0.12)" stroke="rgb(21,101,192)" stroke-width="2" points="170,137.5 257.8,119.3 265.7,225.3 170,245.4 88.9,216.8 91.2,124.5" />
+      <circle cx="170" cy="137.5" r="4" fill="rgb(21,101,192)"/>
+      <circle cx="257.8" cy="119.3" r="4" fill="rgb(21,101,192)"/>
+      <circle cx="265.7" cy="225.3" r="4" fill="rgb(21,101,192)"/>
+      <circle cx="170" cy="245.4" r="4" fill="rgb(21,101,192)"/>
+      <circle cx="88.9" cy="216.8" r="4" fill="rgb(21,101,192)"/>
+      <circle cx="91.2" cy="124.5" r="4" fill="rgb(21,101,192)"/>
+      <text x="170" y="25" text-anchor="middle" font-size="12" font-weight="500" fill="#333">D1 内部人增持</text>
+      <text x="170" y="38" text-anchor="middle" font-size="10" fill="#1565c0">25分</text>
+      <text x="295" y="130" font-size="12" font-weight="500" fill="#333">D2 股息回购</text>
+      <text x="295" y="144" font-size="10" fill="#1565c0">78分</text>
+      <text x="295" y="260" font-size="12" font-weight="500" fill="#333">D3 竞争优势</text>
+      <text x="295" y="274" font-size="10" fill="#1565c0">85分</text>
+      <text x="170" y="320" text-anchor="middle" font-size="12" font-weight="500" fill="#333">D4 估值</text>
+      <text x="170" y="333" text-anchor="middle" font-size="10" fill="#1565c0">58分</text>
+      <text x="42" y="260" text-anchor="end" font-size="12" font-weight="500" fill="#333">D5 成长动能</text>
+      <text x="42" y="274" text-anchor="end" font-size="10" fill="#1565c0">72分</text>
+      <text x="50" y="130" text-anchor="end" font-size="12" font-weight="500" fill="#333">D6 财务健康</text>
+      <text x="50" y="144" text-anchor="end" font-size="10" fill="#1565c0">70分</text>
+    </svg>
+  </div>
+  <div style="display:flex;justify-content:center;gap:80px;font-size:12px;">
+    <span style="color:#e65100;">← HKEX雷达图</span>
+    <span style="color:#1565c0;">CME雷达图 →</span>
+  </div>
+
+  <h4 style="margin-top:20px;">六维度评分详表</h4>
+  <table>
+    <tr><th>维度</th><th>权重</th><th>香港交易所</th><th>CME Group</th><th>优胜方</th></tr>
+    <tr>
+      <td>D1 内部人增持</td>
+      <td>12%</td>
+      <td>50 <span class="badge badge-partial">部分</span></td>
+      <td>25 <span class="badge badge-fail">未过</span></td>
+      <td><span class="vs-badge win">HKEX</span></td>
+    </tr>
+    <tr>
+      <td>D2 股息+回购</td>
+      <td>20%</td>
+      <td>58 <span class="badge badge-partial">部分</span></td>
+      <td>78 <span class="badge badge-pass">通过</span></td>
+      <td><span class="vs-badge win">CME</span></td>
+    </tr>
+    <tr>
+      <td>D3 竞争优势</td>
+      <td>28%</td>
+      <td>82 <span class="badge badge-pass">通过</span></td>
+      <td>85 <span class="badge badge-pass">通过</span></td>
+      <td><span class="vs-badge win">CME</span></td>
+    </tr>
+    <tr>
+      <td>D4 估值</td>
+      <td>20%</td>
+      <td>55 <span class="badge badge-partial">部分</span></td>
+      <td>58 <span class="badge badge-partial">部分</span></td>
+      <td><span class="vs-badge win">CME</span></td>
+    </tr>
+    <tr>
+      <td>D5 成长动能</td>
+      <td>12%</td>
+      <td>82 <span class="badge badge-pass">通过</span></td>
+      <td>72 <span class="badge badge-partial">部分</span></td>
+      <td><span class="vs-badge win">HKEX</span></td>
+    </tr>
+    <tr>
+      <td>D6 财务健康</td>
+      <td>8%</td>
+      <td>60 <span class="badge badge-partial">部分</span></td>
+      <td>70 <span class="badge badge-partial">部分</span></td>
+      <td><span class="vs-badge win">CME</span></td>
+    </tr>
+    <tr class="best">
+      <td><strong>加权总分</strong></td>
+      <td><strong>100%</strong></td>
+      <td><strong>66.6</strong></td>
+      <td><strong>68.1</strong></td>
+      <td><span class="vs-badge win">CME</span></td>
+    </tr>
+    <tr>
+      <td><strong>等级</strong></td>
+      <td>—</td>
+      <td><strong>B级</strong></td>
+      <td><strong>B级</strong></td>
+      <td>平手</td>
+    </tr>
+  </table>
+  <div class="footnote" style="margin-top:8px;">
+    CME以68.1分微弱领先HKEX的66.6分，两者均为B级（纳入观察）。CME赢在D2股息高、D3优势稳固；HKEX赢在D1内部人增持和D5成长动能。两者的D4估值维度都是短板——CME不便宜，HKEX更贵。
+  </div>
+
+  <!-- Detail for each dimension -->
+  <div class="two-col" style="margin-top:16px;">
+    <div>
+      <h4>D1 内部人增持</h4>
+      <p style="font-size:12px;color:#666;">
+        <strong>HKEX 50分：</strong>港交所CEO陈翊庭2024年上任，高管有一定持股。香港交易所为公营机构，无明显"实控人"，但管理层增持记录可查。<br>
+        <strong>CME 25分：</strong>内部人持股仅0.3%，近3年无显著内部增持记录。属美国公司常见情况。
+      </p>
+      <h4>D2 股息+回购</h4>
+      <p style="font-size:12px;color:#666;">
+        <strong>HKEX 58分：</strong>股息率3.05%，连续多年分红。但有息负债率较高（~90%，含结算保证金），扣分净现金项。<br>
+        <strong>CME 78分：</strong>股息率3.96%+回购=综合~6%。FCF覆盖率接近100%，支持良好。
+      </p>
+      <h4>D3 竞争优势</h4>
+      <p style="font-size:12px;color:#666;">
+        <strong>HKEX 82分：</strong>行政垄断+中国资本开放独家通道。净利率极高。<br>
+        <strong>CME 85分：</strong>全球衍生品流动性之王，5重护城河叠加，转换成本最高。
+      </p>
+    </div>
+    <div>
+      <h4>D4 估值</h4>
+      <p style="font-size:12px;color:#666;">
+        <strong>HKEX 55分：</strong>PE 28.7x，Forward 30.8x。3年历史分位仅25.6%（相对低位），但绝对估值偏贵。<br>
+        <strong>CME 58分：</strong>PE 24.5x，合理区间。5年分位65%，当前价接近我们测算的合理价值。
+      </p>
+      <h4>D5 成长动能</h4>
+      <p style="font-size:12px;color:#666;">
+        <strong>HKEX 82分：</strong>Q1营收+20%、净利+27%、IPO+489%。中国资本开放故事远未结束。<br>
+        <strong>CME 72分：</strong>Q1营收+14%、净利+20%。稳定增长但速度不及HKEX。
+      </p>
+      <h4>D6 财务健康</h4>
+      <p style="font-size:12px;color:#666;">
+        <strong>HKEX 60分：</strong>资产负债率90.13%看似很高，但主要是结算保证金负债。有息负债实际可控。<br>
+        <strong>CME 70分：</strong>D/E 0.14，利息保障25.5倍，资产负债表极稳健。
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- 30-DIMENSION COMPARISON -->
+<div class="card">
+  <h3>第六章：30维度综合评分对比</h3>
+  <table style="font-size:12px;">
+    <tr><th style="width:60px">模块</th><th style="width:45px">维</th><th style="width:160px">维度名称</th><th>HKEX</th><th>CME</th><th style="width:80px">优胜</th></tr>
+    <tr><td rowspan="2">一</td><td>1</td><td>研究价值</td><td>5 <span class="positive">优</span></td><td>5 <span class="positive">优</span></td><td>平手</td></tr>
+    <tr><td>2</td><td>CEO必知事项</td><td>5 <span class="positive">优</span></td><td>5 <span class="positive">优</span></td><td>平手</td></tr>
+    <tr><td rowspan="6">二</td><td>3</td><td>利润真钱比例</td><td>4 <span class="positive">良</span></td><td>5 <span class="positive">优</span></td><td><span class="positive">CME</span></td></tr>
+    <tr><td>4</td><td>核心客户</td><td>5 <span class="positive">优</span></td><td>5 <span class="positive">优</span></td><td>平手</td></tr>
+    <tr><td>5</td><td>获客难度</td><td>5 <span class="positive">优</span></td><td>5 <span class="positive">优</span></td><td>平手</td></tr>
+    <tr><td>6</td><td>客户留存</td><td>4 <span class="positive">良</span></td><td>4 <span class="positive">良</span></td><td>平手</td></tr>
+    <tr><td>7</td><td>客户价值</td><td>5 <span class="positive">优</span></td><td>5 <span class="positive">优</span></td><td>平手</td></tr>
+    <tr><td>8</td><td>消失测试</td><td>5 <span class="positive">优</span></td><td>5 <span class="positive">优</span></td><td>平手</td></tr>
+    <tr><td rowspan="4">三</td><td>9</td><td>护城河</td><td>5 <span class="positive">优</span></td><td>5 <span class="positive">优</span></td><td>平手</td></tr>
+    <tr><td>10</td><td>定价权</td><td>4 <span class="positive">良</span></td><td>4 <span class="positive">良</span></td><td>平手</td></tr>
+    <tr><td>11</td><td>竞争格局</td><td>5 <span class="positive">优</span></td><td>4 <span class="positive">良</span></td><td><span class="positive">HKEX</span></td></tr>
+    <tr><td>12</td><td>竞争对手</td><td>4 <span class="positive">良</span></td><td>4 <span class="positive">良</span></td><td>平手</td></tr>
+    <tr><td rowspan="8">四</td><td>13</td><td>核心指标</td><td>4 <span class="positive">良</span></td><td>5 <span class="positive">优</span></td><td><span class="positive">CME</span></td></tr>
+    <tr><td>14</td><td>风险评估</td><td>3 <span style="color:#f9a825">中</span></td><td>3 <span style="color:#f9a825">中</span></td><td>平手</td></tr>
+    <tr><td>15</td><td>负债水平</td><td>3 <span style="color:#f9a825">中</span></td><td>5 <span class="positive">优</span></td><td><span class="positive">CME</span></td></tr>
+    <tr><td>16</td><td>资本回报</td><td>5 <span class="positive">优</span></td><td>4 <span class="positive">良</span></td><td><span class="positive">HKEX</span></td></tr>
+    <tr><td>17</td><td>会计政策</td><td>4 <span class="positive">良</span></td><td>4 <span class="positive">良</span></td><td>平手</td></tr>
+    <tr><td>18</td><td>收入持续性</td><td>4 <span class="positive">良</span></td><td>5 <span class="positive">优</span></td><td><span class="positive">CME</span></td></tr>
+    <tr><td>19</td><td>产业链地位</td><td>4 <span class="positive">良</span></td><td>5 <span class="positive">优</span></td><td><span class="positive">CME</span></td></tr>
+    <tr><td>20</td><td>资本效率</td><td>4 <span class="positive">良</span></td><td>5 <span class="positive">优</span></td><td><span class="positive">CME</span></td></tr>
+    <tr><td rowspan="6">五</td><td>21</td><td>诚信能力</td><td>4 <span class="positive">良</span></td><td>4 <span class="positive">良</span></td><td>平手</td></tr>
+    <tr><td>22</td><td>选拔机制</td><td>4 <span class="positive">良</span></td><td>3 <span style="color:#f9a825">中</span></td><td><span class="positive">HKEX</span></td></tr>
+    <tr><td>23</td><td>薪酬股权</td><td>3 <span style="color:#f9a825">中</span></td><td>3 <span style="color:#f9a825">中</span></td><td>平手</td></tr>
+    <tr><td>24</td><td>股东导向</td><td>4 <span class="positive">良</span></td><td>4 <span class="positive">良</span></td><td>平手</td></tr>
+    <tr><td>25</td><td>信息一致</td><td>4 <span class="positive">良</span></td><td>4 <span class="positive">良</span></td><td>平手</td></tr>
+    <tr><td>26</td><td>独立思考</td><td>4 <span class="positive">良</span></td><td>4 <span class="positive">良</span></td><td>平手</td></tr>
+    <tr><td rowspan="4">六</td><td>27</td><td>增长来源</td><td>4 <span class="positive">良</span></td><td>4 <span class="positive">良</span></td><td>平手</td></tr>
+    <tr><td>28</td><td>并购成功</td><td>4 <span class="positive">良</span></td><td>4 <span class="positive">良</span></td><td>平手</td></tr>
+    <tr><td>29</td><td>并购战略</td><td>4 <span class="positive">良</span></td><td>4 <span class="positive">良</span></td><td>平手</td></tr>
+    <tr><td>30</td><td>未来增长</td><td>5 <span class="positive">优</span></td><td>4 <span class="positive">良</span></td><td><span class="positive">HKEX</span></td></tr>
+    <tr class="best"><td colspan="3"><strong>加权总分</strong></td><td><strong>78.5 / 100</strong></td><td><strong>78.0 / 100</strong></td><td><span class="positive">HKEX</span></td></tr>
+  </table>
+  <div class="footnote" style="margin-top:8px;">30维度评分两者极其接近（HKEX 78.5 vs CME 78.0），都是"卓越型"公司。HKEX成长性和垄断性强；CME财务质量和稳定性更优。</div>
+</div>
+
+<!-- VALUATION -->
+<div class="card">
+  <h3>第七章：估值与投资建议</h3>
+  <div class="two-col">
+    <div class="comp-box hkex">
+      <h4>香港交易所估值分析</h4>
+      <table style="font-size:12px;margin:8px 0;">
+        <tr><td>EPS(TTM)</td><td>14.88 HKD</td></tr>
+        <tr><td>合理PE (5年中枢25-30x)</td><td>~30.0x</td></tr>
+        <tr><td>合理价值</td><td><strong>~446 HKD</strong></td></tr>
+        <tr><td>当前价</td><td>423.60 HKD</td></tr>
+        <tr><td>上行空间</td><td style="color:#cf1322">+5.3%</td></tr>
+        <tr><td>建议买入价(B级×75%)</td><td><strong>~334 HKD</strong></td></tr>
+      </table>
+      <div style="font-size:11px;color:#666;margin-top:6px;">
+        分析师目标价520-540 HKD，共识"买入"。当前PE 28.7x处于3年低分位(25.6%)，但Forward PE 30.8x显示市场已定价了强劲增长。
+      </div>
+    </div>
+    <div class="comp-box cme">
+      <h4>CME Group估值分析</h4>
+      <table style="font-size:12px;margin:8px 0;">
+        <tr><td>EPS(TTM)</td><td>$11.72</td></tr>
+        <tr><td>合理PE (5年均值~26x)</td><td>~24.3x</td></tr>
+        <tr><td>合理价值</td><td><strong>~$285</strong></td></tr>
+        <tr><td>当前价</td><td>$286.85</td></tr>
+        <tr><td>上行空间</td><td style="color:#666">~0%</td></tr>
+        <tr><td>建议买入价(B级×75%)</td><td><strong>~$215</strong></td></tr>
+      </table>
+      <div style="font-size:11px;color:#666;margin-top:6px;">
+        分析师目标价$307 (共识"Buy")。当前PE 24.5x处于5年65th分位，价格接近合理价值。建议等待回调。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RISK COMPARISON -->
+<div class="card">
+  <h3>第八章：风险对比</h3>
+  <div class="two-col">
+    <div class="comp-box hkex">
+      <h4>香港交易所核心风险</h4>
+      <div class="risk-flag watch">🟡 <strong>地缘政治风险：</strong>中美关系紧张可能影响互联互通的存续和扩容</div>
+      <div class="risk-flag watch">🟡 <strong>市场周期依赖：</strong>港股成交量和IPO受市场情绪影响大，周期性明显</div>
+      <div class="risk-flag watch">🟡 <strong>Forward PE扩张：</strong>Forward PE 30.8x已超过TTM PE，市场预期非常高</div>
+      <div class="risk-flag info">🟢 <strong>监管变化：</strong>中国政策变动（如数据安全法）可能影响上市节奏</div>
+      <div class="risk-flag info">🟢 <strong>LME风险：</strong>伦敦金属交易所面临COMEX和上期所竞争</div>
+    </div>
+    <div class="comp-box cme">
+      <h4>CME Group核心风险</h4>
+      <div class="risk-flag watch">🟡 <strong>估值偏高：</strong>当前价接近合理价值，上行空间极为有限</div>
+      <div class="risk-flag watch">🟡 <strong>高派息率天花板：</strong>派息率95.6%，未来股息增长空间受限</div>
+      <div class="risk-flag watch">🟡 <strong>$21亿诉讼：</strong>场内交易商的集体诉讼可能产生重大费用</div>
+      <div class="risk-flag info">🟢 <strong>RPC下行：</strong>每合约费率从$0.686降至$0.652，收入质量微降</div>
+      <div class="risk-flag info">🟢 <strong>加密竞争：</strong>去中心化交易所(DEX)可能威胁部分衍生品业务</div>
+    </div>
+  </div>
+</div>
+
+<!-- FINAL CONCLUSION -->
+<div class="conclusion-box">
+  <h3>最终对比结论</h3>
+  <p style="font-size:13px;line-height:1.8;">
+    <strong>两者都是全球顶级交易所资产，共同拥有"垄断+高利润率+高回报"的卓越生意模式。</strong>但在投资视角下存在关键差异：
+  </p>
+  <p style="font-size:13px;line-height:1.8;margin-top:8px;">
+    <strong>📊 CME Group (审美68.1分 / 30维78分) — 稳健型首选</strong><br>
+    CME的护城河更深（衍生品流动性本身就是最强壁垒）、收入更稳定（风险管理是刚性需求而非周期性交易）、股息更高（3.96%）、Beta更低（0.26）。适合追求稳态现金流和防御性的投资者。当前$287接近合理价值，建议等待回调至$215以下。
+  </p>
+  <p style="font-size:13px;line-height:1.8;margin-top:8px;">
+    <strong>📈 香港交易所 (审美66.6分 / 30维78.5分) — 增长型首选</strong><br>
+    HKEX的增长故事更亮眼：Q1净利润+27%、IPO募资+489%、中国资本开放不可逆。但Forward PE 30.8x意味着市场已经定价了高增长，且地缘政治风险不可忽视。当前423.6 HKD有有限上行空间（~+5%），建议等待回调至330 HKD以下。
+  </p>
+  <p style="font-size:13px;line-height:1.8;margin-top:8px;">
+    <strong>💡 结论：</strong>从长期持有的角度看，<strong>CME的品质略胜一筹</strong>（更深的护城河+更高的股息+更低的波动性），但两者当前估值都未提供足够安全边际。建议将两者都放入"能力圈观察清单"，等待市场波动带来的低估买入机会。若发生系统性回调，CME的$215和HKEX的$330将是极具吸引力的介入价位。
+  </p>
+</div>
+
+<!-- CME Previous Report Link -->
+<div class="card">
+  <h3>附件参考</h3>
+  <div style="font-size:12px;color:#666;line-height:1.8;">
+    <p>CME Group单独深度分析报告（2026-04-29）：<code>CME_Group_深度分析报告_20260429.html</code></p>
+    <p>数据来源：SEC公告（CME 10-K/10-Q/8-K）、HKEX业绩公告、StockAnalysis、CompaniesMarketCap、券商研报（长江/华源/格隆汇/花旗）</p>
+    <p>报告生成时间：2026年5月8日 16:10 HKT</p>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>海螺水泥（600585.SH）六维投资分析报告</title>
+<style>
+  :root {
+    --primary: #1a5276;
+    --primary-light: #2980b9;
+    --accent: #e74c3c;
+    --accent-light: #f1948a;
+    --green: #27ae60;
+    --green-light: #82e0aa;
+    --orange: #f39c12;
+    --bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+    --border: #e0e0e0;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 16px;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 36px 40px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .header .stock-name {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .header .stock-code {
+    font-size: 16px;
+    opacity: 0.85;
+    margin-bottom: 16px;
+  }
+  .header .meta-row {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .header .meta-item {
+    display: flex;
+    flex-direction: column;
+  }
+  .header .meta-label {
+    font-size: 12px;
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .header .meta-value {
+    font-size: 22px;
+    font-weight: 600;
+  }
+  .header .date {
+    position: absolute;
+    top: 24px;
+    right: 32px;
+    font-size: 13px;
+    opacity: 0.7;
+  }
+
+  /* Score Summary */
+  .score-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  .total-score-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .total-score-card .score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(var(--primary) 0%, var(--primary) calc(var(--pct) * 1%), #e8e8e8 calc(var(--pct) * 1%));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .total-score-card .score-circle::before {
+    content: '';
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    position: absolute;
+  }
+  .total-score-card .score-num {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--primary);
+    position: relative;
+    z-index: 1;
+  }
+  .total-score-card .score-label {
+    font-size: 14px;
+    color: var(--text-light);
+    font-weight: 500;
+  }
+  .verdict-badge {
+    display: inline-block;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+  .verdict-buy {
+    background: #d5f5e3;
+    color: #1e8449;
+  }
+
+  /* Radar Card */
+  .radar-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .radar-card svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Quick Scores Row */
+  .quick-scores {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .qs-item {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 16px 12px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  .qs-item:hover { transform: translateY(-2px); }
+  .qs-item .qs-label {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .qs-item .qs-bar {
+    width: 100%;
+    height: 6px;
+    background: #eee;
+    border-radius: 3px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .qs-item .qs-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+  }
+  .qs-item .qs-score {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  /* Dimension Detail Cards */
+  .dimension-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    border-left: 5px solid var(--primary);
+  }
+  .dimension-card .dim-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .dimension-card .dim-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .dimension-card .dim-score {
+    font-size: 28px;
+    font-weight: 800;
+  }
+  .dimension-card .dim-score.high { color: var(--green); }
+  .dimension-card .dim-score.mid { color: var(--orange); }
+  .dimension-card .dim-score.low { color: var(--accent); }
+  .dimension-card .dim-desc {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .data-item {
+    background: #f7f9fc;
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .data-item .di-label {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 4px;
+  }
+  .data-item .di-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .data-item .di-note {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 2px;
+  }
+  .highlight-green { color: var(--green) !important; }
+  .highlight-red { color: var(--accent) !important; }
+
+  /* Insight Box */
+  .insight-box {
+    background: #fef9e7;
+    border-left: 4px solid var(--orange);
+    padding: 14px 18px;
+    border-radius: 0 10px 10px 0;
+    margin-top: 16px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .insight-box.danger {
+    background: #fdedec;
+    border-left-color: var(--accent);
+  }
+  .insight-box.success {
+    background: #d5f5e3;
+    border-left-color: var(--green);
+  }
+
+  /* Catalysts */
+  .catalysts {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .catalysts h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 16px;
+  }
+  .catalyst-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .catalyst-item:last-child { border-bottom: none; }
+  .catalyst-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+  .tag-strong { background: #d5f5e3; color: #1e8449; }
+  .tag-medium { background: #fef9e7; color: #b7950b; }
+  .tag-watch { background: #ebf5fb; color: #2e86c1; }
+
+  /* Conclusion */
+  .conclusion {
+    background: linear-gradient(135deg, #1a5276 0%, #2980b9 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 20px;
+  }
+  .conclusion h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .conclusion p {
+    font-size: 15px;
+    line-height: 1.8;
+    opacity: 0.95;
+    margin-bottom: 12px;
+  }
+  .conclusion .target-box {
+    display: inline-flex;
+    gap: 24px;
+    background: rgba(255,255,255,0.15);
+    padding: 16px 24px;
+    border-radius: 12px;
+    margin-top: 12px;
+  }
+  .conclusion .target-item {
+    text-align: center;
+  }
+  .conclusion .target-item .t-label {
+    font-size: 12px;
+    opacity: 0.7;
+  }
+  .conclusion .target-item .t-value {
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  /* Risk Section */
+  .risks {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    border-left: 5px solid var(--accent);
+  }
+  .risks h2 { font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 16px; }
+  .risk-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .risk-item:last-child { border-bottom: none; }
+  .risk-level {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-right: 8px;
+  }
+  .rl-high { background: #fdedec; color: #c0392b; }
+  .rl-mid { background: #fef9e7; color: #b7950b; }
+  .rl-low { background: #d5f5e3; color: #1e8449; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    font-size: 12px;
+    color: #aaa;
+    padding: 20px;
+  }
+
+  @media (max-width: 768px) {
+    .score-summary { grid-template-columns: 1fr; }
+    .quick-scores { grid-template-columns: repeat(3, 1fr); }
+    .header .meta-row { gap: 16px; }
+    .header { padding: 24px; }
+    .dimension-card { padding: 20px; }
+    .container { padding: 12px 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+  <div class="date">报告日期：2026年5月8日</div>
+  <div class="stock-name">海螺水泥</div>
+  <div class="stock-code">600585.SH / 0914.HK · 申万水泥制造</div>
+  <div class="meta-row">
+    <div class="meta-item">
+      <span class="meta-label">A股价格</span>
+      <span class="meta-value">21.09元</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">总股本</span>
+      <span class="meta-value">52.78亿股</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">TTM市值</span>
+      <span class="meta-value">~1,113亿</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">周期定位</span>
+      <span class="meta-value" style="color:#f9e79f">底部区域</span>
+    </div>
+  </div>
+</div>
+
+<!-- Score Summary -->
+<div class="score-summary">
+  <div class="total-score-card">
+    <div class="score-circle" style="--pct:73">
+      <span class="score-num">73</span>
+    </div>
+    <span class="score-label">综合评分 / 100</span>
+    <span class="verdict-badge verdict-buy">建议买入（控制仓位）</span>
+  </div>
+  <div class="radar-card">
+    <svg viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg">
+      <!-- Grid -->
+      <g stroke="#e0e0e0" stroke-width="0.8" fill="none">
+        <polygon points="200,40 331.8,110 331.8,250 200,320 68.2,250 68.2,110"/>
+        <polygon points="200,80 298.1,130 298.1,230 200,280 101.9,230 101.9,130"/>
+        <polygon points="200,120 264.4,150 264.4,210 200,240 135.6,210 135.6,150"/>
+        <polygon points="200,160 230.7,170 230.7,190 200,200 169.3,190 169.3,170"/>
+      </g>
+      <!-- Axis lines -->
+      <g stroke="#ccc" stroke-width="0.6">
+        <line x1="200" y1="40" x2="200" y2="320"/>
+        <line x1="68.2" y1="110" x2="331.8" y2="250"/>
+        <line x1="331.8" y1="110" x2="68.2" y2="250"/>
+      </g>
+      <!-- Data polygon: D1=80 D2=70 D3=75 D4=90 D5=30 D6=90 -->
+      <polygon points="200,56 306.1,147.5 303.7,237.5 200,268 106.3,191 101.9,150"
+               fill="rgba(41,128,185,0.18)" stroke="#2980b9" stroke-width="2.5"/>
+      <!-- Data points -->
+      <g fill="#2980b9">
+        <circle cx="200" cy="56" r="5"/>
+        <circle cx="306.1" cy="147.5" r="5"/>
+        <circle cx="303.7" cy="237.5" r="5"/>
+        <circle cx="200" cy="268" r="5"/>
+        <circle cx="106.3" cy="191" r="5"/>
+        <circle cx="101.9" cy="150" r="5"/>
+      </g>
+      <!-- Score labels -->
+      <g font-size="14" font-weight="700" fill="#1a5276">
+        <text x="200" y="30" text-anchor="middle">D1 80</text>
+        <text x="348" y="115" text-anchor="start">D2 70</text>
+        <text x="348" y="260" text-anchor="start">D3 75</text>
+        <text x="200" y="342" text-anchor="middle">D4 90</text>
+        <text x="52" y="260" text-anchor="end">D5 30</text>
+        <text x="52" y="115" text-anchor="end">D6 90</text>
+      </g>
+      <!-- Dimension names -->
+      <g font-size="11" fill="#7f8c8d">
+        <text x="200" y="18" text-anchor="middle">内部人增持</text>
+        <text x="348" y="100" text-anchor="start">分红回购</text>
+        <text x="348" y="248" text-anchor="start">竞争优势</text>
+        <text x="200" y="356" text-anchor="middle">估值水平</text>
+        <text x="52" y="248" text-anchor="end">成长动能</text>
+        <text x="52" y="100" text-anchor="end">财务健康</text>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<!-- Quick Scores -->
+<div class="quick-scores">
+  <div class="qs-item">
+    <div class="qs-label">D1 内部人增持</div>
+    <div class="qs-bar"><div class="qs-bar-fill" style="width:80%;background:var(--green)"></div></div>
+    <div class="qs-score" style="color:var(--green)">80</div>
+  </div>
+  <div class="qs-item">
+    <div class="qs-label">D2 分红回购</div>
+    <div class="qs-bar"><div class="qs-bar-fill" style="width:70%;background:var(--primary-light)"></div></div>
+    <div class="qs-score" style="color:var(--primary-light)">70</div>
+  </div>
+  <div class="qs-item">
+    <div class="qs-label">D3 竞争优势</div>
+    <div class="qs-bar"><div class="qs-bar-fill" style="width:75%;background:var(--green)"></div></div>
+    <div class="qs-score" style="color:var(--green)">75</div>
+  </div>
+  <div class="qs-item">
+    <div class="qs-label">D4 估值水平</div>
+    <div class="qs-bar"><div class="qs-bar-fill" style="width:90%;background:var(--green)"></div></div>
+    <div class="qs-score" style="color:var(--green)">90</div>
+  </div>
+  <div class="qs-item">
+    <div class="qs-label">D5 成长动能</div>
+    <div class="qs-bar"><div class="qs-bar-fill" style="width:30%;background:var(--accent)"></div></div>
+    <div class="qs-score" style="color:var(--accent)">30</div>
+  </div>
+  <div class="qs-item">
+    <div class="qs-label">D6 财务健康</div>
+    <div class="qs-bar"><div class="qs-bar-fill" style="width:90%;background:var(--green)"></div></div>
+    <div class="qs-score" style="color:var(--green)">90</div>
+  </div>
+</div>
+
+<!-- D1 Insider Buying -->
+<div class="dimension-card" style="border-left-color:#27ae60">
+  <div class="dim-header">
+    <div>
+      <div class="dim-title">D1 · 内部人增持</div>
+      <div class="dim-desc">评估控股股东、管理层及核心人员的持股变动信号，反映内部人对公司价值的判断。</div>
+    </div>
+    <div class="dim-score high">80</div>
+  </div>
+  <div class="data-grid">
+    <div class="data-item">
+      <div class="di-label">增持主体</div>
+      <div class="di-value">海螺集团（控股股东）</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">增持数量</div>
+      <div class="di-value highlight-green">5,292万股</div>
+      <div class="di-note">占总股本约1%</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">增持金额</div>
+      <div class="di-value highlight-green">12.80亿元</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">增持均价</div>
+      <div class="di-value">24.19元</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">增持期间</div>
+      <div class="di-value">2026.2.25 - 4.9</div>
+      <div class="di-note">仅1.5个月完成（计划6个月）</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">完成度</div>
+      <div class="di-value highlight-green">91%</div>
+      <div class="di-note">占增持计划上限14亿的91%</div>
+    </div>
+  </div>
+  <div class="insight-box success">
+    <strong>核心判断：</strong>控股股东以远快于计划的速度、接近计划上限的金额完成增持，是极为强烈的看好信号。12.80亿元的增持规模在A股蓝筹中属于大手笔，1.5个月内完成（vs 6个月期限）反映内部人认为当前价格具备显著安全边际。扣分项：仅控股股东增持，未见管理层个人层面的增持动作。
+  </div>
+</div>
+
+<!-- D2 Dividends -->
+<div class="dimension-card" style="border-left-color:#2980b9">
+  <div class="dim-header">
+    <div>
+      <div class="dim-title">D2 · 分红回购</div>
+      <div class="dim-desc">评估公司的股东回报政策、股息率水平和回购执行力度。</div>
+    </div>
+    <div class="dim-score mid">70</div>
+  </div>
+  <div class="data-grid">
+    <div class="data-item">
+      <div class="di-label">2025年DPS</div>
+      <div class="di-value highlight-green">0.85元</div>
+      <div class="di-note">中期0.24 + 年度0.61</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">A股息率（TTM）</div>
+      <div class="di-value highlight-green">~4.03%</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">H股息率（TTM）</div>
+      <div class="di-value highlight-green">~5.4%</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">2025年分红率</div>
+      <div class="di-value">55.3%</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">累计分红总额</div>
+      <div class="di-value">839.85亿元</div>
+      <div class="di-note">24次分红</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">近三年累计分红比例</div>
+      <div class="di-value highlight-green">152%</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">2026年承诺分红率</div>
+      <div class="di-value">≥50%</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">DPS趋势</div>
+      <div class="di-value highlight-red">↓</div>
+      <div class="di-note">2021: 2.38 → 2023: 0.96 → 2024: 0.71 → 2025: 0.85</div>
+    </div>
+  </div>
+  <div class="insight-box">
+    <strong>核心判断：</strong>公司自2025年起实施"中期+年度"双分红政策，当年DPS恢复至0.85元（较2024年的0.71元回升19.7%），A股息率回升至4%+水平，H股息率更达5.4%，在当前低利率环境下具有显著吸引力。近三年累计分红比例达152%（超过当年利润），体现了管理层回报股东的诚意。扣分项：DPS较历史高点2.38元（2021年）仍大幅缩水，分红绝对额受周期利润下滑制约。
+  </div>
+</div>
+
+<!-- D3 Competitive Moat -->
+<div class="dimension-card" style="border-left-color:#27ae60">
+  <div class="dim-header">
+    <div>
+      <div class="dim-title">D3 · 竞争优势</div>
+      <div class="dim-desc">评估公司的护城河深度，包括成本优势、行业地位、品牌壁垒等。</div>
+    </div>
+    <div class="dim-score high">75</div>
+  </div>
+  <div class="data-grid">
+    <div class="data-item">
+      <div class="di-label">2025年自产毛利率</div>
+      <div class="di-value highlight-green">27.76%</div>
+      <div class="di-note">同比+2.95pct</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">2026Q1毛利率</div>
+      <div class="di-value">21.26%</div>
+      <div class="di-note">同比-1.62pct（季节性低点）</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">2026Q1归母净利</div>
+      <div class="di-value highlight-green">14.68亿元</div>
+      <div class="di-note">行业亏损期仍大幅盈利</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">海外收入占比</div>
+      <div class="di-value">~7.9%</div>
+      <div class="di-note">65.19亿元，同比高增</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">行业地位</div>
+      <div class="di-value">全国龙头</div>
+      <div class="di-note">行业出清中市占率持续提升</div>
+    </div>
+  </div>
+  <div class="insight-box success">
+    <strong>核心判断：</strong>海螺水泥在行业寒冬中展现了绝对的成本优势和规模壁垒。2026Q1全行业亏损背景下，海螺仍实现14.68亿元归母净利，利润断层领先。毛利率27.76%在同业中遥遥领先，反映其"T型战略"（沿长江石灰石资源布局）构建的不可复制成本优势。行业产能出清加速，中小厂商退出，海螺市占率有望进一步提升。海外业务增速亮眼（+25%）但占比尚低（~8%），是未来增长的重要看点。
+  </div>
+</div>
+
+<!-- D4 Valuation -->
+<div class="dimension-card" style="border-left-color:#27ae60">
+  <div class="dim-header">
+    <div>
+      <div class="dim-title">D4 · 估值水平</div>
+      <div class="dim-desc">运用周期调整法（PE/PB均值回归）评估当前估值的合理性。</div>
+    </div>
+    <div class="dim-score high">90</div>
+  </div>
+  <div class="data-grid">
+    <div class="data-item">
+      <div class="di-label">PE（TTM）</div>
+      <div class="di-value">~13.7x</div>
+      <div class="di-note">基于当前股价21.09元</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">PB</div>
+      <div class="di-value highlight-green">0.48x</div>
+      <div class="di-note">深度破净</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">周期调整PE</div>
+      <div class="di-value highlight-green">~7.4x</div>
+      <div class="di-note">5年均值EPS 3.73元</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">5年均值归母净利</div>
+      <div class="di-value">196.7亿</div>
+    </div>
+  </div>
+  <div class="data-grid" style="margin-top:12px">
+    <div class="data-item">
+      <div class="di-label">年度归母净利</div>
+      <div class="di-value" style="font-size:14px">
+        2020: 331.7亿 · 2021: 332.7亿<br>
+        2022: 156.6亿 · 2023: 104.3亿<br>
+        2024: 77.0亿 · 2025: 81.1亿
+      </div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">A股息率 vs 国债</div>
+      <div class="di-value" style="font-size:14px">
+        股息率 ~4.03%<br>
+        10年国债收益率 ~1.7%<br>
+        <span style="color:var(--green);font-weight:700">股息率 > 2.3倍国债</span>
+      </div>
+    </div>
+  </div>
+  <div class="insight-box success">
+    <strong>核心判断：</strong>估值是海螺水泥最突出的亮点。PB 0.48x深度破净，周期调整PE仅约7.4x（以5年平均盈利~196.7亿计算），处于历史极低分位。以1.7%的10年国债收益率作为无风险利率锚定，4.03%的股息率提供了2.3倍的风险溢价，具有显著安全边际。若行业周期回归至均值水平（年均利润200亿+），当前估值有翻倍空间。AH折价进一步增强了H股的吸引力。
+  </div>
+</div>
+
+<!-- D5 Growth -->
+<div class="dimension-card" style="border-left-color:#e74c3c">
+  <div class="dim-header">
+    <div>
+      <div class="dim-title">D5 · 成长动能</div>
+      <div class="dim-desc">评估营收和利润的增长趋势、行业景气度及未来增长驱动力。</div>
+    </div>
+    <div class="dim-score low">30</div>
+  </div>
+  <div class="data-grid">
+    <div class="data-item">
+      <div class="di-label">2026Q1营收</div>
+      <div class="di-value highlight-red">170.66亿</div>
+      <div class="di-note">同比-10.45%</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">2026Q1归母净利</div>
+      <div class="di-value highlight-red">14.68亿</div>
+      <div class="di-note">同比-18.98%</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">2026Q1全国水泥产量</div>
+      <div class="di-value highlight-red">同比-7.1%</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">2026Q1全国均价</div>
+      <div class="di-value highlight-red">343元/吨</div>
+      <div class="di-note">同比-14%</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">行业状态</div>
+      <div class="di-value highlight-red">全行业亏损</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">海外业务增速</div>
+      <div class="di-value highlight-green">~+25%</div>
+      <div class="di-note">但占比仅~8%</div>
+    </div>
+  </div>
+  <div class="insight-box danger">
+    <strong>核心判断：</strong>成长动能是海螺最大的短板。行业处于深度衰退期——量价齐跌、全行业亏损，2026Q1数据仍在恶化。水泥需求与房地产高度相关，当前房地产投资持续下行，基建对冲力度有限。二季度预计窄幅震荡，复苏力度偏弱。海外业务虽高增长但体量太小（~8%），无法对冲国内下滑。唯一的亮点是行业出清加速，一旦供给端收缩到位，海螺作为龙头将最先受益。但拐点时间不确定，短期成长评分为负。
+  </div>
+</div>
+
+<!-- D6 Financial Health -->
+<div class="dimension-card" style="border-left-color:#27ae60">
+  <div class="dim-header">
+    <div>
+      <div class="dim-title">D6 · 财务健康</div>
+      <div class="dim-desc">评估资产负债表强度、现金流质量和抗风险能力。</div>
+    </div>
+    <div class="dim-score high">90</div>
+  </div>
+  <div class="data-grid">
+    <div class="data-item">
+      <div class="di-label">资产负债率</div>
+      <div class="di-value highlight-green">20.42%</div>
+      <div class="di-note">2026Q1降至19.0%</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">有息负债</div>
+      <div class="di-value highlight-green">接近零</div>
+      <div class="di-note">无显著借款</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">现金类资产</div>
+      <div class="di-value highlight-green">631.51亿</div>
+      <div class="di-note">货币资金502.52亿+交易性金融资产128.99亿</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">经营现金流</div>
+      <div class="di-value highlight-green">166.44亿</div>
+      <div class="di-note">2025年度</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">资本开支</div>
+      <div class="di-value">110.32亿</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">自由现金流</div>
+      <div class="di-value highlight-green">56.12亿</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">北向资金持股</div>
+      <div class="di-value">24.50%</div>
+    </div>
+    <div class="data-item">
+      <div class="di-label">社保基金持股</div>
+      <div class="di-value">1.30%</div>
+    </div>
+  </div>
+  <div class="insight-box success">
+    <strong>核心判断：</strong>海螺水泥的资产负债表堪称A股制造业标杆。资产负债率仅20%（且持续下降），接近零有息负债，631.51亿现金类资产远超总市值的一半。即使行业继续恶化数年，公司也完全有能力维持分红并熬过周期底部。自由现金流56.12亿，经营现金流166.44亿，现金流造血能力极强。北向资金持股24.5%也反映了外资对其财务质量的认可。
+  </div>
+</div>
+
+<!-- Event Catalysts -->
+<div class="catalysts">
+  <h2>事件催化</h2>
+  <div class="catalyst-item">
+    <span class="catalyst-tag tag-strong">强信号</span>
+    <div>控股股东已完成12.80亿元增持（占计划91%），增持均价24.19元高于当前价格，反映内部人对价值的强烈看好。</div>
+  </div>
+  <div class="catalyst-item">
+    <span class="catalyst-tag tag-medium">中期催化</span>
+    <div>水泥行业产能出清加速，大量中小厂商退出市场。2026下半年若出台更严格的产能置换政策或错峰生产强化，供需格局有望改善。</div>
+  </div>
+  <div class="catalyst-item">
+    <span class="catalyst-tag tag-medium">中期催化</span>
+    <div>房地产政策持续放松（降低首付、取消限购、收储），若房地产销售回暖传导至新开工端，水泥需求有望触底反弹。</div>
+  </div>
+  <div class="catalyst-item">
+    <span class="catalyst-tag tag-watch">持续关注</span>
+    <div>海外业务扩张提速，已覆盖东南亚、中亚、非洲等地区，产能投放和收入增长持续兑现，有望成为第二增长曲线。</div>
+  </div>
+  <div class="catalyst-item">
+    <span class="catalyst-tag tag-watch">持续关注</span>
+    <div>特别国债、专项债等财政政策力度若超预期，基建投资加速将直接拉动水泥需求。</div>
+  </div>
+</div>
+
+<!-- Risks -->
+<div class="risks">
+  <h2>风险提示</h2>
+  <div class="risk-item">
+    <span class="risk-level rl-high">高风险</span>
+    <strong>周期底部持续时间不确定：</strong>水泥行业已连续多年下行，房地产拖累需求。行业拐点可能延后至2027年甚至更晚，期间利润可能继续下滑，股价可能长期低迷。
+  </div>
+  <div class="risk-item">
+    <span class="risk-level rl-high">高风险</span>
+    <strong>分红持续下调风险：</strong>若行业持续恶化，公司可能被迫进一步削减分红。2025年DPS（0.85元）虽较2024年回升，但仍远低于2021年高点（2.38元）。
+  </div>
+  <div class="risk-item">
+    <span class="risk-level rl-mid">中风险</span>
+    <strong>海外业务地缘政治风险：</strong>海外扩张面临政治风险、汇率波动和本地化经营挑战，项目回报可能不及预期。
+  </div>
+  <div class="risk-item">
+    <span class="risk-level rl-mid">中风险</span>
+    <strong>估值陷阱：</strong>PB 0.48x的破净状态可能长期持续（"价值陷阱"），破净本身并不构成买入的充分理由。
+  </div>
+  <div class="risk-item">
+    <span class="risk-level rl-low">低风险</span>
+    <strong>财务风险极低：</strong>公司资产负债率仅20%，无有息负债，631亿现金储备，基本无破产或流动性风险。
+  </div>
+</div>
+
+<!-- Conclusion -->
+<div class="conclusion">
+  <h2>投资结论</h2>
+  <p>海螺水泥是一家在行业低谷中展现出卓越韧性的龙头公司。其核心投资逻辑是：<strong>"极度便宜的好公司处于行业周期底部"</strong>。</p>
+  <p>六维评分中，<strong>估值（90）、财务健康（90）、内部人增持（80）、竞争优势（75）</strong>四个维度得分优秀，构成坚实的价值底座。控股股东12.8亿的快速增持是当前最有力的信心锚定。<strong>成长动能（30）</strong>是唯一的显著短板，反映行业周期下行的现实约束。</p>
+  <p>投资策略上，建议以<strong>"防御性价值投资"</strong>思路对待——4%+的股息率提供底部保护，周期反转提供上行弹性。适合对行业周期有耐心、能承受中期波动的投资者。鉴于行业拐点不确定性较高，建议<strong>控制仓位</strong>，分批布局。</p>
+  <div class="target-box">
+    <div class="target-item">
+      <div class="t-label">建议买入价</div>
+      <div class="t-value">≤ 21.00元</div>
+    </div>
+    <div class="target-item">
+      <div class="t-label">合理估值目标</div>
+      <div class="t-value">34.08元</div>
+    </div>
+    <div class="target-item">
+      <div class="t-label">估值方法</div>
+      <div class="t-value" style="font-size:14px">周期EPS×12x PE</div>
+    </div>
+    <div class="target-item">
+      <div class="t-label">潜在上行空间</div>
+      <div class="t-value">+62%</div>
+    </div>
+  </div>
+  <p style="margin-top:16px;font-size:13px;opacity:0.7">目标价测算：5年周期均值归母净利~196.7亿 → 周期EPS≈3.73元 × 合理PE 12x = 44.71元（乐观）；取保守周期EPS 2.84元（5年均值的75%分位） × 12x = 34.08元。</p>
+</div>
+
+<!-- Disclaimer -->
+<div class="footer">
+  <p>免责声明：本报告基于公开数据分析，仅供投资研究参考，不构成投资建议。投资有风险，入市需谨慎。</p>
+  <p>数据来源：公司公告、Wind、同花顺、行业研报 | 生成时间：2026年5月8日</p>
+</div>
+
+</div>
+</body>
+</html>

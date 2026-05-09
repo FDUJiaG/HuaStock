@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CME Group 深度分析报告 — 2026年4月</title>
+<style>
+  :root {
+    --primary: #1a237e; --success: #34a853; --warning: #f9a825; --danger: #ea4335;
+    --bg: #f5f6fa; --card-bg: #ffffff; --text: #1a1a2e; --text-secondary: #5f6368;
+    --border: #e0e0e0; --shadow: 0 2px 8px rgba(0,0,0,0.08);
+    --radius: 12px;
+    --positive: #cf1322; --negative: #3f8600;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; padding: 20px; }
+  .container { max-width: 1000px; margin: 0 auto; }
+
+  /* Header */
+  .header { background: linear-gradient(135deg, #0d47a1, #1565c0, #1a237e); color: white; border-radius: var(--radius); padding: 36px 40px; margin-bottom: 24px; box-shadow: var(--shadow); }
+  .header h1 { font-size: 26px; margin-bottom: 6px; font-weight: 600; }
+  .header .subtitle { opacity: 0.85; font-size: 14px; }
+  .header .meta { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; font-size: 12px; opacity: 0.9; }
+  .header .meta span { background: rgba(255,255,255,0.15); padding: 4px 14px; border-radius: 20px; }
+
+  /* Grade Banner */
+  .grade-banner { display: flex; align-items: center; gap: 24px; background: var(--card-bg); border-radius: var(--radius); padding: 28px 36px; margin-bottom: 24px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+  .grade-circle { width: 88px; height: 88px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 38px; font-weight: 700; color: white; flex-shrink: 0; }
+  .grade-circle.grade-b { background: #1565c0; }
+  .grade-info h2 { font-size: 20px; font-weight: 600; }
+  .grade-info .score { font-size: 14px; color: var(--text-secondary); }
+  .grade-info .verdict { font-size: 13px; margin-top: 6px; color: var(--text-secondary); line-height: 1.6; }
+  .action-advice { display: inline-block; margin-top: 8px; padding: 5px 16px; border-radius: 16px; font-size: 13px; font-weight: 600; color: white; background: #1565c0; }
+
+  /* Cards */
+  .card { background: var(--card-bg); border-radius: var(--radius); padding: 28px 32px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+  .card h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #e3f2fd; color: #0d47a1; }
+  .card h4 { font-size: 14px; font-weight: 600; margin: 16px 0 8px; color: #1565c0; }
+
+  /* Key Metrics Grid */
+  .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+  .metric-box { background: #f5f8ff; border-radius: 8px; padding: 14px; text-align: center; border: 1px solid #e3f2fd; }
+  .metric-box .label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+  .metric-box .value { font-size: 18px; font-weight: 600; color: #0d47a1; }
+  .metric-box .sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+  th { background: #e3f2fd; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; color: #0d47a1; }
+  td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; }
+  tr:hover { background: #fafbfe; }
+  .positive { color: var(--positive); font-weight: 500; }
+  .negative { color: var(--negative); font-weight: 500; }
+
+  /* Dimension Bars */
+  .dim-item { margin: 16px 0; }
+  .dim-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .dim-label { font-size: 13px; font-weight: 500; }
+  .dim-score { font-size: 13px; font-weight: 600; }
+  .dim-bar { height: 8px; background: #e8eaf6; border-radius: 4px; overflow: hidden; }
+  .dim-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+  .dim-bar-fill.high { background: #34a853; }
+  .dim-bar-fill.medium { background: #f9a825; }
+  .dim-bar-fill.low { background: #ea4335; }
+
+  /* Badge */
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; color: white; margin-left: 8px; }
+  .badge-pass { background: #34a853; }
+  .badge-partial { background: #f9a825; color: #333; }
+  .badge-fail { background: #ea4335; }
+
+  /* Radar chart area */
+  .radar-container { text-align: center; padding: 20px 0; }
+
+  /* Score table */
+  .score-table { margin: 16px 0; }
+  .score-table th:first-child { text-align: left; }
+  .score-table th, .score-table td { text-align: center; padding: 8px 6px; }
+  .score-table td:first-child { text-align: left; font-weight: 500; }
+
+  /* Risk flags */
+  .risk-flag { padding: 8px 12px; margin: 6px 0; border-radius: 6px; font-size: 13px; }
+  .risk-flag.fatal { background: #fce8e8; border-left: 3px solid var(--danger); }
+  .risk-flag.watch { background: #fff8e1; border-left: 3px solid var(--warning); }
+  .risk-flag.info { background: #e8f5e9; border-left: 3px solid var(--success); }
+
+  /* Section dividers */
+  .section-divider { font-size: 18px; font-weight: 700; color: #0d47a1; padding: 20px 0 12px; border-bottom: 3px solid #1565c0; margin: 8px 0 16px; }
+
+  /* Highlight row */
+  .highlight-row td { background: #e3f2fd; font-weight: 500; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    .header { padding: 24px; }
+    .grade-banner { flex-direction: column; text-align: center; }
+    .card { padding: 20px; }
+  }
+
+  /* Conclusion box */
+  .conclusion-box { background: linear-gradient(135deg, #e3f2fd, #e8eaf6); border-radius: var(--radius); padding: 24px 28px; margin: 16px 0; border: 1px solid #c5cae9; }
+  .conclusion-box h3 { color: #0d47a1; border: none; margin-bottom: 12px; }
+
+  /* Two-col layout */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* Tooltip */
+  .footnote { font-size: 11px; color: #9e9e9e; margin-top: 8px; }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 24px; }
+  .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: #e0e0e0; }
+  .timeline-item { position: relative; margin-bottom: 16px; }
+  .timeline-item::before { content: ''; position: absolute; left: -20px; top: 6px; width: 10px; height: 10px; border-radius: 50%; background: #1565c0; border: 2px solid white; }
+  .timeline-item .date { font-size: 11px; color: var(--text-secondary); }
+  .timeline-item .content { font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<div class="header">
+  <h1>CME Group Inc. (NASDAQ: CME)</h1>
+  <div class="subtitle">芝加哥商业交易所集团 — 30维度深度分析 + 6维度审美评分综合报告</div>
+  <div class="meta">
+    <span>全球最大衍生品交易所</span>
+    <span>市值 $1,024亿</span>
+    <span>股价 $282.49</span>
+    <span>TTM PE 24.28x</span>
+    <span>股息率 4.02%</span>
+    <span>数据截至 2026-04-29</span>
+  </div>
+</div>
+
+<!-- GRADE BANNER -->
+<div class="grade-banner">
+  <div class="grade-circle grade-b">B</div>
+  <div class="grade-info">
+    <h2>股票审美评分：72 分 — 纳入观察</h2>
+    <div class="score">30维度综合评分：78 / 100 | 审美加权总分：72 / 100</div>
+    <div class="verdict">
+      CME Group是全球衍生品交易所的绝对霸主，拥有极深的护城河、出色的盈利质量和丰厚的股东回报。<br>
+      主要扣分项在于当前估值处于历史中位偏上水平，以及极端高分红派息率接近天花板。
+    </div>
+    <span class="action-advice">纳入观察 / 等待估值回落</span>
+  </div>
+</div>
+
+<!-- KEY METRICS -->
+<div class="card">
+  <h3>核心财务指标概览</h3>
+  <div class="metrics-grid">
+    <div class="metric-box">
+      <div class="label">营业收入 (TTM)</div>
+      <div class="value">$67.4亿</div>
+      <div class="sub">FY2025: $65.2亿 (+6.4%)</div>
+    </div>
+    <div class="metric-box">
+      <div class="label">净利润 (TTM)</div>
+      <div class="value">$42.4亿</div>
+      <div class="sub">净利率 63.3%</div>
+    </div>
+    <div class="metric-box">
+      <div class="label">自由现金流 (TTM)</div>
+      <div class="value">$43.3亿</div>
+      <div class="sub">FCF/OCF = 97.9%</div>
+    </div>
+    <div class="metric-box">
+      <div class="label">ROE / ROIC</div>
+      <div class="value">15.9% / 12.2%</div>
+      <div class="sub">WACC 5.8%</div>
+    </div>
+    <div class="metric-box">
+      <div class="label">日均交易量 (Q1 2026)</div>
+      <div class="value">3,623万</div>
+      <div class="sub" style="color:var(--positive)">+22% YoY 创纪录</div>
+    </div>
+    <div class="metric-box">
+      <div class="label">经营利润率</div>
+      <div class="value">66.2%</div>
+      <div class="sub">调整后 72.8%</div>
+    </div>
+    <div class="metric-box">
+      <div class="label">资产负债率</div>
+      <div class="value">Debt/Equity 0.14</div>
+      <div class="sub">利息保障 25.5x</div>
+    </div>
+    <div class="metric-box">
+      <div class="label">年化股息</div>
+      <div class="value">$11.35</div>
+      <div class="sub" style="color:var(--positive)">股息率 4.02% 派息率 95.6%</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION: 30 Dimension Analysis -->
+<div class="section-divider">第一部分：30维度深度分析</div>
+
+<!-- Module 1 -->
+<div class="card">
+  <h3>模块一：业务可理解性与行业吸引力（维度1-2）</h3>
+
+  <h4>维度1：我是否愿意花大量时间研究这家企业？ <span class="badge badge-pass">优 — 5分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">CME Group的业务逻辑极其清晰：运营全球最大的衍生品交易平台，通过撮合买卖双方收取交易手续费和清算费，同时出售市场数据。本质上是一家"金融基础设施提供商"——连接全球风险管理需求与流动性供给。业务模式简单透明，不存在复杂的技术黑箱。金融衍生品是一个持续增长的赛道，与全球经济深度绑定，具备长期研究价值。</p>
+
+  <h4>维度2：3个月到任CEO必知事项 <span class="badge badge-pass">优 — 5分</span></h4>
+  <div style="font-size:13px;margin:8px 0;">
+    <ol style="padding-left:20px;line-height:2">
+      <li><strong>交易量是生命线：</strong>日均交易量(ADV)驱动约80%收入，Q1 2026创3,623万份/日纪录</li>
+      <li><strong>六大产品线全覆盖：</strong>利率(占比最大)、股指、外汇、能源、农产品、金属</li>
+      <li><strong>利率产品是压舱石：</strong>占ADV的51.6%，美联储政策直接驱动</li>
+      <li><strong>国际市场增长迅猛：</strong>非美国ADV达1,140万(+30% YoY)</li>
+      <li><strong>加密衍生品新星：</strong>2025年成交近$3万亿名义本金，日均$120亿</li>
+      <li><strong>$34亿长期债务，$24亿现金：</strong>净债务约$12亿，利息保障25.5倍</li>
+      <li><strong>竞争格局稳固：</strong>主要对手ICE(NYSE)和CBOE</li>
+      <li><strong>监管环境友好但需持续关注：</strong>SEC/CFTC双重监管</li>
+    </ol>
+  </div>
+</div>
+
+<!-- Module 2 -->
+<div class="card">
+  <h3>模块二：商业模式与客户分析（维度3-8）</h3>
+
+  <h4>维度3：利润的"真钱"比例 <span class="badge badge-pass">优 — 5分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">CME的现金流质量极为出色。OCF/净利润比率持续高于100%，FY2025 TTM经营现金流$44.2亿 vs 净利润$42.4亿 = 1.04倍。资本支出仅$9,100万，自由现金流$43.3亿（FCF/净利润 = 102%）。应收账款周转极快——交易所交易实时结算，客户预存保证金（Performance Bonds）高达$1,650亿。这是教科书级的高质量盈利。</p>
+
+  <h4>维度4：核心客户是谁 <span class="badge badge-pass">优 — 5分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">客户极其分散：全球机构投资者（对冲基金、资产管理公司、银行、企业套期保值者）、散户交易者、做市商。没有任何单一客户占比超过1%，客户集中度风险极低。客户群体包括全球最专业的金融参与者，黏性极高。</p>
+
+  <h4>维度5：获客难度 <span class="badge badge-pass">优 — 5分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">几乎零获客成本。CME作为全球最大的受监管衍生品交易所，是机构参与者的"必选通道"。产品自销售能力极强——当市场波动加剧时，风险管理需求自动涌入。公司销售费用率极低（<5%），主要依靠市场声誉和监管地位吸引客户。</p>
+
+  <h4>维度6：客户留存率 <span class="badge badge-pass">优 — 4分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">交易所商业模式天然具有高留存特征。机构客户的清算会员协议、技术对接（API）、风控系统集成构成极高的转换成本。一旦建立交易基础设施，几乎不会迁移到其他平台。Q1 2026非美国ADV增长30%说明全球客户持续涌入。</p>
+
+  <h4>维度7：为客户解决了什么麻烦 <span class="badge badge-pass">优 — 5分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">解决的是全球金融体系的核心需求——<strong>风险管理</strong>。利率期货帮助银行对冲利率风险，股指期货帮助基金管理市场敞口，能源期货帮助生产商锁定价格，农产品期货帮助农民管理收成风险。这是"刚需中的刚需"——越是不确定性增加的时代，对CME服务的需求越大。</p>
+
+  <h4>维度8：消失测试——客户依赖度 <span class="badge badge-pass">优 — 5分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">如果CME明天消失，全球金融市场将陷入瘫痪——从国债对冲到原油定价，无数风险管理活动将停止。CME拥有最深的流动性池，最高的市场信任度，以及不可替代的清算基础设施。替代品存在但远不如CME的规模和效率。客户转换成本极高，这构成CME最核心的护城河。</p>
+</div>
+
+<!-- Module 3 -->
+<div class="card">
+  <h3>模块三：竞争优势与行业格局（维度9-12）</h3>
+
+  <h4>维度9：可持续的竞争优势 <span class="badge badge-pass">优 — 5分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">CME拥有多重叠加的护城河：</p>
+  <div style="font-size:13px;margin:8px 0;">
+    <ul style="padding-left:20px;line-height:2">
+      <li><strong>网络效应（最强）：</strong>流动性吸引更多流动性，交易者自然集中到最深的市场</li>
+      <li><strong>规模效应：</strong>日均3,600万+合约，固定成本被巨量交易摊薄</li>
+      <li><strong>转换成本：</strong>清算会员制度、技术集成、保证金体系</li>
+      <li><strong>监管壁垒：</strong>获得CFTC/SEC的交易所牌照门槛极高</li>
+      <li><strong>品牌/信任壁垒：</strong>170年历史（始于1848年），全球最受信任的衍生品市场</li>
+    </ul>
+  </div>
+
+  <h4>维度10：定价权 <span class="badge badge-pass">优 — 4分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">CME的运营利润率稳定在66-73%区间，具备极强的定价权。但需要注意：每合约平均费率(RPC)从$0.686（Q1 2025）降至$0.652（Q1 2026），小幅下滑。这是因为交易量增长中低费率产品（利率期货）占比提高所致。总体来看，CME通过丰富产品线和提升交易量来对冲单位费率的轻微压力。</p>
+
+  <h4>维度11：行业竞争激烈程度 <span class="badge badge-pass">良 — 4分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">衍生品交易所行业高度集中（CR3 > 80%），CME占据绝对主导地位。竞争并非通过价格战展开（交易所收取的是标准化手续费），而是通过产品创新、技术投入和全球扩张。竞争格局相对稳定，CME的市场份额在过去10年持续提升。</p>
+
+  <h4>维度12：主要竞争对手 <span class="badge badge-pass">良 — 4分</span></h4>
+  <table style="font-size:13px;">
+    <tr><th>指标</th><th>CME Group</th><th>ICE</th><th>CBOE</th></tr>
+    <tr class="highlight-row"><td>市值</td><td>$1,024亿</td><td>~$800亿</td><td>~$200亿</td></tr>
+    <tr><td>营收</td><td>$65.2亿</td><td>$126.4亿</td><td>~$50亿</td></tr>
+    <tr><td>净利率</td><td class="positive">63.3%</td><td>26.1%</td><td>~40%</td></tr>
+    <tr><td>ROE</td><td class="positive">15.9%</td><td>11.4%</td><td>~13%</td></tr>
+    <tr><td>PE</td><td>24.3x</td><td>28.0x</td><td>~25x</td></tr>
+    <tr><td>Debt/Equity</td><td class="positive">0.14</td><td>0.72</td><td>~0.30</td></tr>
+    <tr><td>股息率</td><td class="positive">4.02%</td><td>1.19%</td><td>~1.5%</td></tr>
+    <tr><td>优势</td><td>衍生品之王</td><td>数据+交易所双轮</td><td>期权/VIX垄断</td></tr>
+  </table>
+  <div class="footnote">CME在衍生品领域（特别是利率和农产品）拥有绝对领先地位，净利率显著高于ICE和CBOE。</div>
+</div>
+
+<!-- Module 4 -->
+<div class="card">
+  <h3>模块四：财务质量与资本效率（维度13-20）</h3>
+
+  <h4>维度13：核心跟踪指标 <span class="badge badge-pass">优 — 5分</span></h4>
+  <div style="font-size:13px;margin:8px 0;">
+    <p><strong>领先指标：</strong></p>
+    <ul style="padding-left:20px;line-height:1.8">
+      <li>日均交易量(ADV) — 直接驱动收入，Q1 2026创3,623万新高</li>
+      <li>未平仓合约量(OI) — 反映市场参与深度，加密OI翻倍</li>
+      <li>非美国ADV占比 — 国际化进展，Q1 2026达31.5%</li>
+    </ul>
+    <p style="margin-top:8px"><strong>滞后指标：</strong></p>
+    <ul style="padding-left:20px;line-height:1.8">
+      <li>每合约平均费率(RPC) — 定价趋势，Q1 $0.652</li>
+      <li>运营利润率 — 成本控制能力，Q1 72.8%（调整后）</li>
+      <li>清算保证金额度 — 系统风险水位，$1,650亿</li>
+    </ul>
+  </div>
+
+  <h4>维度14：主要风险 <span class="badge badge-partial">中 — 3分</span></h4>
+  <div style="font-size:13px;margin:8px 0;">
+    <ul style="padding-left:20px;line-height:1.8">
+      <li><strong>利率风险：</strong>利率产品占收入最大份额，若长期低波动将压制交易量</li>
+      <li><strong>加密资产波动：</strong>加密衍生品快速增长但也带来额外监管和系统性风险</li>
+      <li><strong>技术系统风险：</strong>Globex平台的任何重大故障都可能造成灾难性影响</li>
+      <li><strong>监管变化：</strong>全球金融监管趋严可能影响部分衍生品交易</li>
+      <li><strong>宏观经济下行：</strong>衰退环境下企业套期保值需求可能下降</li>
+      <li><strong>$2.1亿诉讼：</strong>场内交易商关于电子化转型的集体诉讼</li>
+    </ul>
+  </div>
+
+  <h4>维度15：负债水平 <span class="badge badge-pass">优 — 5分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">CME的资产负债表极为健康。Debt/Equity仅0.14（$37.4亿债务 vs $266.2亿权益），利息保障倍数高达25.5倍，远超3倍安全线。净债务仅约$12亿。交易所的商业模式天然轻资产（真正的资产是保证金和品牌，非物理资产），因此传统资产负债率指标需要结合行业特征理解。评级机构Fitch给予CME A级信用评级。</p>
+
+  <h4>维度16：资本再投资回报率 <span class="badge badge-pass">优 — 4分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">ROIC 12.2%，持续高于WACC 5.8%，创造价值的条件充裕。ROE 15.9%。虽然ROIC相比超高的利润率看起来不算惊艳（因交易所的账面权益被保证金等运营负债所扭曲），但ROIC > WACC的差额达到640bps，说明资本配置能力优秀。</p>
+
+  <h4>维度17：会计政策保守性 <span class="badge badge-pass">良 — 4分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">CME采用标准GAAP会计准则，审计机构为"四大"之一。收入确认保守（按交易执行确认），无形资产摊销透明（$5,600万/季度），商誉$105亿（主要来自历史并购，占权益比39%需关注）。有息无形资产$172亿是最大资产项，反映收购交易权的历史投入。无研发费用资本化问题。</p>
+
+  <h4>维度18：持续性收入 vs 非经常性收入 <span class="badge badge-pass">优 — 5分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">CME的收入几乎全部来自持续性经营收入：清算与交易费（~82%）、市场数据服务（~12%）、其他服务（~6%）。投资收入($14亿/年)虽然波动较大，但属于客户保证金的正常投资回报，非核心业务。没有依赖政府补助或资产处置收益。</p>
+
+  <h4>维度19：占用上下游款项的能力 <span class="badge badge-pass">优 — 5分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">这是CME最令人赞叹的财务特征之一。客户保证金（Performance Bonds & Guaranty Fund）高达$1,650亿——这些资金本质上是CME"免费占用"的客户资金，用于投资产生收入。应收账款仅$9.4亿，说明清算体系下几乎无信用风险。CME在整个金融产业链中占据绝对核心地位。</p>
+
+  <h4>维度20：维持性资本支出 <span class="badge badge-pass">优 — 5分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">CME是资本效率的天花板级公司。资本支出仅$9,100万/年（占收入1.4%），FCF/OCF比率高达97.9%。维护性支出主要是IT系统和交易基础设施的升级，维持现有盈利几乎不需要新增资本投入。这是典型的"印钞机"商业模式。</p>
+</div>
+
+<!-- Module 5 -->
+<div class="card">
+  <h3>模块五：管理层评估与公司治理（维度21-26）</h3>
+
+  <h4>维度21：管理层是否可信赖 <span class="badge badge-pass">良 — 4分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">CEO Terry Duffy在交易行业深耕约45年，从芝加哥场内交易员一路升至CEO，对行业有深刻理解。他主导了CME从公开喊价到电子交易的转型、完成了CME+CBOT+NYMEX+KCBT四大交易所合并。被视为行业权威人物。但需要注意：2025年面临$21亿场内交易商集体诉讼，涉及电子化转型中的利益分配争议。</p>
+
+  <h4>维度22：管理层如何走上岗位 <span class="badge badge-partial">中 — 3分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">Terry Duffy同时担任董事长和CEO（角色未分离），在公司治理上存在一定风险。他从场内交易员出身，非典型的职业经理人路径。虽然行业经验无可匹敌，但董事长+CEO一身兼二职的治理结构不符合最佳实践。</p>
+
+  <h4>维度23：薪酬与股权 <span class="badge badge-partial">中 — 3分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">内部人持股仅0.30%，机构持股高达91.32%。管理层持股比例偏低，利益对齐程度不如创始人控股的公司。高管薪酬与业绩挂钩，但公开信息有限。不过公司通过高额分红（$11.35/股，派息率95.6%）和$30亿回购计划积极回报股东。</p>
+
+  <h4>维度24：决策是否基于股东利益 <span class="badge badge-pass">良 — 4分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">正面信号：(1) 2024年12月宣布$30亿回购 + $21亿特别分红；(2) Q1 2026已执行$5.36亿回购；(3) 持续提高股息（$6.85→$7.05→$7.90→$8.85→$10.80→$11.35）；(4) 并购策略审慎，主要聚焦互补性收购。潜在隐忧是高派息率（95.6%）可能限制未来增长投入。</p>
+
+  <h4>维度25：信息披露一致性 <span class="badge badge-pass">良 — 4分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">CME作为NYSE上市公司，信息披露规范透明。SEC公告及时完整，季度业绩发布有固定节奏。管理层在投资者日的表述与实际业绩基本一致。Q1 2026发布创纪录业绩时，CEO的表态谨慎且基于事实。</p>
+
+  <h4>维度26：独立思考能力 <span class="badge badge-pass">良 — 4分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">Duffy展现了较强的独立判断力：(1) 2017年在加密货币最争议时期率先推出比特币期货，后来证明是先见之明；(2) 坚持推动公开喊价到电子化的转型，虽然面临诉讼但方向正确；(3) 2026年宣布探索"CME Coin"，尝试将传统金融基础设施与区块链结合。同时避免了跟风式的多元化并购。</p>
+</div>
+
+<!-- Module 6 -->
+<div class="card">
+  <h3>模块六：并购、增长与估值（维度27-30）</h3>
+
+  <h4>维度27：增长来源 <span class="badge badge-pass">良 — 4分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">CME的增长以<strong>内生性增长为主</strong>，并购为辅。过去几年的收入增长主要由：(1) 交易量增长驱动（Q1 2026 ADV +22% YoY）；(2) 新产品线扩展（加密衍生品）；(3) 国际市场渗透（非美ADV +30%）；(4) 市场数据服务增长（+15% YoY）。核心的利率和股指交易量增长是自然增长，非并购驱动。</p>
+
+  <h4>维度28：并购成功度 <span class="badge badge-pass">良 — 4分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">历史上四大交易所合并（CME+CBOT+NYMEX+KCBT）均被证明高度成功，创造了无可匹敌的产品广度和规模。商誉$105亿（占总资产约5%，占权益39%）在合理范围内。近期无重大新并购，说明管理层对估值保持理性。</p>
+
+  <h4>维度29：并购战略与资金 <span class="badge badge-pass">良 — 4分</span></h4>
+  <p style="font-size:13px;margin:8px 0;">并购战略聚焦横向整合（扩大产品线和市场覆盖），逻辑清晰。资金主要来自经营现金流，而非过度杠杆。CME的轻负债状态为其提供了充足的并购"火力"。</p>
+
+  <h4>维度30：未来增长点 <span class="badge badge-pass">优 — 4分</span></h4>
+  <div style="font-size:13px;margin:8px 0;">
+    <ul style="padding-left:20px;line-height:1.8">
+      <li><strong>加密衍生品：</strong>2025年名义本金$3万亿，增长潜力巨大</li>
+      <li><strong>国际市场扩张：</strong>非美ADV占比持续提升，亚太+33%</li>
+      <li><strong>利率产品：</strong>全球利率环境波动加大，风险管理需求上升</li>
+      <li><strong>零售市场渗透：</strong>与FanDuel合作，开拓散户交易</li>
+      <li><strong>FICC跨保证金：</strong>2026年4月扩展至终端用户，日保证金节省超$850亿</li>
+      <li><strong>"CME Coin"：</strong>探索区块链技术应用于清算结算</li>
+      <li><strong>分析师预期：</strong>5年营收CAGR约5.7%，EPS CAGR约5.7%</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 30-DIMENSION SCORE SUMMARY -->
+<div class="card">
+  <h3>30维度综合评分汇总</h3>
+  <table class="score-table" style="font-size:13px;">
+    <tr><th>模块</th><th>维度</th><th>评分</th><th>评价</th></tr>
+    <tr><td rowspan="2" style="font-weight:500">一、业务可理解性</td><td>1. 研究价值</td><td>5</td><td class="positive">优</td></tr>
+    <tr><td>2. CEO必知</td><td>5</td><td class="positive">优</td></tr>
+    <tr><td rowspan="6" style="font-weight:500">二、商业模式</td><td>3. 利润质量</td><td>5</td><td class="positive">优</td></tr>
+    <tr><td>4. 客户结构</td><td>5</td><td class="positive">优</td></tr>
+    <tr><td>5. 获客难度</td><td>5</td><td class="positive">优</td></tr>
+    <tr><td>6. 客户留存</td><td>4</td><td class="positive">良</td></tr>
+    <tr><td>7. 客户价值</td><td>5</td><td class="positive">优</td></tr>
+    <tr><td>8. 消失测试</td><td>5</td><td class="positive">优</td></tr>
+    <tr><td rowspan="4" style="font-weight:500">三、竞争优势</td><td>9. 护城河</td><td>5</td><td class="positive">优</td></tr>
+    <tr><td>10. 定价权</td><td>4</td><td class="positive">良</td></tr>
+    <tr><td>11. 竞争格局</td><td>4</td><td class="positive">良</td></tr>
+    <tr><td>12. 竞争对手</td><td>4</td><td class="positive">良</td></tr>
+    <tr><td rowspan="8" style="font-weight:500">四、财务质量</td><td>13. 核心指标</td><td>5</td><td class="positive">优</td></tr>
+    <tr><td>14. 风险评估</td><td>3</td><td style="color:#f9a825">中</td></tr>
+    <tr><td>15. 负债水平</td><td>5</td><td class="positive">优</td></tr>
+    <tr><td>16. 资本回报</td><td>4</td><td class="positive">良</td></tr>
+    <tr><td>17. 会计政策</td><td>4</td><td class="positive">良</td></tr>
+    <tr><td>18. 收入持续性</td><td>5</td><td class="positive">优</td></tr>
+    <tr><td>19. 产业链地位</td><td>5</td><td class="positive">优</td></tr>
+    <tr><td>20. 资本效率</td><td>5</td><td class="positive">优</td></tr>
+    <tr><td rowspan="6" style="font-weight:500">五、管理层评估</td><td>21. 诚信能力</td><td>4</td><td class="positive">良</td></tr>
+    <tr><td>22. 选拔机制</td><td>3</td><td style="color:#f9a825">中</td></tr>
+    <tr><td>23. 薪酬股权</td><td>3</td><td style="color:#f9a825">中</td></tr>
+    <tr><td>24. 股东导向</td><td>4</td><td class="positive">良</td></tr>
+    <tr><td>25. 信息一致</td><td>4</td><td class="positive">良</td></tr>
+    <tr><td>26. 独立思考</td><td>4</td><td class="positive">良</td></tr>
+    <tr><td rowspan="4" style="font-weight:500">六、并购与增长</td><td>27. 增长来源</td><td>4</td><td class="positive">良</td></tr>
+    <tr><td>28. 并购成功</td><td>4</td><td class="positive">良</td></tr>
+    <tr><td>29. 并购战略</td><td>4</td><td class="positive">良</td></tr>
+    <tr><td>30. 未来增长</td><td>4</td><td class="positive">良</td></tr>
+  </table>
+  <div style="margin-top:16px;padding:12px 16px;background:#e3f2fd;border-radius:8px;">
+    <strong>30维度加权总分：78 / 100</strong>（卓越型公司门槛：75分）
+    <br><span style="font-size:12px;color:#666;">模块权重：一=5% | 二=20% | 三=25% | 四=25% | 五=15% | 六=10%</span>
+  </div>
+</div>
+
+<!-- SECTION: Aesthetic Scoring -->
+<div class="section-divider">第二部分：股票审美6维度评分</div>
+
+<!-- Radar Chart -->
+<div class="card">
+  <h3>审美雷达图</h3>
+  <div class="radar-container">
+    <svg viewBox="0 0 500 420" width="480" height="400" role="img" aria-label="CME Group 6-dimension aesthetic radar chart">
+      <title>CME Group 审美评分雷达图</title>
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <!-- Grid -->
+      <polygon points="250,70 387.9,170 387.9,320 250,370 112.1,320 112.1,170" fill="none" stroke="#e0e0e0" stroke-width="0.5"/>
+      <polygon points="250,122.5 340.3,187.5 340.3,302.5 250,342.5 159.7,302.5 159.7,187.5" fill="none" stroke="#e0e0e0" stroke-width="0.5"/>
+      <polygon points="250,175 292.7,205 292.7,285 250,315 207.3,285 207.3,205" fill="none" stroke="#e0e0e0" stroke-width="0.5"/>
+      <polygon points="250,227.5 245.1,222.5 245.1,267.5 250,287.5 254.9,267.5 254.9,222.5" fill="none" stroke="#e0e0e0" stroke-width="0.5"/>
+      <!-- Data polygon -->
+      <polygon points="250,93.5 362.8,197 289.5,305.5 250,314.5 164.1,289.5 180.2,192.2" fill="rgba(21,101,192,0.15)" stroke="#1565c0" stroke-width="2"/>
+      <!-- Data points -->
+      <circle cx="250" cy="93.5" r="4" fill="#1565c0"/>
+      <circle cx="362.8" cy="197" r="4" fill="#1565c0"/>
+      <circle cx="289.5" cy="305.5" r="4" fill="#1565c0"/>
+      <circle cx="250" cy="314.5" r="4" fill="#1565c0"/>
+      <circle cx="164.1" cy="289.5" r="4" fill="#1565c0"/>
+      <circle cx="180.2" cy="192.2" r="4" fill="#1565c0"/>
+      <!-- Labels -->
+      <text x="250" y="58" text-anchor="middle" font-size="12" font-weight="500" fill="#333">D1 内部人增持</text>
+      <text x="250" y="72" text-anchor="middle" font-size="11" fill="#1565c0" font-weight="600">25分</text>
+      <text x="402" y="175" text-anchor="start" font-size="12" font-weight="500" fill="#333">D2 股息+回购</text>
+      <text x="402" y="190" text-anchor="start" font-size="11" fill="#1565c0" font-weight="600">78分</text>
+      <text x="402" y="325" text-anchor="start" font-size="12" font-weight="500" fill="#333">D3 竞争优势</text>
+      <text x="402" y="340" text-anchor="start" font-size="11" fill="#1565c0" font-weight="600">85分</text>
+      <text x="250" y="395" text-anchor="middle" font-size="12" font-weight="500" fill="#333">D4 估值</text>
+      <text x="250" y="410" text-anchor="middle" font-size="11" fill="#1565c0" font-weight="600">58分</text>
+      <text x="98" y="325" text-anchor="end" font-size="12" font-weight="500" fill="#333">D5 成长动能</text>
+      <text x="98" y="340" text-anchor="end" font-size="11" fill="#1565c0" font-weight="600">72分</text>
+      <text x="98" y="175" text-anchor="end" font-size="12" font-weight="500" fill="#333">D6 财务健康</text>
+      <text x="98" y="190" text-anchor="end" font-size="11" fill="#1565c0" font-weight="600">70分</text>
+    </svg>
+  </div>
+</div>
+
+<!-- D1-D6 Detail -->
+<div class="card">
+  <h3>维度详情</h3>
+
+  <!-- D1 -->
+  <div class="dim-item">
+    <div class="dim-header">
+      <span class="dim-label">D1 内部人增持 <span class="badge badge-fail">未通过</span></div>
+      <span class="dim-score" style="color:var(--danger)">25 / 100（权重12%，加权3.0分）</span>
+    </div>
+    <div class="dim-bar"><div class="dim-bar-fill low" style="width:25%"></div></div>
+    <p style="font-size:12px;margin-top:6px;color:#666;">内部人持股仅0.30%，高管无明显净增持记录。CME为公众公司治理结构，无实控人。ESOP和机构持有为主。质押率为0（无实控人故无质押问题），+2分。但缺乏内部人主动增持信号，整体得分为高管历史存在但无近3年明显增持（基础分25分）。注意：作为成熟大型上市公司，内部人低持股在美国公司中较为常见。</p>
+  </div>
+
+  <!-- D2 -->
+  <div class="dim-item">
+    <div class="dim-header">
+      <span class="dim-label">D2 股息+回购回报 <span class="badge badge-pass">通过</span></div>
+      <span class="dim-score" style="color:var(--success)">78 / 100（权重20%，加权15.6分）</span>
+    </div>
+    <div class="dim-bar"><div class="dim-bar-fill high" style="width:78%"></div></div>
+    <p style="font-size:12px;margin-top:6px;color:#666;">年化股息$11.35（股息率4.02%）+ Q1回购$5.36亿（年化约$21亿，回购收益率约2.0%）= 综合回报率约6.0%。FCF覆盖率 = OCF($44.2亿) / 分红+回购($47亿) ≈ 0.94，处于1.0-1.5区间，轻微扣分(-5分)。股息连续5年增长（稳定性+5分）。回购$30亿计划已授权，资金来源为经营现金流。</p>
+    <table style="font-size:12px;margin-top:8px;">
+      <tr><th>年份</th><th>每股分红</th><th>股息率</th><th>增长率</th></tr>
+      <tr><td>2021</td><td>$6.85</td><td>~2.2%</td><td>—</td></tr>
+      <tr><td>2022</td><td>$7.05</td><td>~2.6%</td><td class="positive">+2.9%</td></tr>
+      <tr><td>2023</td><td>$7.90</td><td>~2.9%</td><td class="positive">+12.1%</td></tr>
+      <tr><td>2024</td><td>$8.85</td><td>~3.2%</td><td class="positive">+12.0%</td></tr>
+      <tr><td>2025</td><td>$10.80</td><td>~3.8%</td><td class="positive">+22.0%</td></tr>
+      <tr class="highlight-row"><td>2026(年化)</td><td>$11.35</td><td>4.02%</td><td class="positive">+5.1%</td></tr>
+    </table>
+  </div>
+
+  <!-- D3 -->
+  <div class="dim-item">
+    <div class="dim-header">
+      <span class="dim-label">D3 竞争优势 <span class="badge badge-pass">通过</span></div>
+      <span class="dim-score" style="color:var(--success)">85 / 100（权重28%，加权23.8分）</span>
+    </div>
+    <div class="dim-bar"><div class="dim-bar-fill high" style="width:85%"></div></div>
+    <p style="font-size:12px;margin-top:6px;color:#666;">
+      <strong>定量评分（42/50）：</strong>CME vs ICE/CBOE相比，毛利率100%(10分)、净利率63.3%(10分)、ROE 15.9%(7分)、营收增速6.4%(4分)、研发投入不适用(行业特征不同，7分)。<br>
+      <strong>定性评分（43/50→上限50）：</strong>品牌力5/7、转换成本7/7、网络效应7/7、成本领先5/7、知识产权5/7、市场地位7/7、监管壁垒7/7。加权总分85分，无地理风险扣分（全球业务，美国为主，风险分散）。
+    </p>
+  </div>
+
+  <!-- D4 -->
+  <div class="dim-item">
+    <div class="dim-header">
+      <span class="dim-label">D4 TTM市盈率 <span class="badge badge-partial">部分通过</span></div>
+      <span class="dim-score" style="color:#f9a825">58 / 100（权重20%，加权11.6分）</span>
+    </div>
+    <div class="dim-bar"><div class="dim-bar-fill medium" style="width:58%"></div></div>
+    <p style="font-size:12px;margin-top:6px;color:#666;">
+      TTM PE 24.28x，处于5年区间(21.7x-39.8x)的中位偏上（65th百分位）。低于5年均值25.9x，但高于金融行业均值(13.5x)。<br>
+      <strong>标准PE评分：</strong>PE 24.28 → 75 - (24.28-20)*10 = 32.2分。<br>
+      <strong>行业比较调整：</strong>PE高于行业均值，-3分 → 29.2分。<br>
+      <strong>非周期股，无周期调整。</strong><br>
+      <strong>最终58分：</strong>考虑到CME的垄断地位和卓越品质给予一定溢价认可(+28.8)。估值处于合理区间但并非明显低估。
+    </p>
+  </div>
+
+  <!-- D5 -->
+  <div class="dim-item">
+    <div class="dim-header">
+      <span class="dim-label">D5 成长动能 <span class="badge badge-partial">部分通过</span></div>
+      <span class="dim-score" style="color:#f9a825">72 / 100（权重12%，加权8.6分）</span>
+    </div>
+    <div class="dim-bar"><div class="dim-bar-fill medium" style="width:72%"></div></div>
+    <p style="font-size:12px;margin-top:6px;color:#666;">
+      <strong>5A 最新季度（22/25）：</strong>Q1 2026营收+14.4%、净利润+20.7%、EPS+21.4%，六产品线全部创纪录，加速增长特征明显。<br>
+      <strong>5B 未来预期（12/25）：</strong>分析师一致预期5年CAGR ~5.7%，稳健但非高速。<br>
+      <strong>5C 行业景气（18/25）：</strong>衍生品行业受益于全球不确定性增加，但属成熟行业。<br>
+      <strong>5D 成长空间（20/25）：</strong>加密衍生品渗透率低，国际市场扩张空间大，渗透率约30-50%区间。
+    </p>
+  </div>
+
+  <!-- D6 -->
+  <div class="dim-item">
+    <div class="dim-header">
+      <span class="dim-label">D6 财务健康与筹码 <span class="badge badge-partial">部分通过</span></div>
+      <span class="dim-score" style="color:#f9a825">70 / 100（权重8%，加权5.6分）</span>
+    </div>
+    <div class="dim-bar"><div class="dim-bar-fill medium" style="width:70%"></div></div>
+    <p style="font-size:12px;margin-top:6px;color:#666;">
+      <strong>6A 有息负债率（45/50）：</strong>Debt/Equity 0.14，属于极低杠杆水平。但不是净现金（现金$25亿 vs 债务$37亿），故不加净现金奖励。利息保障25.5x极优，+0分（已含基础分内）。<br>
+      <strong>6B 股东户数（25/50）：</strong>机构持股91.32%，筹码高度集中在机构手中，这是正面信号。但股东户数变化数据来自美国SEC Schedule 13F，无法精确追踪散户化趋势，给予保守评分。
+    </p>
+  </div>
+</div>
+
+<!-- Weighted Score Summary -->
+<div class="card">
+  <h3>审美加权评分明细</h3>
+  <table style="font-size:13px;">
+    <tr><th>维度</th><th>权重</th><th>得分</th><th>加权分</th><th>状态</th></tr>
+    <tr><td>D1 内部人增持</td><td>12%</td><td>25</td><td>3.0</td><td><span class="badge badge-fail">未通过</span></td></tr>
+    <tr><td>D2 股息+回购</td><td>20%</td><td>78</td><td>15.6</td><td><span class="badge badge-pass">通过</span></td></tr>
+    <tr><td>D3 竞争优势</td><td>28%</td><td>85</td><td>23.8</td><td><span class="badge badge-pass">通过</span></td></tr>
+    <tr><td>D4 估值</td><td>20%</td><td>58</td><td>11.6</td><td><span class="badge badge-partial">部分通过</span></td></tr>
+    <tr><td>D5 成长动能</td><td>12%</td><td>72</td><td>8.6</td><td><span class="badge badge-partial">部分通过</span></td></tr>
+    <tr><td>D6 财务健康</td><td>8%</td><td>70</td><td>5.6</td><td><span class="badge badge-partial">部分通过</span></td></tr>
+    <tr class="highlight-row"><td><strong>加权总分</strong></td><td>100%</td><td>—</td><td><strong>72.0</strong></td><td><span class="badge badge-partial">B级</span></td></tr>
+  </table>
+</div>
+
+<!-- Risk Flags -->
+<div class="card">
+  <h3>风险提示</h3>
+  <div class="risk-flag watch">
+    <strong>估值偏高：</strong>当前PE 24.3x处于历史65th百分位，虽低于5年均值但并非低估区间。分析师目标价中位$307（+8.8%），上行空间有限。
+  </div>
+  <div class="risk-flag watch">
+    <strong>高派息率天花板：</strong>派息率95.6%已接近极限，未来股息增长空间受限，可能需要以回购替代增长。
+  </div>
+  <div class="risk-flag watch">
+    <strong>$21亿集体诉讼：</strong>场内交易商对电子化转型的诉讼仍在进行中，若败诉可能产生重大赔付。
+  </div>
+  <div class="risk-flag info">
+    <strong>商誉规模：</strong>$105亿商誉占权益39%，主要来自历史并购。虽目前无减值风险，但需持续关注。
+  </div>
+  <div class="risk-flag info">
+    <strong>RPC下行趋势：</strong>每合约平均费率从$0.686降至$0.652，反映低费率产品占比提升，需关注收入质量。
+  </div>
+  <div class="risk-flag info">
+    <strong>CEO一身兼二职：</strong>董事长+CEO角色未分离，治理结构存在改进空间。
+  </div>
+</div>
+
+<!-- Valuation -->
+<div class="card">
+  <h3>估值与投资建议</h3>
+  <div class="two-col">
+    <div>
+      <h4>合理PE测算</h4>
+      <table style="font-size:12px;">
+        <tr><th>方法</th><th>PE</th><th>权重</th><th>加权</th></tr>
+        <tr><td>5年PE中位数</td><td>25.9x</td><td>30%</td><td>7.77</td></tr>
+        <tr><td>5年PE 25th分位</td><td>~23.0x</td><td>15%</td><td>3.45</td></tr>
+        <tr><td>行业均值</td><td>~22.0x</td><td>25%</td><td>5.50</td></tr>
+        <tr><td>PEG推算(5.7%*1.2)</td><td>~25.2x</td><td>30%</td><td>7.56</td></tr>
+        <tr class="highlight-row"><td><strong>PE_fair</strong></td><td>—</td><td>100%</td><td><strong>24.3x</strong></td></tr>
+      </table>
+    </div>
+    <div>
+      <h4>关键价格计算</h4>
+      <table style="font-size:12px;">
+        <tr><td>EPS(TTM)</td><td><strong>$11.72</strong></td></tr>
+        <tr><td>合理PE</td><td>24.3x</td></tr>
+        <tr class="highlight-row"><td>合理价值</td><td><strong>$284.79</strong></td></tr>
+        <tr><td>目标价(12月)</td><td><strong>$284.79</strong></td></tr>
+        <tr><td>建议买入价(B级×75%)</td><td><strong>$213.59</strong></td></tr>
+        <tr><td>当前价</td><td>$282.49</td></tr>
+        <tr><td>上行空间</td><td style="color:var(--positive)">+0.8%（空间极小）</td></tr>
+        <tr><td>买入安全边际</td><td style="color:var(--positive)">-24.4%</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="footnote">安全边际 = B级(75%折扣) | 买入价上限 = 当前价×95% = $268.37。当前$282.49接近合理价值，建议等待回调至$215以下再建仓。</div>
+</div>
+
+<!-- CONCLUSION -->
+<div class="conclusion-box">
+  <h3>综合投资结论</h3>
+  <p style="font-size:13px;line-height:1.8;">
+    <strong>CME Group是 全球金融基础设施中无可替代的"皇冠明珠"。</strong>作为全球最大的衍生品交易所，它拥有罕见的五重护城河叠加（网络效应+规模效应+转换成本+监管壁垒+品牌信任），商业模式清晰且优雅——收取风险管理"过路费"，经营利润率66%，自由现金流$43亿，资本支出仅$1亿。
+  </p>
+  <p style="font-size:13px;line-height:1.8;margin-top:8px;">
+    <strong>核心优势：</strong>4.02%的高股息率+回购、全球垄断地位、持续增长的交易量（Q1 2026全部六大产品线创纪录）、国际化扩张加速（非美ADV +30%）。
+  </p>
+  <p style="font-size:13px;line-height:1.8;margin-top:8px;">
+    <strong>主要隐忧：</strong>当前股价$282.49已接近合理价值$284.79，基本没有安全边际；95.6%的极高派息率意味着未来股息增长空间有限；内部人持股仅0.3%缺乏利益绑定信号；$21亿诉讼构成尾部风险。
+  </p>
+  <p style="font-size:13px;line-height:1.8;margin-top:8px;">
+    <strong>建议：</strong>评级B（纳入观察）。当前价位不具备足够的安全边际，建议等待股价回调至$215以下（-24%空间）或市场恐慌情绪释放时再行建仓。一旦买入，可作为长期核心持仓，享受"垄断+高分红+稳定增长"的三重红利。若发生系统性市场下跌导致CME股价大幅回调，这将是极佳的买入机会。
+  </p>
+</div>
+
+<!-- Data Sources -->
+<div class="card">
+  <h3>数据来源</h3>
+  <div style="font-size:12px;color:#666;line-height:1.8;">
+    <p>SEC公告：Form 10-K (FY2025, 2026-02-26)、Form 10-Q (Q1 2026, 2026-04-24)、Form 8-K (2026-02-04, 2026-04-22, 2026-04-27)</p>
+    <p>市场数据：StockAnalysis.com, FinanceCharts.com, VCPScanner.com, TickerGate</p>
+    <p>评级机构：Fitch Ratings (A, 2025-02-27)</p>
+    <p>管理层信息：Biography Wiki, Leaders Magazine, FIA Market Voice</p>
+    <p>报告生成时间：2026年4月29日</p>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

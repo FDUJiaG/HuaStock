@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>理文造纸 - Stock Aesthetic Report</title>
+<style>
+  :root {
+    --primary: #1a73e8;
+    --success: #34a853;
+    --warning: #fbbc04;
+    --danger: #ea4335;
+    --bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --text: #202124;
+    --text-secondary: #5f6368;
+    --border: #e0e0e0;
+    --shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
+    --radius: 12px;
+    --metric-positive: #cf1322;
+    --metric-negative: #3f8600;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 20px;
+  }
+
+  .container { max-width: 960px; margin: 0 auto; }
+
+  .header {
+    background: linear-gradient(135deg, #1a237e, #0d47a1, #1565c0);
+    color: white;
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+  .header h1 { font-size: 28px; margin-bottom: 8px; }
+  .header .subtitle { opacity: 0.85; font-size: 14px; }
+  .header .meta {
+    display: flex; gap: 12px; margin-top: 16px;
+    flex-wrap: wrap; font-size: 13px; opacity: 0.9;
+  }
+  .header .meta span { background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; }
+
+  .grade-banner {
+    display: flex; align-items: center; gap: 20px;
+    background: var(--card-bg); border-radius: var(--radius);
+    padding: 24px 32px; margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+  .grade-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; font-weight: 700; color: white;
+    flex-shrink: 0;
+  }
+  .grade-circle.grade-a { background: var(--success); }
+  .grade-circle.grade-b { background: var(--primary); }
+  .grade-circle.grade-c { background: var(--warning); }
+  .grade-circle.grade-d { background: var(--danger); }
+  .grade-info h2 { font-size: 20px; }
+  .grade-info .score { font-size: 14px; color: var(--text-secondary); }
+  .grade-info .verdict { font-size: 13px; margin-top: 4px; color: var(--text-secondary); }
+  .action-advice {
+    display: inline-block; margin-top: 8px;
+    padding: 4px 14px; border-radius: 16px;
+    font-size: 13px; font-weight: 600; color: white;
+  }
+  .action-advice.grade-b { background: var(--primary); }
+
+  .card {
+    background: var(--card-bg); border-radius: var(--radius);
+    padding: 24px; margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 {
+    font-size: 16px; margin-bottom: 16px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .radar-container {
+    display: flex; justify-content: center; padding: 20px 0;
+  }
+
+  .criterion {
+    border-left: 4px solid var(--border);
+    padding: 16px 20px; margin-bottom: 16px;
+    border-radius: 0 8px 8px 0;
+    background: #fafafa;
+    transition: border-color 0.2s;
+  }
+  .criterion.pass { border-left-color: var(--success); }
+  .criterion.partial { border-left-color: var(--warning); }
+  .criterion.fail { border-left-color: var(--danger); }
+  .criterion .criterion-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px;
+  }
+  .criterion .criterion-title { font-weight: 600; font-size: 15px; }
+  .criterion .criterion-badge {
+    font-size: 12px; padding: 2px 10px; border-radius: 12px;
+    font-weight: 600;
+  }
+  .criterion.pass .criterion-badge { background: #e6f4ea; color: var(--success); }
+  .criterion.partial .criterion-badge { background: #fef7e0; color: #b06000; }
+  .criterion.fail .criterion-badge { background: #fce8e6; color: var(--danger); }
+  .criterion .criterion-detail {
+    font-size: 13px; color: var(--text-secondary); line-height: 1.8;
+  }
+  .criterion .criterion-detail strong { color: var(--text); }
+
+  .score-bar {
+    height: 10px; background: #e0e0e0; border-radius: 5px;
+    overflow: hidden; margin-top: 8px;
+  }
+  .score-bar-fill {
+    height: 100%; border-radius: 5px;
+    transition: width 0.6s ease;
+    min-width: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 6px;
+    font-size: 10px;
+    color: white;
+    font-weight: 700;
+  }
+  .score-bar-fill.high { background: var(--success); }
+  .score-bar-fill.medium { background: var(--warning); }
+  .score-bar-fill.low { background: var(--danger); }
+  .score-bar-wrapper {
+    display: flex; align-items: center; gap: 8px; margin-top: 8px;
+  }
+  .score-bar-wrapper .score-bar { flex: 1; }
+  .score-bar-wrapper .score-label { font-size: 12px; color: var(--text-secondary); white-space: nowrap; }
+
+  .dividend-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .dividend-table th {
+    background: #f1f3f4; padding: 10px 12px; text-align: center;
+    font-weight: 600; border-bottom: 2px solid var(--border);
+  }
+  .dividend-table td {
+    padding: 10px 12px; text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .dividend-table tfoot td {
+    font-size: 11px; color: var(--text-secondary); padding: 8px 12px;
+    background: #fafafa;
+  }
+
+  .peer-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .peer-table th {
+    background: #f1f3f4; padding: 10px 12px; text-align: center;
+    font-weight: 600; border-bottom: 2px solid var(--border);
+  }
+  .peer-table td {
+    padding: 10px 12px; text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .peer-table tr.highlight { background: #e8f0fe; font-weight: 600; }
+  .peer-table .positive { color: var(--metric-positive); font-weight: 600; }
+  .peer-table .negative { color: var(--metric-negative); }
+  .peer-table tfoot td {
+    font-size: 11px; color: #999; padding: 8px 12px;
+    background: #fafafa; text-align: left;
+  }
+
+  .catalyst-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+  }
+  .catalyst-item:last-child { border-bottom: none; }
+  .catalyst-icon { font-size: 16px; flex-shrink: 0; }
+  .catalyst-type {
+    display: inline-block; padding: 1px 8px; border-radius: 10px;
+    font-size: 11px; font-weight: 600; margin-right: 4px;
+  }
+  .catalyst-type.high { background: #fce8e6; color: var(--danger); }
+  .catalyst-type.medium { background: #fef7e0; color: #b06000; }
+  .catalyst-type.low { background: #e8f0fe; color: var(--primary); }
+  .catalyst-timing { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+  .risk-flag {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 10px 0; border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+  }
+  .risk-flag:last-child { border-bottom: none; }
+  .risk-flag .flag-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .risk-flag .flag-text { color: var(--text-secondary); }
+  .risk-flag .flag-text strong { color: var(--text); }
+  .risk-flag.watch {
+    border-left: 3px solid #f57c00; background: #fff8e1;
+    padding: 10px 12px; margin-bottom: 8px; border-radius: 0 6px 6px 0;
+  }
+  .risk-flag.info {
+    border-left: 3px solid var(--primary); background: #e8f0fe;
+    padding: 10px 12px; margin-bottom: 8px; border-radius: 0 6px 6px 0;
+  }
+
+  .invest-conclusion {
+    background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+    color: white; border-radius: var(--radius);
+    padding: 28px 32px; margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .invest-conclusion h3 {
+    color: white; border-bottom-color: rgba(255,255,255,0.2);
+    margin-bottom: 20px; padding-bottom: 12px;
+  }
+  .verdict-banner {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 20px; border-radius: 10px;
+    margin-bottom: 20px; font-size: 20px; font-weight: 700;
+  }
+  .verdict-banner.buy-cautious { background: rgba(66,133,244,0.2); border: 2px solid var(--primary); }
+  .verdict-banner .verdict-emoji { font-size: 28px; }
+  .verdict-banner .verdict-text { font-size: 20px; }
+  .verdict-banner .verdict-sub { font-size: 13px; font-weight: 400; opacity: 0.85; margin-top: 4px; }
+
+  .price-cards {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    margin-bottom: 20px;
+  }
+  .price-card {
+    background: rgba(255,255,255,0.1); border-radius: 10px;
+    padding: 20px; text-align: center;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .price-card .price-label { font-size: 12px; opacity: 0.8; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+  .price-card .price-value { font-size: 32px; font-weight: 800; }
+  .price-card .price-note { font-size: 11px; opacity: 0.65; margin-top: 6px; }
+  .price-card.buy-card { background: rgba(52,168,83,0.15); border-color: rgba(52,168,83,0.4); }
+  .price-card.target-card { background: rgba(66,133,244,0.15); border-color: rgba(66,133,244,0.4); }
+  .price-card.fair-card { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
+  .price-card.buy-card .price-value { color: #81c784; }
+  .price-card.target-card .price-value { color: #90caf9; }
+
+  .upside-bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-radius: 8px;
+    background: rgba(255,255,255,0.08); margin-bottom: 16px;
+  }
+  .upside-bar .upside-label { font-size: 13px; opacity: 0.8; }
+  .upside-bar .upside-value { font-size: 24px; font-weight: 800; }
+  .upside-bar .upside-value.positive { color: #81c784; }
+
+  .position-advice {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; border-radius: 8px;
+    font-size: 14px; font-weight: 600;
+  }
+  .position-advice.small { background: rgba(251,188,4,0.2); color: #fff59d; }
+
+  .valuation-note {
+    margin-top: 16px; padding: 12px 16px;
+    background: rgba(255,255,255,0.06); border-radius: 8px;
+    font-size: 12px; line-height: 1.8; opacity: 0.8;
+    border-left: 3px solid rgba(255,255,255,0.3);
+  }
+  .valuation-note strong { opacity: 1; }
+
+  .conclusion-text {
+    font-size: 14px; line-height: 2; color: rgba(255,255,255,0.9);
+    padding: 16px 20px; background: rgba(255,255,255,0.06);
+    border-radius: 8px; margin-top: 16px;
+  }
+
+  .footer {
+    text-align: center; font-size: 12px; color: var(--text-secondary);
+    padding: 20px 0; margin-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .cyclical-notice {
+    border-left: 4px solid #f57c00;
+    background: #fff8e1;
+  }
+  .pe-comparison {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px; margin: 16px 0;
+  }
+  .pe-item {
+    background: rgba(255,255,255,0.7); border-radius: 8px;
+    padding: 16px; text-align: center;
+  }
+  .pe-item.adjusted { border: 2px solid #f57c00; }
+  .pe-item .pe-label { font-size: 12px; color: var(--text-secondary); display: block; }
+  .pe-item .pe-value { font-size: 28px; font-weight: 700; margin: 4px 0; }
+  .pe-item .pe-score { font-size: 12px; color: var(--text-secondary); }
+  .cycle-stage {
+    display: inline-block; padding: 3px 12px; border-radius: 12px;
+    font-size: 13px; font-weight: 600; margin-top: 8px;
+  }
+  .cycle-stage.bottom { background: #e8f5e9; color: #2e7d32; }
+
+  .hidden { display: none; }
+  .text-sm { font-size: 12px; }
+  .mt-2 { margin-top: 8px; }
+  .mb-2 { margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>理文造纸（02314.HK）审美分析报告</h1>
+    <div class="subtitle">造纸（纸及纸制品） | 分析日期：2026-05-08</div>
+    <div class="meta">
+      <span>最新价：3.27 港元</span>
+      <span>总市值：140.4亿港元</span>
+      <span>TTM 市盈率：7.24x</span>
+      <span>股息率：4.86%</span>
+      <span>总评分：62/100</span>
+    </div>
+    <div class="meta">
+      <span>申万行业：轻工制造-造纸</span>
+      <span>市净率：0.46x（破净）</span>
+    </div>
+  </div>
+
+  <!-- Grade Banner -->
+  <div class="grade-banner">
+    <div class="grade-circle grade-b">B</div>
+    <div class="grade-info">
+      <h2>纳入观察 / 等待时机</h2>
+      <div class="score">综合得分 62/100 | 2/6 项通过</div>
+      <div class="verdict">估值安全边际充足，股息有吸引力，但营收增长偏弱，需等待催化剂</div>
+      <div class="action-advice grade-b">纳入观察/等待时机</div>
+    </div>
+  </div>
+
+  <!-- Data Verification -->
+  <div class="card">
+    <h3>🔍 数据核查</h3>
+    <div class="verification-status pass" style="padding:12px 16px; border-radius:8px; font-size:13px; line-height:1.8; background:#e6f4ea; border-left:4px solid var(--success);">
+      <div class="verification-item">✅ <strong>数据一致性：</strong>通过 — 股票代码02314.HK，最新股价3.27港元，市值140.4亿港元</div>
+      <div class="verification-item">✅ <strong>PE校验：</strong>通过 — 3.27 ÷ 0.452 = 7.24x，与公开数据一致</div>
+      <div class="verification-item">✅ <strong>股息验证：</strong>通过 — 2025全年0.159港元/股，FCF/股0.82港元，充分覆盖</div>
+      <div class="verification-item">✅ <strong>数据新鲜度：</strong>通过 — 基于2025年报（最新），数据截至2025-12-31</div>
+    </div>
+  </div>
+
+  <!-- Score Radar -->
+  <div class="card">
+    <h3>📊 六维评分总览</h3>
+    <div class="radar-container">
+      <svg viewBox="-50 -30 600 570" width="100%" height="auto" style="max-width:500px">
+        <!-- Grid polygons (10 concentric levels at 10% intervals for 6 dimensions) -->
+        <!-- Background grid at 20%, 40%, 60%, 80%, 100% -->
+        <polygon points="250,130 356.0,190 356.0,310 250,370 144.0,310 144.0,190" fill="rgba(0,0,0,0.03)" stroke="#ddd" stroke-width="1"/>
+        <polygon points="250,10 462.0,130 462.0,370 250,490 38.0,370 38.0,130" fill="rgba(0,0,0,0.03)" stroke="#ddd" stroke-width="1"/>
+        <polygon points="250,250 250,250 250,250 250,250 250,250 250,250" fill="none" stroke="#ddd" stroke-width="1"/>
+        <!-- Axis lines -->
+        <line x1="250" y1="250" x2="250" y2="10" stroke="#ccc" stroke-width="1"/>
+        <line x1="250" y1="250" x2="462" y2="130" stroke="#ccc" stroke-width="1"/>
+        <line x1="250" y1="250" x2="462" y2="370" stroke="#ccc" stroke-width="1"/>
+        <line x1="250" y1="250" x2="250" y2="490" stroke="#ccc" stroke-width="1"/>
+        <line x1="250" y1="250" x2="38" y2="370" stroke="#ccc" stroke-width="1"/>
+        <line x1="250" y1="250" x2="38" y2="130" stroke="#ccc" stroke-width="1"/>
+        <!-- Data polygon (score/100 * 240px max radius from center) -->
+        <!-- D1 (35): x=250, y=250-84=166 -->
+        <!-- D2 (70): x=250+156*cos(30)=385.1, y=250-156*sin(30)=172 -->
+        <!-- D3 (65): x=250+168*cos(-30)=395.5, y=250-168*sin(-30)=334 -->
+        <!-- D4 (75): x=250, y=250+180=430 -->
+        <!-- D5 (45): x=250-108*cos(30)=156.5, y=250+108*sin(30)=304 -->
+        <!-- D6 (65): x=250-156*cos(30)=114.9, y=250-156*sin(30)=172 -->
+        <polygon points="250,166 385.1,172 395.5,334 250,430 156.5,304 114.9,172" fill="rgba(26,115,232,0.2)" stroke="#1a73e8" stroke-width="2"/>
+        <!-- Data points -->
+        <circle cx="250" cy="166" r="5" fill="#1a73e8"/>
+        <circle cx="385.1" cy="172" r="5" fill="#1a73e8"/>
+        <circle cx="395.5" cy="334" r="5" fill="#1a73e8"/>
+        <circle cx="250" cy="430" r="5" fill="#1a73e8"/>
+        <circle cx="156.5" cy="304" r="5" fill="#1a73e8"/>
+        <circle cx="114.9" cy="172" r="5" fill="#1a73e8"/>
+        <!-- Labels -->
+        <text x="250" y="8" text-anchor="middle" font-size="14" font-weight="600" fill="#202124">D1 内部人增持 35</text>
+        <text x="468" y="130" text-anchor="start" font-size="14" font-weight="600" fill="#202124">D2 股息回报 70</text>
+        <text x="468" y="380" text-anchor="start" font-size="14" font-weight="600" fill="#202124">D3 竞争优势 65</text>
+        <text x="250" y="505" text-anchor="middle" font-size="14" font-weight="600" fill="#202124">D4 市盈率 75</text>
+        <text x="30" y="380" text-anchor="end" font-size="14" font-weight="600" fill="#202124">D5 成长动能 45</text>
+        <text x="30" y="130" text-anchor="end" font-size="14" font-weight="600" fill="#202124">D6 财务健康 65</text>
+        <!-- Axis labels -->
+        <text x="250" y="125" text-anchor="middle" font-size="11" fill="#999">D1</text>
+        <text x="448" y="140" text-anchor="start" font-size="11" fill="#999">D2</text>
+        <text x="448" y="380" text-anchor="start" font-size="11" fill="#999">D3</text>
+        <text x="250" y="445" text-anchor="middle" font-size="11" fill="#999">D4</text>
+        <text x="52" y="380" text-anchor="end" font-size="11" fill="#999">D5</text>
+        <text x="52" y="140" text-anchor="end" font-size="11" fill="#999">D6</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Criterion 1 -->
+  <div class="card">
+    <h3>🔍 维度一：内部人增持（权重 12%）</h3>
+    <div class="criterion partial">
+      <div class="criterion-header">
+        <span class="criterion-title">近3年内部人净增持（实控人/高管/员工持股）</span>
+        <span class="criterion-badge">部分通过</span>
+      </div>
+      <div class="criterion-detail">
+        <strong>李氏家族把控稳固</strong> — 创始人李运强为实控人，主席李文俊（李运强之子）管理。家族控股稳定。<br>
+        ❌ 近3年未发现公开市场大规模增持；❌ 未披露员工持股计划。<br>
+        ✅ 未发现大比例股权质押情况，控股稳定。
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill medium" style="width:35%">35分</div></div>
+        <span class="score-label">4.2/12 加权</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Criterion 2 -->
+  <div class="card">
+    <h3>💰 维度二：股息+回购回报率（权重 20%）</h3>
+    <div class="criterion pass">
+      <div class="criterion-header">
+        <span class="criterion-title">股息率 + 回购注销回报率（FCF验证）</span>
+        <span class="criterion-badge">通过</span>
+      </div>
+      <div class="criterion-detail">
+        ✅ <strong>2025年股息率约4.86%</strong>，行业最优水平<br>
+        ✅ 近3年股息 CAGR 36%（2023: 0.086 → 2024: 0.107 → 2025: 0.159港元/股）<br>
+        ✅ FCF充分覆盖：每股经营现金流0.82港元，每股股息0.159港元，<strong>覆盖率5.2x</strong><br>
+        ❌ 无股份回购注销
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill high" style="width:70%">70分</div></div>
+        <span class="score-label">14.0/20 加权</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dividend Timeline -->
+  <div class="card">
+    <h3>📅 分红历史</h3>
+    <table class="dividend-table">
+      <thead>
+        <tr>
+          <th>年份</th>
+          <th>每股分红(港元)</th>
+          <th>股息率(%)</th>
+          <th>回购注销(亿港元)</th>
+          <th>FCF覆盖</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2023</td>
+          <td>0.086</td>
+          <td>~2.6%</td>
+          <td>0</td>
+          <td class="positive">—</td>
+        </tr>
+        <tr>
+          <td>2024</td>
+          <td>0.107</td>
+          <td>~3.3%</td>
+          <td>0</td>
+          <td class="positive">—</td>
+        </tr>
+        <tr>
+          <td>2025</td>
+          <td>0.159</td>
+          <td>4.86%</td>
+          <td>0</td>
+          <td class="positive">5.2x</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr><td colspan="5">数据来源：公司年报，FCF覆盖 = 每股经营现金流 / 每股股息。2023-2024年经营现金流数据不完整。</td></tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Criterion 3 -->
+  <div class="card">
+    <h3>🏆 维度三：竞争优势（权重 28%）</h3>
+    <div class="criterion partial">
+      <div class="criterion-header">
+        <span class="criterion-title">产品在可比公司中具有竞争优势</span>
+        <span class="criterion-badge">部分通过</span>
+      </div>
+      <div class="criterion-detail">
+        <strong>量化评分 44/50：</strong>盈利能力、财务结构均优于同行玖龙纸业<br>
+        <strong>定性评分 25/50：</strong>浆纸一体化成本优势显著，但行业同质化、转换成本低<br>
+        <strong>核心优势：</strong>✅ 净利率7.29%领先行业 ✅ 负债率47%优于玖龙 ✅ 唯一慷慨派息的纸业龙头<br>
+        <strong>核心弱点：</strong>❌ 品牌差异化有限 ❌ 客户转换成本低 ❌ 行业周期性强
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill medium" style="width:65%">65分</div></div>
+        <span class="score-label">18.2/28 加权</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Peer Comparison -->
+  <div class="card">
+    <h3>📈 可比公司财务指标对比</h3>
+    <table class="peer-table">
+      <thead>
+        <tr>
+          <th>公司</th>
+          <th>净利率</th>
+          <th>ROE</th>
+          <th>营收增速</th>
+          <th>资产负债率</th>
+          <th>TTM PE</th>
+          <th>股息率</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="highlight">
+          <td>理文造纸</td>
+          <td class="positive">7.29%</td>
+          <td class="positive">6.38%</td>
+          <td>+2.5%</td>
+          <td class="positive">47.2%</td>
+          <td class="positive">7.24x</td>
+          <td class="positive">4.86%</td>
+        </tr>
+        <tr>
+          <td>玖龙纸业(02689)</td>
+          <td class="negative">~4%</td>
+          <td class="negative">~4%</td>
+          <td>~0%</td>
+          <td class="negative">>60%</td>
+          <td>~10x</td>
+          <td class="negative">0%</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr><td colspan="7"><span class="positive">红色</span>数值表示优于可比公司，<span class="negative">绿色</span>表示劣于。数据来源：公司年报/花旗研报，截至2025-12-31。</td></tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Cyclical Notice -->
+  <div class="card cyclical-notice">
+    <h3>🔄 周期性行业估值调整</h3>
+    <div class="pe-comparison">
+      <div class="pe-item">
+        <span class="pe-label">TTM 市盈率</span>
+        <span class="pe-value">7.24x</span>
+        <span class="pe-score">基于2025年EPS 0.452港元</span>
+      </div>
+      <div class="pe-item adjusted">
+        <span class="pe-label">周期调整PE (5年均利润)</span>
+        <span class="pe-value">~9.4x</span>
+        <span class="pe-score">基于近5年平均净利润~15亿港元</span>
+      </div>
+      <div class="pe-item">
+        <span class="pe-label">市净率 PB</span>
+        <span class="pe-value">0.46x</span>
+        <span class="pe-score">破净，历史低位</span>
+      </div>
+    </div>
+    <div>
+      <span class="cycle-stage bottom">⬆ 周期底部 · 盈利复苏</span>
+    </div>
+    <div style="margin-top:12px; font-size:13px; color:var(--text-secondary);">
+      造纸行业属周期性行业。当前PE(TTM)=7.24x处于历史低位，周期调整PE~9.4x亦低于行业均值10-12x。 
+      花旗判断造纸行业盈利周期已触底，2025年下半年起盈利能力改善。PB仅0.46x破净提供安全边际。
+    </div>
+  </div>
+
+  <!-- Criterion 4 -->
+  <div class="card">
+    <h3>📐 维度四：市盈率（权重 20%）</h3>
+    <div class="criterion pass">
+      <div class="criterion-header">
+        <span class="criterion-title">TTM 市盈率 ≤ 20 倍</span>
+        <span class="criterion-badge">通过</span>
+      </div>
+      <div class="criterion-detail">
+        ✅ <strong>PE(TTM)=7.24x</strong>，远低于20倍标准<br>
+        ✅ <strong>PB=0.46x</strong>，低于每股净资产7.09港元，破净提供安全边际<br>
+        ✅ 低于行业平均PE（10-12x）<br>
+        ✅ 花旗目标价4.2港元，潜在上行空间约28%
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill high" style="width:75%">75分</div></div>
+        <span class="score-label">15.0/20 加权</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Criterion 5 -->
+  <div class="card">
+    <h3>🚀 维度五：成长动能（权重 12%）</h3>
+    <div class="criterion partial">
+      <div class="criterion-header">
+        <span class="criterion-title">业绩趋势 · 增长预期 · 行业景气度 · 渗透率空间</span>
+        <span class="criterion-badge">部分通过</span>
+      </div>
+      <div class="criterion-detail">
+        <strong>近期季度（15/25）：</strong>营收温和+2.5%，但净利润受利润率扩张大幅+43%<br>
+        <strong>增长预期（10/25）：</strong>花旗上修2026-2027盈利预测12-13%；2026年产能全面释放<br>
+        <strong>行业景气（12/25）：</strong>盈利周期触底，消费提振政策利好，但产能过剩仍在<br>
+        <strong>成长空间（8/25）：</strong>包装纸成熟市场；卫生纸人均用量有提升空间；东南亚提供增量
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill medium" style="width:45%">45分</div></div>
+        <span class="score-label">5.4/12 加权</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Criterion 6 -->
+  <div class="card">
+    <h3>🛡️ 维度六：财务健康与筹码结构（权重 8%）</h3>
+    <div class="criterion partial">
+      <div class="criterion-header">
+        <span class="criterion-title">有息负债率 · 股东户数变化趋势</span>
+        <span class="criterion-badge">部分通过</span>
+      </div>
+      <div class="criterion-detail">
+        ✅ <strong>资产负债率47.21%</strong>，中等健康水平<br>
+        ✅ 现金结余19.42亿港元<br>
+        ✅ 财务费用同比下降34%，利息保障能力改善<br>
+        ℹ️ 股东户数和机构持股数据不足，未纳入评分
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill medium" style="width:65%">65分</div></div>
+        <span class="score-label">5.2/8 加权</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event Catalysts -->
+  <div class="card">
+    <h3>⏰ 近期催化剂看点</h3>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">📋</span>
+      <div>
+        <span class="catalyst-type high">高影响</span>
+        <strong>2026年产能全面释放</strong> — 生产线技改完成，有望驱动量价齐升
+        <div class="catalyst-timing">预计时间：2026年全年</div>
+      </div>
+    </div>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">📊</span>
+      <div>
+        <span class="catalyst-type high">高影响</span>
+        <strong>2026年H1业绩</strong> — 产能释放效果首次检验
+        <div class="catalyst-timing">预计时间：2026年8月</div>
+      </div>
+    </div>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">🏛️</span>
+      <div>
+        <span class="catalyst-type medium">中影响</span>
+        <strong>消费提振政策</strong> — 国家将提振消费列为经济工作首位，利好包装纸需求
+        <div class="catalyst-timing">预计时间：2026年持续</div>
+      </div>
+    </div>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">🌍</span>
+      <div>
+        <span class="catalyst-type low">低影响</span>
+        <strong>东南亚市场扩张</strong> — 越南+马来西亚产能持续释放，海外收入占比提升至17%
+        <div class="catalyst-timing">预计时间：2026-2027年</div>
+      </div>
+    </div>
+    <div class="text-sm" style="color:var(--text-secondary); margin-top:8px;">
+      注：催化剂仅供信息参考，不影响审美评分。
+    </div>
+  </div>
+
+  <!-- Risk Flags -->
+  <div class="card">
+    <h3>⚠️ 风险提示</h3>
+    <div class="risk-flag watch">
+      <span class="flag-icon">🟡</span>
+      <span class="flag-text"><strong>纸浆价格波动风险：</strong>作为主要原材料，纸浆价格大幅波动直接影响成本和毛利率。虽浆纸一体化可在一定程度对冲，但不能完全消除影响。</span>
+    </div>
+    <div class="risk-flag watch">
+      <span class="flag-icon">🟡</span>
+      <span class="flag-text"><strong>营收增长动能不足：</strong>FY2025收入仅+2.5%，远低于利润增速。若提价不可持续，利润弹性难以维持。</span>
+    </div>
+    <div class="risk-flag watch">
+      <span class="flag-icon">🟡</span>
+      <span class="flag-text"><strong>行业产能过剩：</strong>造纸行业整体产能过剩，低价无序竞争压缩利润空间，"反内卷"转型仍具不确定性。</span>
+    </div>
+    <div class="risk-flag info">
+      <span class="flag-icon">🔵</span>
+      <span class="flag-text"><strong>国际贸易关税壁垒：</strong>中美贸易摩擦持续，可能影响出口市场拓展及纸浆进口成本。</span>
+    </div>
+    <div class="risk-flag info">
+      <span class="flag-icon">🔵</span>
+      <span class="flag-text"><strong>家族控制风险：</strong>李氏家族控制权集中，独立董事比例偏低，公司治理透明度有待观察。</span>
+    </div>
+  </div>
+
+  <!-- Investment Conclusion -->
+  <div class="invest-conclusion">
+    <h3>🎯 投资结论</h3>
+
+    <div class="verdict-banner buy-cautious">
+      <span class="verdict-emoji">✅</span>
+      <div>
+        <div class="verdict-text" id="verdictText">建议买入（控制仓位）</div>
+        <div class="verdict-sub" id="verdictSub">审美评分良好，可适度参与，注意控制仓位</div>
+      </div>
+    </div>
+
+    <div class="price-cards">
+      <div class="price-card buy-card">
+        <div class="price-label">建议买入价</div>
+        <div class="price-value">3.11 港元</div>
+        <div class="price-note">安全边际 25% · EPS(TTM)=0.452</div>
+      </div>
+      <div class="price-card target-card">
+        <div class="price-label">12个月目标价</div>
+        <div class="price-value">4.52 港元</div>
+        <div class="price-note">合理PE: 10.0x</div>
+      </div>
+      <div class="price-card fair-card">
+        <div class="price-label">合理价值</div>
+        <div class="price-value">4.52 港元</div>
+        <div class="price-note">当前价: 3.27 港元</div>
+      </div>
+    </div>
+
+    <div class="upside-bar">
+      <span class="upside-label">较当前价潜在上涨空间</span>
+      <span class="upside-value positive">+38.2%</span>
+    </div>
+
+    <div class="position-advice small">
+      <span>📐</span>
+      <span>建议小仓位参与，控制在 5% 以下仓位</span>
+    </div>
+
+    <div class="valuation-note">
+      <strong>估值说明：</strong>合理PE取10x，参考：①行业均值10-12x；②花旗目标价对应PE约9.3x（4.2/0.452）；③历史5年均值约10x。安全边际25%对应B级标准（0.75x合理价值）。Floor constraint: 建议买入价不超过现价×0.95=3.11港元。
+    </div>
+
+    <div class="conclusion-text">
+      <strong>理文造纸（02314.HK）审美评分62分B级。</strong>核心优势在于低估值（PE 7.24x、PB 0.46x破净）+高股息（4.86%）提供充足安全边际，财务稳健（负债率47%）优于同行玖龙。2025年净利润大增43%，浆纸一体化和产能释放有望延续盈利改善趋势。但营收增长偏弱（仅+2.5%），造纸行业周期性强，内部人增持信号不明。建议在3.0-3.3港元区间小仓位分批建仓（控制在<5%），等待2026年产能全面释放和消费提振政策催化，花旗目标价4.2港元提供~28%参考上行空间。不含投资建议，仅供参考。
+    </div>
+  </div>
+
+  <!-- Bottom Conclusion -->
+  <div class="card">
+    <h3>📝 分析小结</h3>
+    <div style="font-size:14px; line-height:2; color:var(--text-secondary);">
+      <strong>理文造纸（02314.HK）审美评分62分B级。</strong>核心优势在于低估值（PE 7.24x、PB 0.46x破净）+高股息（4.86%）提供充足安全边际，财务稳健（负债率47%）优于同行玖龙。2025年净利润大增43%，浆纸一体化和产能释放有望延续盈利改善趋势。但营收增长偏弱（仅+2.5%），造纸行业周期性强，内部人增持信号不明。建议在3.0-3.3港元区间小仓位分批建仓（控制在<5%），等待2026年产能全面释放和消费提振政策催化，花旗目标价4.2港元提供~28%参考上行空间。不含投资建议，仅供参考。
+    </div>
+  </div>
+
+  <div class="footer">
+    本报告基于公开数据自动生成，仅供研究参考，不构成任何投资建议。<br>
+    报告中的买入建议、目标价、合理价值等均为基于历史数据和估值模型的推算，不代表未来实际表现。投资有风险，入市需谨慎。<br>
+    数据更新时间：2025-12-31 | 报告生成时间：2026-05-08 15:15
+  </div>
+</div>
+
+<script>
+  // Color the upside value
+  const upsideEl = document.querySelector('.upside-value');
+  if (upsideEl) {
+    const txt = upsideEl.textContent.trim();
+    const val = parseFloat(txt);
+    if (!isNaN(val)) {
+      upsideEl.classList.add(val > 5 ? 'positive' : 'neutral');
+    }
+  }
+</script>
+</body>
+</html>

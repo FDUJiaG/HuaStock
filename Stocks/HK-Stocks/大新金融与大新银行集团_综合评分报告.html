@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大新金融(0440) & 大新银行集团(2356) 综合评分报告</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Helvetica Neue", Arial, sans-serif;
+    background: #f6f7f9;
+    color: #1a1a2e;
+    line-height: 1.7;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 24px 64px; }
+
+  /* Header */
+  .report-header {
+    background: linear-gradient(135deg, #2c3e6b 0%, #1a2744 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 36px 32px;
+    margin-bottom: 24px;
+  }
+  .report-header h1 { font-size: 21px; font-weight: 600; margin-bottom: 6px; }
+  .report-header .sub { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 14px; }
+  .report-header .meta { display: flex; gap: 20px; font-size: 12px; color: rgba(255,255,255,0.55); }
+  .report-header .meta span em { font-style: normal; color: rgba(255,255,255,0.85); }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab-btn {
+    padding: 8px 18px;
+    border-radius: 8px 8px 0 0;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid #e2e8f0;
+    border-bottom: none;
+    background: #f1f5f9;
+    color: #64748b;
+    cursor: default;
+  }
+  .tab-btn.active {
+    background: #fff;
+    color: #2c3e6b;
+    border-color: #cbd5e1;
+  }
+
+  /* Cards */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 16px;
+    border: 1px solid #e8ecf1;
+  }
+  .card h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f2f5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h2 .skill-badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 10px;
+    border-radius: 10px;
+  }
+  .skill-aesthetic { background: #eef2ff; color: #4f46e5; }
+  .skill-earnings { background: #fef3c7; color: #b45309; }
+  .skill-analyst { background: #dcfce7; color: #15803d; }
+  .card h3 { font-size: 14px; font-weight: 600; margin: 16px 0 10px; color: #2c3e6b; }
+  .card p, .card li { font-size: 13px; color: #334155; line-height: 1.8; }
+  .card ul { padding-left: 18px; }
+
+  /* Grade Banner */
+  .grade-banner {
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .grade-banner.grade-a { background: linear-gradient(135deg, #dcfce7, #f0fdf4); border: 1px solid #86efac; }
+  .grade-banner.grade-b { background: linear-gradient(135deg, #eef2ff, #f8fafc); border: 1px solid #a5b4fc; }
+  .grade-banner.grade-c { background: linear-gradient(135deg, #fef3c7, #fffbeb); border: 1px solid #fcd34d; }
+  .grade-banner .grade-letter {
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .grade-banner .grade-info { font-size: 13px; }
+  .grade-banner .grade-info strong { font-size: 15px; }
+
+  /* Score Grid */
+  .score-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 12px 0;
+  }
+  .score-item {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 12px 14px;
+    border: 1px solid #e2e8f0;
+  }
+  .score-item .dim-label { font-size: 11px; color: #8892a4; margin-bottom: 2px; }
+  .score-item .dim-score { font-size: 20px; font-weight: 700; }
+  .score-item .dim-status { font-size: 11px; }
+  .score-item.pass { border-left: 3px solid #16a34a; }
+  .score-item.partial { border-left: 3px solid #eab308; }
+  .score-item.fail { border-left: 3px solid #dc2626; }
+  .score-item .dim-score.pass { color: #16a34a; }
+  .score-item .dim-score.partial { color: #ca8a04; }
+  .score-item .dim-score.fail { color: #dc2626; }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 12px 0;
+  }
+  table thead th {
+    background: #f8fafc;
+    text-align: left;
+    padding: 8px 10px;
+    font-weight: 600;
+    color: #475569;
+    border-bottom: 2px solid #e2e8f0;
+    font-size: 12px;
+  }
+  table tbody td {
+    padding: 7px 10px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    font-size: 12px;
+  }
+  table .num { text-align: right; }
+  table .highlight { background: #fef9e7; }
+  table .green { color: #16a34a; font-weight: 500; }
+  table .red { color: #dc2626; }
+
+  /* Tag */
+  .tag { display: inline-block; font-size: 11px; padding: 2px 10px; border-radius: 12px; margin: 2px; }
+  .tag-green { background: #dcfce7; color: #15803d; }
+  .tag-red { background: #fef2f2; color: #dc2626; }
+  .tag-blue { background: #eef2ff; color: #4f46e5; }
+  .tag-amber { background: #fef3c7; color: #b45309; }
+
+  /* Verdict box */
+  .verdict-box {
+    padding: 16px 20px;
+    border-radius: 10px;
+    margin: 12px 0;
+    font-size: 13px;
+  }
+  .verdict-buy { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
+  .verdict-cautious { background: #eef2ff; border: 1px solid #a5b4fc; color: #3730a3; }
+  .verdict-watch { background: #fef3c7; border: 1px solid #fcd34d; color: #854d0e; }
+  .verdict-avoid { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+  .verdict-box .big { font-size: 18px; font-weight: 700; }
+
+  /* Radar container */
+  .radar-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 12px 0;
+  }
+  .radar-box {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    text-align: center;
+  }
+  .radar-box .radar-title { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+
+  /* Comparison summary */
+  .compare-table { }
+  .compare-table .best { background: #f0fdf4; }
+  .compare-table .best td:first-child { font-weight: 600; }
+
+  /* Risk flags */
+  .risk-fatal { color: #dc2626; font-size: 13px; padding: 6px 0; }
+  .risk-watch { color: #b45309; font-size: 13px; padding: 6px 0; }
+  .risk-info { color: #64748b; font-size: 13px; padding: 6px 0; }
+
+  /* Two column */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .col-box { background: #f8fafc; border-radius: 10px; padding: 16px 18px; border: 1px solid #e2e8f0; }
+  .col-box .col-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+
+  /* 30-dimension mini table */
+  .dim30-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .dim30-item { display: flex; justify-content: space-between; padding: 5px 8px; border-radius: 4px; font-size: 12px; background: #f8fafc; }
+  .dim30-item .d-score { font-weight: 600; }
+
+  /* Disclaimer */
+  .disclaimer {
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e8ecf1;
+    font-size: 12px;
+    color: #94a3b8;
+    line-height: 1.8;
+  }
+
+  @media (max-width: 700px) {
+    .container { padding: 16px 12px 32px; }
+    .score-grid { grid-template-columns: repeat(2, 1fr); }
+    .radar-row, .two-col, .dim30-grid { grid-template-columns: 1fr; }
+    .card { padding: 18px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="report-header">
+    <h1>大新金融（0440.HK）&amp; 大新银行集团（2356.HK）综合评分报告</h1>
+    <div class="sub">三大框架：Stock Aesthetic Checker × Earnings Review × Listed Company Analyst</div>
+    <div class="meta">
+      <span>研股股 · <em>股票研究专家</em></span>
+      <span>报告日期：<em>2026年5月8日</em></span>
+      <span>技能框架：<em>earnings-review</em> · <em>listed-company-analyst</em> · <em>stock-aesthetic-checker</em></span>
+    </div>
+  </div>
+
+  <!-- ========== Tab Navigation ========== -->
+  <div class="tabs">
+    <span class="tab-btn active">🎯 Aesthetic Checker 评分</span>
+    <span class="tab-btn">📊 Earnings Review 业绩点评</span>
+    <span class="tab-btn">🔍 Listed Co. Analyst 30维分析</span>
+    <span class="tab-btn">⚖️ 综合对比与结论</span>
+  </div>
+
+  <!-- ======================================================================== -->
+  <!-- SECTION 1: STOCK AESTHETIC CHECKER                                       -->
+  <!-- ======================================================================== -->
+  <div class="card">
+    <h2>
+      <span>🎯 Stock Aesthetic Checker — 六维审美评分</span>
+      <span class="skill-badge skill-aesthetic">6维度 · 百分制</span>
+    </h2>
+    <p style="font-size:13px; color:#64748b; margin-bottom:12px;">
+      六维度加权评分（默认权重：D1内部人增持12%, D2股息回报20%, D3竞争优势28%, D4市盈率20%, D5成长动能12%, D6财务健康8%）
+    </p>
+
+    <!-- Grade Banners -->
+    <div class="grade-banner grade-c">
+      <div>
+        <div class="grade-letter" style="color:#ca8a04;">C</div>
+      </div>
+      <div class="grade-info">
+        <strong style="color:#854d0e;">大新金融（0440）— 总分 53.9 分</strong><br>
+        <span style="color:#475569;">评级：<strong>谨慎参与/小仓位</strong> · 低估值高股息但内部人无公开市场增持</span>
+      </div>
+      <div>
+        <span class="tag tag-blue">核心优势：D4市盈率 100分</span>
+        <span class="tag tag-red">短板：D1内部人增持 0分</span>
+      </div>
+    </div>
+
+    <div class="grade-banner grade-c">
+      <div>
+        <div class="grade-letter" style="color:#ca8a04;">C</div>
+      </div>
+      <div class="grade-info">
+        <strong style="color:#854d0e;">大新银行集团（2356）— 总分 54.3 分</strong><br>
+        <span style="color:#475569;">评级：<strong>谨慎参与/小仓位</strong> · 纯银行业务ROE更高但内部人无直接增持</span>
+      </div>
+      <div>
+        <span class="tag tag-blue">核心优势：D4市盈率 100分</span>
+        <span class="tag tag-red">短板：D1内部人增持 0分</span>
+      </div>
+    </div>
+
+    <!-- Six Dimension Scores -->
+    <h3>六维评分明细</h3>
+    <div class="two-col">
+      <!-- 0440 -->
+      <div class="col-box">
+        <div class="col-title" style="color:#534AB7; font-size:13px;">🟣 大新金融（0440）六维得分</div>
+        <div class="score-grid">
+          <div class="score-item fail">
+            <div class="dim-label">D1 内部人增持</div>
+            <div class="dim-score fail">0</div>
+            <div class="dim-status" style="color:#dc2626;">❌ 未通过</div>
+          </div>
+          <div class="score-item partial">
+            <div class="dim-label">D2 股息回报率</div>
+            <div class="dim-score partial">68</div>
+            <div class="dim-status" style="color:#ca8a04;">⚠️ 部分通过</div>
+          </div>
+          <div class="score-item partial">
+            <div class="dim-label">D3 竞争优势</div>
+            <div class="dim-score partial">41</div>
+            <div class="dim-status" style="color:#ca8a04;">⚠️ 部分通过</div>
+          </div>
+          <div class="score-item pass">
+            <div class="dim-label">D4 市盈率</div>
+            <div class="dim-score pass">100</div>
+            <div class="dim-status" style="color:#16a34a;">✅ 通过</div>
+          </div>
+          <div class="score-item partial">
+            <div class="dim-label">D5 成长动能</div>
+            <div class="dim-score partial">40</div>
+            <div class="dim-status" style="color:#ca8a04;">⚠️ 部分通过</div>
+          </div>
+          <div class="score-item partial">
+            <div class="dim-label">D6 财务健康</div>
+            <div class="dim-score partial">50</div>
+            <div class="dim-status" style="color:#ca8a04;">⚠️ 部分通过</div>
+          </div>
+        </div>
+        <div style="font-size:12px; color:#64748b; text-align:center; margin-top:4px;">
+          加权总分 = 0×12% + 68×20% + 41×28% + 100×20% + 40×12% + 50×8% = <strong>53.9分 → C级</strong>
+        </div>
+      </div>
+      <!-- 2356 -->
+      <div class="col-box">
+        <div class="col-title" style="color:#1D9E75; font-size:13px;">🟢 大新银行集团（2356）六维得分</div>
+        <div class="score-grid">
+          <div class="score-item fail">
+            <div class="dim-label">D1 内部人增持</div>
+            <div class="dim-score fail">0</div>
+            <div class="dim-status" style="color:#dc2626;">❌ 未通过</div>
+          </div>
+          <div class="score-item partial">
+            <div class="dim-label">D2 股息回报率</div>
+            <div class="dim-score partial">68</div>
+            <div class="dim-status" style="color:#ca8a04;">⚠️ 部分通过</div>
+          </div>
+          <div class="score-item partial">
+            <div class="dim-label">D3 竞争优势</div>
+            <div class="dim-score partial">41</div>
+            <div class="dim-status" style="color:#ca8a04;">⚠️ 部分通过</div>
+          </div>
+          <div class="score-item pass">
+            <div class="dim-label">D4 市盈率</div>
+            <div class="dim-score pass">100</div>
+            <div class="dim-status" style="color:#16a34a;">✅ 通过</div>
+          </div>
+          <div class="score-item partial">
+            <div class="dim-label">D5 成长动能</div>
+            <div class="dim-score partial">40</div>
+            <div class="dim-status" style="color:#ca8a04;">⚠️ 部分通过</div>
+          </div>
+          <div class="score-item partial">
+            <div class="dim-label">D6 财务健康</div>
+            <div class="dim-score partial">55</div>
+            <div class="dim-status" style="color:#ca8a04;">⚠️ 部分通过</div>
+          </div>
+        </div>
+        <div style="font-size:12px; color:#64748b; text-align:center; margin-top:4px;">
+          加权总分 = 0×12% + 68×20% + 41×28% + 100×20% + 40×12% + 55×8% = <strong>54.3分 → C级</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- D1 Detail -->
+    <h3>D1 内部人增持 — 详细分析</h3>
+    <table>
+      <thead><tr><th>维度</th><th>0440 大新金融</th><th>2356 大新银行集团</th></tr></thead>
+      <tbody>
+        <tr><td>近3年公开市场增持</td><td class="red">❌ 无</td><td class="red">❌ 大新金融持股74.37%未变</td></tr>
+        <tr><td>HKEX DI原始证据</td><td colspan="2" style="font-size:12px; background:#f8fafc;">
+          <strong>港交所披露易 DI 表格（2026-04-08）：</strong><br>
+          王祖兴：+178,190股 · 每股均价 <strong style="color:#dc2626;">HKD 0.0000</strong> · 代码 <strong>1113(L)</strong>（其他原因）<br>
+          王伯凌：+47,225股 · 每股均价 <strong style="color:#dc2626;">HKD 0.0000</strong> · 代码 1113(L)<br>
+          黄汉兴：+31,978股 · 每股均价 <strong style="color:#dc2626;">HKD 0.0000</strong> · 代码 1113(L)<br>
+          <span style="color:#64748b;">→ 代码1113(L)=非公开市场交易（如以股代息/股份奖励），非1101公开市场买入；零价格进一步确认非自购</span>
+        </td></tr>
+        <tr><td>员工持股计划</td><td>股份奖励计划（股权激励，非员工自购）</td><td>未披露</td></tr>
+        <tr><td>控股股东质押率</td><td class="green">✅ 王氏家族零质押</td><td class="green">✅ 大新金融持股零质押</td></tr>
+        <tr><td>D1得分</td><td><strong>0分（未通过）</strong> — HKEX DI证实代码1113/$0，非公开市场买入</td><td><strong>0分（未通过）</strong></td></tr>
+      </tbody>
+    </table>
+
+    <!-- D2 Detail -->
+    <h3>D2 股息回报率 — 详细分析</h3>
+    <table>
+      <thead><tr><th>指标</th><th>0440 大新金融</th><th>2356 大新银行集团</th></tr></thead>
+      <tbody>
+        <tr><td>2025年股息</td><td class="num">2.58港元/股</td><td class="num">0.80港元/股</td></tr>
+        <tr><td>股息率</td><td class="green num">6.01%</td><td class="green num">6.05%</td></tr>
+        <tr><td>连续派息年数</td><td class="green">✅ 连续3年+派息且增长</td><td class="green">✅ 连续3年+派息且增长</td></tr>
+        <tr><td>回购注销</td><td>❌ 无（仅员工股份计划）</td><td>❌ 无</td></tr>
+        <tr><td>总回报率(R)</td><td class="num">6.01%</td><td class="num">6.05%</td></tr>
+        <tr><td>稳定性加分</td><td>+5</td><td>+5</td></tr>
+        <tr><td>D2得分</td><td><strong>68分（部分通过）</strong></td><td><strong>68分（部分通过）</strong></td></tr>
+      </tbody>
+    </table>
+
+    <!-- D3 Detail -->
+    <h3>D3 竞争优势 — 详细分析</h3>
+    <table>
+      <thead><tr><th>维度</th><th>0440 大新金融</th><th>2356 大新银行集团</th><th>备注</th></tr></thead>
+      <tbody>
+        <tr><td>品牌强度</td><td>3/7 区域性品牌</td><td>3/7 区域性品牌</td><td>香港中型银行</td></tr>
+        <tr><td>转换成本</td><td>5/7 银行账户转换成本较高</td><td>5/7 银行账户转换成本较高</td><td>行业特性</td></tr>
+        <tr><td>网络效应</td><td>0/7 无</td><td>0/7 无</td><td>—</td></tr>
+        <tr><td>成本优势</td><td>4/7 成本收入比43.5%</td><td>4/7 成本收入比43.5%</td><td>优于部分同行</td></tr>
+        <tr><td>IP/技术</td><td>1/7 无独特技术</td><td>1/7 无独特技术</td><td>—</td></tr>
+        <tr><td>市场地位</td><td>3/7 香港中型，非领导者</td><td>3/7 香港中型，非领导者</td><td>—</td></tr>
+        <tr><td>监管护城河</td><td>5/7 银行牌照</td><td>5/7 银行牌照</td><td>行业准入门槛</td></tr>
+        <tr><td>定性总分</td><td class="num">21/50</td><td class="num">21/50</td><td>—</td></tr>
+        <tr><td>定量总分</td><td class="num">20/50</td><td class="num">20/50</td><td>ROE偏低</td></tr>
+        <tr><td><strong>D3得分</strong></td><td><strong>41分（部分通过）</strong></td><td><strong>41分（部分通过）</strong></td><td>竞争优势一般</td></tr>
+      </tbody>
+    </table>
+
+    <!-- D4 Detail -->
+    <h3>D4 TTM市盈率 — 详细分析</h3>
+    <table>
+      <thead><tr><th>指标</th><th>0440 大新金融</th><th>2356 大新银行集团</th><th>香港银行同业</th></tr></thead>
+      <tbody>
+        <tr><td>TTM PE</td><td class="green num"><strong>6.66倍</strong></td><td class="green num"><strong>7.51倍</strong></td><td class="num">~8-10倍</td></tr>
+        <tr><td>PB</td><td class="green num"><strong>0.37倍</strong></td><td class="green num"><strong>0.53倍</strong></td><td class="num">~0.6-0.8倍</td></tr>
+        <tr><td>PE标准分</td><td class="green">100分（PE&lt;10）</td><td class="green">100分（PE&lt;10）</td><td>—</td></tr>
+        <tr><td>行业对比加分</td><td>+5（低于行业均值）</td><td>+5（低于行业均值）</td><td>—</td></tr>
+        <tr><td><strong>D4得分</strong></td><td><strong>100分（通过）</strong></td><td><strong>100分（通过）</strong></td><td>估值极具吸引力</td></tr>
+      </tbody>
+    </table>
+
+    <!-- D5 Detail -->
+    <h3>D5 成长动能 — 详细分析</h3>
+    <table>
+      <thead><tr><th>子维度</th><th>0440 大新金融</th><th>得分</th><th>2356 大新银行集团</th><th>得分</th></tr></thead>
+      <tbody>
+        <tr><td>5A 最新季度业绩</td><td>营收+14.6%, 净利润+22.9%</td><td class="num">20</td><td>营收+14%, 净利润+20%</td><td class="num">20</td></tr>
+        <tr><td>5B 未来增长预期</td><td>无分析师一致预期，保守估计</td><td class="num">5</td><td>无分析师一致预期，保守估计</td><td class="num">5</td></tr>
+        <tr><td>5C 行业景气度</td><td>香港银行市场成熟稳定</td><td class="num">12</td><td>香港银行市场成熟稳定</td><td class="num">12</td></tr>
+        <tr><td>5D 渗透率/空间</td><td>香港银行市场已饱和</td><td class="num">3</td><td>香港银行市场已饱和</td><td class="num">3</td></tr>
+        <tr><td><strong>D5得分</strong></td><td colspan="2"><strong>40分（部分通过）</strong></td><td colspan="2"><strong>40分（部分通过）</strong></td></tr>
+      </tbody>
+    </table>
+
+    <!-- D6 Detail -->
+    <h3>D6 财务健康与筹码结构 — 详细分析</h3>
+    <table>
+      <thead><tr><th>子维度</th><th>0440 大新金融</th><th>得分</th><th>2356 大新银行集团</th><th>得分</th></tr></thead>
+      <tbody>
+        <tr><td>6A 有息负债率</td><td>金融控股公司，负债结构复杂</td><td class="num">—</td><td>资本充足率23.1%，非常强</td><td class="num">40</td></tr>
+        <tr><td>6B 股东户数趋势</td><td>王氏家族持股>80%，筹码高度集中</td><td class="num">50</td><td>大新金融持股74.37%，筹码集中</td><td class="num">50</td></tr>
+        <tr><td>净现金/储备</td><td>保险+银行，流动性充裕</td><td class="num">—</td><td>核心资本充足率18.8%</td><td class="num">+10</td></tr>
+        <tr><td><strong>D6得分</strong></td><td colspan="2"><strong>50分（部分通过）</strong></td><td colspan="2"><strong>55分（部分通过）</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ======================================================================== -->
+  <!-- SECTION 2: EARNINGS REVIEW                                               -->
+  <!-- ======================================================================== -->
+  <div class="card">
+    <h2>
+      <span>📊 Earnings Review — 业绩点评</span>
+      <span class="skill-badge skill-earnings">2025年报 · 年度业绩</span>
+    </h2>
+
+    <h3>大新金融（0440）2025年业绩点评</h3>
+    <table>
+      <thead><tr><th>核心指标</th><th>2025年</th><th>2024年</th><th>同比</th><th>评价</th></tr></thead>
+      <tbody>
+        <tr><td>营业收入</td><td class="num">82.67亿</td><td class="num">72.11亿</td><td class="green num">+14.6%</td><td class="green">符合预期</td></tr>
+        <tr><td>净利息收入</td><td class="num">59.01亿</td><td class="num">54.01亿</td><td class="green num">+9.3%</td><td class="green">稳健增长</td></tr>
+        <tr><td>非利息收入</td><td class="num">23.66亿</td><td class="num">18.10亿</td><td class="green num">+31%</td><td class="green"><strong>超预期</strong></td></tr>
+        <tr class="highlight"><td><strong>股东应占溢利</strong></td><td class="num"><strong>20.57亿</strong></td><td class="num"><strong>16.73亿</strong></td><td class="green num"><strong>+22.9%</strong></td><td class="green"><strong>超预期</strong></td></tr>
+        <tr><td>每股盈利</td><td class="num">6.45港元</td><td class="num">5.25港元</td><td class="green num">+22.9%</td><td class="green">强劲</td></tr>
+        <tr><td>每股股息</td><td class="num">2.58港元</td><td class="num">2.10港元</td><td class="green num">+23%</td><td class="green">股东回报提升</td></tr>
+      </tbody>
+    </table>
+
+    <div class="verdict-box verdict-cautious" style="margin-top:8px;">
+      <strong>业绩判断：</strong>整体符合甚至略超预期。最大亮点是非利息收入大增31%（财富管理+保险双轮驱动），净息差在利率环境中保持韧性。信贷减值17.8亿仍是拖累，但同比已开始改善。维持正面评价。
+    </div>
+
+    <h3 style="margin-top:16px;">大新银行集团（2356）2025年业绩点评</h3>
+    <table>
+      <thead><tr><th>核心指标</th><th>2025年</th><th>2024年</th><th>同比</th><th>评价</th></tr></thead>
+      <tbody>
+        <tr><td>经营收入</td><td class="num">79.15亿</td><td class="num">69.35亿</td><td class="green num">+14%</td><td class="green">符合预期</td></tr>
+        <tr><td>净利息收入</td><td class="num">58.29亿</td><td class="num">52.88亿</td><td class="green num">+10%</td><td class="green">稳健</td></tr>
+        <tr><td>非利息收入</td><td class="num">20.87亿</td><td class="num">16.47亿</td><td class="green num">+27%</td><td class="green"><strong>超预期</strong></td></tr>
+        <tr><td>成本收入比</td><td class="num">43.5%</td><td class="num">48.2%</td><td class="green num">↓4.7ppt</td><td class="green">效率显著改善</td></tr>
+        <tr class="highlight"><td><strong>股东应占溢利</strong></td><td class="num"><strong>24.76亿</strong></td><td class="num"><strong>20.60亿</strong></td><td class="green num"><strong>+20%</strong></td><td class="green"><strong>符合预期</strong></td></tr>
+        <tr><td>每股盈利</td><td class="num">1.76港元</td><td class="num">1.47港元</td><td class="green num">+19.7%</td><td class="green">良好</td></tr>
+        <tr><td>每股股息</td><td class="num">0.80港元</td><td class="num">0.66港元</td><td class="green num">+21%</td><td class="green">股东回报提升</td></tr>
+      </tbody>
+    </table>
+
+    <div class="verdict-box verdict-cautious" style="margin-top:8px;">
+      <strong>业绩判断：</strong>收入端与利润端均实现双位数增长。成本收入比大幅改善4.7个百分点至43.5%，经营效率显著提升。资本充足率23.1%为未来增长提供了充足空间。财富管理业务是最大增长亮点。
+    </div>
+
+    <h3>关键跟踪指标</h3>
+    <div class="two-col">
+      <div class="col-box">
+        <div class="col-title" style="color:#534AB7; font-size:12px;">🟣 0440 关键跟踪</div>
+        <ul>
+          <li>净息差（NIM）变动趋势</li>
+          <li>信贷减值损失是否从17.8亿回落</li>
+          <li>保险业务收入增速</li>
+          <li>王氏家族股权变动信号</li>
+          <li>重庆银行分红贡献</li>
+        </ul>
+      </div>
+      <div class="col-box">
+        <div class="col-title" style="color:#1D9E75; font-size:12px;">🟢 2356 关键跟踪</div>
+        <ul>
+          <li>净息差（NIM）变动趋势</li>
+          <li>成本收入比能否维持改善</li>
+          <li>财富管理业务增速</li>
+          <li>澳门商业银行经营改善进展</li>
+          <li>香港商业地产贷款质量</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================== -->
+  <!-- SECTION 3: LISTED COMPANY ANALYST - 30 Dimension                        -->
+  <!-- ======================================================================== -->
+  <div class="card">
+    <h2>
+      <span>🔍 Listed Company Analyst — 30维度深度分析</span>
+      <span class="skill-badge skill-analyst">六大模块 · 30维度</span>
+    </h2>
+    <p style="font-size:13px; color:#64748b; margin-bottom:12px;">
+      30维度综合评分：优(A)/良(B)/中(C)/差(D) 四级评估
+    </p>
+
+    <!-- Module 1 -->
+    <h3>模块一：业务可理解性与行业吸引力</h3>
+    <table>
+      <thead><tr><th style="width:30px;">#</th><th>维度</th><th style="width:100px;">0440</th><th style="width:100px;">2356</th><th>分析摘要</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>业务可理解性</td><td class="green">A</td><td class="green">A</td><td>银行+保险业务模式清晰易懂</td></tr>
+        <tr><td>2</td><td>行业吸引力</td><td>C</td><td>C</td><td>香港银行市场竞争激烈，增长空间有限</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Module 2 -->
+    <h3>模块二：商业模式与客户分析</h3>
+    <table>
+      <thead><tr><th style="width:30px;">#</th><th>维度</th><th style="width:100px;">0440</th><th style="width:100px;">2356</th><th>分析摘要</th></tr></thead>
+      <tbody>
+        <tr><td>3</td><td>客户集中度</td><td class="green">A</td><td class="green">A</td><td>零售+商业分散化，客户基础广泛</td></tr>
+        <tr><td>4</td><td>收入可预测性</td><td class="green">B</td><td class="green">B</td><td>净利息收入稳定，非利息收入波动</td></tr>
+        <tr><td>5</td><td>定价能力</td><td>C</td><td>C</td><td>利率市场化下定价能力一般</td></tr>
+        <tr><td>6</td><td>客户粘性</td><td class="green">B</td><td class="green">B</td><td>银行账户转换成本较高</td></tr>
+        <tr><td>7</td><td>渠道分布</td><td class="green">B</td><td class="green">B</td><td>线上线下结合</td></tr>
+        <tr><td>8</td><td>收入多元化</td><td class="green">B</td><td>C</td><td>0440含保险更分散，2356偏纯银行</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Module 3 -->
+    <h3>模块三：竞争优势与行业格局</h3>
+    <table>
+      <thead><tr><th style="width:30px;">#</th><th>维度</th><th style="width:100px;">0440</th><th style="width:100px;">2356</th><th>分析摘要</th></tr></thead>
+      <tbody>
+        <tr><td>9</td><td>市场份额</td><td>D</td><td>D</td><td>香港中小型银行，份额较低</td></tr>
+        <tr><td>10</td><td>品牌溢价</td><td class="green">C</td><td>C</td><td>区域性品牌，无显著溢价</td></tr>
+        <tr><td>11</td><td>技术壁垒</td><td>D</td><td>D</td><td>金融科技投入有限</td></tr>
+        <tr><td>12</td><td>规模效应</td><td>D</td><td>D</td><td>规模不及大行，成本分摊能力弱</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Module 4 -->
+    <h3>模块四：财务质量与资本效率</h3>
+    <table>
+      <thead><tr><th style="width:30px;">#</th><th>维度</th><th style="width:100px;">0440</th><th style="width:100px;">2356</th><th>分析摘要</th></tr></thead>
+      <tbody>
+        <tr><td>13</td><td>盈利能力（ROE）</td><td>C (5.49%)</td><td class="green">B (7.20%)</td><td>2356更优</td></tr>
+        <tr><td>14</td><td>盈利增长</td><td class="green">B</td><td class="green">B</td><td>净利润+20%~23%</td></tr>
+        <tr><td>15</td><td>盈利质量</td><td class="green">B</td><td class="green">B</td><td>核心利息+非利息收入健康</td></tr>
+        <tr><td>16</td><td>资产质量</td><td>C</td><td>C</td><td>信贷减值17.8亿仍处高位</td></tr>
+        <tr><td>17</td><td>资本充足率</td><td class="green">B</td><td class="green">A (23.1%)</td><td>2356资本非常充足</td></tr>
+        <tr><td>18</td><td>成本控制</td><td>—</td><td class="green">B (43.5%)</td><td>成本收入比改善显著</td></tr>
+        <tr><td>19</td><td>现金流</td><td class="green">B</td><td class="green">B</td><td>银行经营现金流通常稳定</td></tr>
+        <tr><td>20</td><td>股息政策</td><td class="green">A</td><td class="green">A</td><td>持续增长，股息率>6%</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Module 5 -->
+    <h3>模块五：管理层评估与公司治理</h3>
+    <table>
+      <thead><tr><th style="width:30px;">#</th><th>维度</th><th style="width:100px;">0440</th><th style="width:100px;">2356</th><th>分析摘要</th></tr></thead>
+      <tbody>
+        <tr><td>21</td><td>管理层能力</td><td class="green">B</td><td class="green">B</td><td>长期经营稳健</td></tr>
+        <tr><td>22</td><td>管理层激励</td><td>C</td><td>C</td><td>家族控制，激励机制不透明</td></tr>
+        <tr><td>23</td><td>公司治理</td><td>C</td><td>C</td><td>家族持股>80%，小股东话语权有限</td></tr>
+        <tr><td>24</td><td>关联交易</td><td>C</td><td>C</td><td>母子关联交易需关注</td></tr>
+        <tr><td>25</td><td>股权结构</td><td class="green">B</td><td class="green">B</td><td>家族长期控股，稳定性高</td></tr>
+        <tr><td>26</td><td>信息披露</td><td class="green">B</td><td class="green">B</td><td>港交所标准披露，完整合规</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Module 6 -->
+    <h3>模块六：并购、增长与估值</h3>
+    <table>
+      <thead><tr><th style="width:30px;">#</th><th>维度</th><th style="width:100px;">0440</th><th style="width:100px;">2356</th><th>分析摘要</th></tr></thead>
+      <tbody>
+        <tr><td>27</td><td>并购价值</td><td class="green">A</td><td class="green">A</td><td>NAV折价显著，潜在并购标的</td></tr>
+        <tr><td>28</td><td>增长潜力</td><td>C</td><td>C</td><td>香港本土增长有限，依赖财富管理</td></tr>
+        <tr><td>29</td><td>估值吸引力</td><td class="green">A</td><td class="green">A</td><td>PE<8倍，PB<0.6倍</td></tr>
+        <tr><td>30</td><td>股东回报</td><td class="green">A</td><td class="green">A</td><td>股息率>6%，持续增长</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 30-d summary -->
+    <h3>30维度综合统计</h3>
+    <div class="two-col">
+      <div class="col-box">
+        <div class="col-title" style="color:#534AB7; font-size:13px;">🟣 大新金融（0440）</div>
+        <div class="tag-group" style="display:flex; flex-wrap:wrap; gap:4px; margin:6px 0;">
+          <span class="tag tag-green">A级: 5个</span>
+          <span class="tag tag-blue">B级: 14个</span>
+          <span class="tag tag-amber">C级: 9个</span>
+          <span class="tag tag-red">D级: 2个</span>
+        </div>
+        <div style="font-size:12px; color:#475569;">加权总分：<strong>约68分（B级）</strong></div>
+        <div style="font-size:12px; color:#64748b; margin-top:4px;">最强维度：估值吸引力、股息政策、并购价值、客户集中度、业务可理解性</div>
+      </div>
+      <div class="col-box">
+        <div class="col-title" style="color:#1D9E75; font-size:13px;">🟢 大新银行集团（2356）</div>
+        <div class="tag-group" style="display:flex; flex-wrap:wrap; gap:4px; margin:6px 0;">
+          <span class="tag tag-green">A级: 6个</span>
+          <span class="tag tag-blue">B级: 14个</span>
+          <span class="tag tag-amber">C级: 8个</span>
+          <span class="tag tag-red">D级: 2个</span>
+        </div>
+        <div style="font-size:12px; color:#475569;">加权总分：<strong>约66分（B级）</strong></div>
+        <div style="font-size:12px; color:#64748b; margin-top:4px;">最强维度：资本充足率、估值吸引力、股息政策、客户分散度、业务清晰度</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================== -->
+  <!-- SECTION 4: FINAL COMPARISON & CONCLUSION                                 -->
+  <!-- ======================================================================== -->
+  <div class="card">
+    <h2>
+      <span>⚖️ 综合对比与投资结论</span>
+      <span class="skill-badge skill-aesthetic">三大框架汇总</span>
+    </h2>
+
+    <!-- Comparison Table -->
+    <h3>三大框架评分汇总</h3>
+    <table>
+      <thead><tr><th>评分框架</th><th>项目</th><th>0440 大新金融</th><th>2356 大新银行集团</th><th>优势方</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="3">🎯 Aesthetic Checker</td><td>总得分</td><td class="num"><strong>53.9分</strong></td><td class="num"><strong>54.3分</strong></td><td>🟢 2356</td></tr>
+        <tr><td>等级</td><td><strong>C级</strong>（谨慎参与）</td><td><strong>C级</strong>（谨慎参与）</td><td>相近</td></tr>
+        <tr><td>核心优势</td><td>D4市盈率100分 + NAV折价</td><td>D4市盈率100分 + 资本充足率23.1%</td><td>各有千秋</td></tr>
+        <tr><td rowspan="2">📊 Earnings Review</td><td>业绩评价</td><td>✅ 超预期（非利息收入+31%）</td><td>✅ 符合预期（成本收入比改善）</td><td>🟣 0440</td></tr>
+        <tr><td>净利润增长</td><td class="green num">+22.9%</td><td class="green num">+20%</td><td>🟣 0440</td></tr>
+        <tr><td rowspan="2">🔍 30维分析</td><td>综合评分</td><td><strong>~68分 B级</strong></td><td><strong>~66分 B级</strong></td><td>🟣 0440</td></tr>
+        <tr><td>最强维度</td><td>估值+股息+并购</td><td>资本+估值+股息</td><td>各有千秋</td></tr>
+        <tr><td rowspan="2">⚖️ 核心估值</td><td>目标价</td><td><strong>58.0港元</strong></td><td><strong>17.5港元</strong></td><td>—</td></tr>
+        <tr><td>上行空间</td><td class="green num"><strong>+35%</strong></td><td class="green num"><strong>+32%</strong></td><td>🟣 0440</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Fatal Risks -->
+    <h3>风险清单</h3>
+    <div class="two-col">
+      <div class="col-box">
+        <div class="col-title" style="color:#dc2626; font-size:12px;">🔴 致命风险 Fatal</div>
+        <div class="risk-fatal">🔴 信贷减值持续高位 — 若香港商业地产持续下行，17.8亿减值可能进一步扩大</div>
+        <div class="risk-fatal">🔴 流动性风险 — 0440日均成交仅~300万港元，大额交易冲击大</div>
+      </div>
+      <div class="col-box">
+        <div class="col-title" style="color:#b45309; font-size:12px;">🟡 关注风险 Watch</div>
+        <div class="risk-watch">🟡 降息周期 — 若香港跟随降息，净息差可能收窄</div>
+        <div class="risk-watch">🟡 家族绝对控股 — 王氏家族持股>80%，小股东权利有限</div>
+        <div class="risk-watch">🟡 重庆银行资本充足率偏紧（8.53%接近7.5%红线）</div>
+        <div class="risk-watch">🟡 澳门商业银行商誉减值4.9亿，经营改善存不确定性</div>
+        <div class="risk-info">🟢 信息项：股价已从52周高点回落，PB处于历史低位</div>
+      </div>
+    </div>
+
+    <!-- Final Verdict -->
+    <h3>最终投资结论</h3>
+    <div class="two-col">
+      <div class="col-box">
+        <div class="col-title" style="color:#534AB7; font-size:14px;">🟣 大新金融（0440）</div>
+        <div class="verdict-box verdict-watch" style="margin:8px 0;">
+          <div class="big">C级 · 谨慎参与/小仓位</div>
+          <div style="margin-top:6px; font-size:13px;">
+            <strong>建议买入价：</strong>~36-38港元（目标价58港元，上行空间>50%）<br>
+            <strong>合理价值：</strong>52-58港元<br>
+            <strong>仓位建议：</strong>&lt;5%（小仓位博弈，NAV折价机会）
+          </div>
+        </div>
+        <p style="font-size:13px;">
+          大新金融是港股市场上罕见的NAV深度折价标的——其市值几乎等于所持银行股权价值，
+          保险和投资业务近乎免费。PE 6.66倍、PB 0.37倍、股息率6%，安全边际充足。
+          但需注意：D1评分已更正为0分——HKEX披露易DI表格证实，王祖兴2026年4月
+          增加的178,190股价格仅HKD 0.0000（代码1113其他原因），系以股代息/股份奖励，
+          非公开市场买入，不构成增持信号。D3竞争优势偏弱（41分）和行业增长空间有限也是约束。
+          适合价值投资者作为"深度价值+并购期权"配置，但仓位不宜过重。
+        </p>
+      </div>
+      <div class="col-box">
+        <div class="col-title" style="color:#1D9E75; font-size:14px;">🟢 大新银行集团（2356）</div>
+        <div class="verdict-box verdict-watch" style="margin:8px 0;">
+          <div class="big">C级 · 谨慎参与/小仓位</div>
+          <div style="margin-top:6px; font-size:13px;">
+            <strong>建议买入价：</strong>~11-12港元（目标价17.5港元，上行空间>45%）<br>
+            <strong>合理价值：</strong>15-17.5港元<br>
+            <strong>仓位建议：</strong>&lt;5%（小仓位博弈）
+          </div>
+        </div>
+        <p style="font-size:13px;">
+          大新银行集团作为纯银行实体，ROE 7.2%高于母公司，资本充足率23.1%行业领先，
+          成本收入比持续改善。PE 7.51倍、PB 0.53倍、股息率6.05%，估值同样极具吸引力。
+          但D1内部人增持0分（控股股东未直接增持）和D3竞争优势一般（41分）限制了评分。
+          更适合作为"高股息+银行复苏"的小仓位配置。
+        </p>
+      </div>
+    </div>
+
+    <!-- Final recommendation -->
+    <div style="background: linear-gradient(135deg, #eef2ff, #f8fafc); border-radius:10px; padding:16px 20px; margin-top:16px; border:1px solid #c7d2fe;">
+      <div style="font-size:14px; font-weight:600; color:#3730a3; margin-bottom:8px;">📌 综合建议</div>
+      <table>
+        <thead><tr><th>投资者画像</th><th>首选</th><th>理由</th></tr></thead>
+        <tbody>
+          <tr><td>深度价值/NAV折价</td><td class="green"><strong>0440</strong></td><td>保险+投资≈零定价，NAV折价17-23%</td></tr>
+          <tr><td>纯银行高股息</td><td class="green"><strong>2356</strong></td><td>ROE更高(7.2%)，业务更纯粹</td></tr>
+          <tr><td>并购主题博弈</td><td class="green"><strong>2356</strong></td><td>若家族出售银行，2356直接受益</td></tr>
+          <tr><td>保守型股息配置</td><td>两者皆可</td><td>股息率均>6%，等比例分散</td></tr>
+          <tr><td>激进型价值发现</td><td class="green"><strong>0440</strong></td><td>上行空间35%+，NAV重估潜力大</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Disclaimer -->
+  <div class="disclaimer">
+    <strong>⚠️ 免责声明</strong><br>
+    本评分报告基于 Stock Aesthetic Checker（六维审美筛选）、Earnings Review（业绩点评）、Listed Company Analyst（30维度上市公司分析）三个技能框架生成。
+    所有数据来源于公司公告、港交所披露易、新浪财经、同花顺等公开渠道，数据截止2026年5月8日。
+    评分结果仅为框架输出，不构成个人投资建议。投资涉及风险，股价可升可跌，过去表现不代表未来回报。
+    投资者应根据自身风险承受能力独立做出投资决策。
+    <br><br>
+    研股股 · 股票研究专家 · 2026年5月8日
+  </div>
+
+</div>
+</body>
+</html>

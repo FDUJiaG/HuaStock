@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>建滔系综合分析报告 — 建滔集团 x 建滔积层板</title>
+<style>
+  :root {
+    --primary: #1a73e8;
+    --success: #34a853;
+    --warning: #fbbc04;
+    --danger: #ea4335;
+    --bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --text: #202124;
+    --text-secondary: #5f6368;
+    --border: #e0e0e0;
+    --shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
+    --radius: 12px;
+    --metric-positive: #cf1322;
+    --metric-negative: #3f8600;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 20px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1a237e, #0d47a1, #1565c0);
+    color: white;
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+  .header h1 { font-size: 28px; margin-bottom: 8px; }
+  .header .subtitle { opacity: 0.85; font-size: 14px; }
+  .header .meta { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; font-size: 13px; opacity: 0.9; }
+  .header .meta span { background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; }
+  .header .meta .highlight-tag { background: rgba(255,215,0,0.25); border: 1px solid rgba(255,215,0,0.4); }
+
+  /* Dual Stock Header */
+  .dual-header {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stock-card {
+    background: var(--card-bg); border-radius: var(--radius);
+    padding: 20px 24px; box-shadow: var(--shadow);
+    border-top: 4px solid var(--primary);
+  }
+  .stock-card.accent-green { border-top-color: var(--success); }
+  .stock-card .stock-name { font-size: 20px; font-weight: 700; }
+  .stock-card .stock-code { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; }
+  .stock-card .stock-price { font-size: 32px; font-weight: 800; margin: 8px 0; }
+  .stock-card .stock-price .change { font-size: 16px; font-weight: 600; margin-left: 8px; }
+  .stock-card .stock-price .change.up { color: var(--metric-positive); }
+  .stock-card .stock-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; color: var(--text-secondary); }
+  .stock-card .stock-meta .label { color: #999; }
+  .stock-card .stock-meta .value { font-weight: 600; color: var(--text); }
+
+  /* Batch Comparison Table */
+  .card { background: var(--card-bg); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow); }
+  .card h3 { font-size: 16px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .card h4 { font-size: 14px; margin: 16px 0 12px; color: var(--text-secondary); }
+
+  .batch-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .batch-table th { background: #f1f3f4; padding: 10px; text-align: center; font-weight: 600; border-bottom: 2px solid var(--border); }
+  .batch-table td { padding: 10px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+  .batch-table .best { background: #e6f4ea; font-weight: 700; }
+  .batch-table .positive { color: var(--metric-positive); font-weight: 600; }
+  .batch-table .negative { color: var(--metric-negative); }
+
+  /* Financial Tables */
+  .fin-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+  .fin-table th { background: #f1f3f4; padding: 8px 10px; text-align: center; font-weight: 600; border-bottom: 2px solid var(--border); font-size: 12px; }
+  .fin-table td { padding: 8px 10px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+  .fin-table tr.highlight { background: #e8f0fe; font-weight: 600; }
+  .fin-table .positive { color: var(--metric-positive); font-weight: 600; }
+  .fin-table .negative { color: var(--metric-negative); }
+  .fin-table tfoot td { font-size: 11px; color: #999; padding: 8px 10px; background: #fafafa; text-align: left; }
+
+  /* Dimension Score Cards */
+  .dims { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0; }
+  .dim-card { border-radius: 10px; padding: 16px; text-align: center; border: 1px solid var(--border); }
+  .dim-card.pass { background: #e6f4ea; border-color: var(--success); }
+  .dim-card.partial { background: #fef7e0; border-color: var(--warning); }
+  .dim-card.fail { background: #fce8e6; border-color: var(--danger); }
+  .dim-card .dim-title { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+  .dim-card .dim-score { font-size: 28px; font-weight: 800; }
+  .dim-card .dim-weight { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+  .dim-card.pass .dim-score { color: var(--success); }
+  .dim-card.partial .dim-score { color: #e65100; }
+  .dim-card.fail .dim-score { color: var(--danger); }
+
+  /* Grade Banner */
+  .grade-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .grade-box { display: flex; align-items: center; gap: 16px; background: var(--card-bg); border-radius: var(--radius); padding: 20px 24px; box-shadow: var(--shadow); }
+  .grade-circle { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: white; flex-shrink: 0; }
+  .grade-circle.grade-a { background: var(--success); }
+  .grade-circle.grade-b { background: var(--primary); }
+  .grade-circle.grade-c { background: var(--warning); }
+  .grade-circle.grade-d { background: var(--danger); }
+  .grade-box .grade-info h4 { font-size: 18px; }
+  .grade-box .grade-info .score { font-size: 13px; color: var(--text-secondary); }
+  .grade-box .grade-info .advice { display: inline-block; margin-top: 6px; padding: 3px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; color: white; }
+  .grade-box .grade-info .advice.a { background: var(--success); }
+  .grade-box .grade-info .advice.b { background: var(--primary); }
+  .grade-box .grade-info .advice.c { background: #e65100; }
+  .grade-box .grade-info .advice.d { background: var(--danger); }
+
+  /* Investment Conclusion */
+  .invest-conclusion {
+    background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+    color: white; border-radius: var(--radius);
+    padding: 28px 32px; margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .invest-conclusion h3 { color: white; border-bottom-color: rgba(255,255,255,0.2); margin-bottom: 20px; padding-bottom: 12px; }
+  .verdict-banner {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 20px; border-radius: 10px;
+    margin-bottom: 16px; font-size: 18px; font-weight: 700;
+  }
+  .verdict-banner.buy { background: rgba(52,168,83,0.2); border: 2px solid var(--success); }
+  .verdict-banner.buy-cautious { background: rgba(66,133,244,0.2); border: 2px solid var(--primary); }
+  .verdict-banner.wait { background: rgba(251,188,4,0.2); border: 2px solid var(--warning); color: #fdd835; }
+  .verdict-banner.watch { background: rgba(251,188,4,0.15); border: 2px solid var(--warning); color: #fdd835; }
+  .verdict-banner.hold { background: rgba(234,67,53,0.15); border: 2px solid var(--danger); color: #ef9a9a; }
+  .verdict-banner.avoid { background: rgba(234,67,53,0.2); border: 2px solid var(--danger); color: #ef9a9a; }
+
+  /* Price Cards */
+  .price-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
+  .price-card { background: rgba(255,255,255,0.1); border-radius: 10px; padding: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.15); }
+  .price-card .price-label { font-size: 11px; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
+  .price-card .price-value { font-size: 26px; font-weight: 800; margin: 4px 0; }
+  .price-card .price-note { font-size: 11px; opacity: 0.65; }
+  .price-card.buy-card { background: rgba(52,168,83,0.15); border-color: rgba(52,168,83,0.4); }
+  .price-card.target-card { background: rgba(66,133,244,0.15); border-color: rgba(66,133,244,0.4); }
+  .price-card.buy-card .price-value { color: #81c784; }
+  .price-card.target-card .price-value { color: #90caf9; }
+
+  .upside-bar { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; background: rgba(255,255,255,0.08); margin-bottom: 12px; }
+  .upside-bar .upside-label { font-size: 13px; opacity: 0.8; }
+  .upside-bar .upside-value { font-size: 22px; font-weight: 800; }
+  .upside-bar .upside-value.positive { color: #81c784; }
+
+  .conclusion-text { font-size: 14px; line-height: 2; color: rgba(255,255,255,0.9); padding: 16px 20px; background: rgba(255,255,255,0.06); border-radius: 8px; margin-top: 12px; }
+
+  /* Risk Flags */
+  .risk-flag { display: flex; align-items: flex-start; gap: 8px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+  .risk-flag:last-child { border-bottom: none; }
+  .risk-flag .flag-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .risk-flag .flag-text { color: var(--text-secondary); }
+  .risk-flag .flag-text strong { color: var(--text); }
+  .risk-flag.fatal { border-left: 3px solid #d32f2f; background: #fff5f5; padding: 10px 12px; margin-bottom: 8px; border-radius: 0 6px 6px 0; }
+  .risk-flag.watch { border-left: 3px solid #f57c00; background: #fff8e1; padding: 10px 12px; margin-bottom: 8px; border-radius: 0 6px 6px 0; }
+  .risk-flag.info { border-left: 3px solid var(--primary); background: #e8f0fe; padding: 10px 12px; margin-bottom: 8px; border-radius: 0 6px 6px 0; }
+
+  /* Catalyst */
+  .catalyst-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+  .catalyst-item:last-child { border-bottom: none; }
+  .catalyst-icon { font-size: 16px; flex-shrink: 0; }
+  .catalyst-type { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; margin-right: 4px; }
+  .catalyst-type.high { background: #fce8e6; color: var(--danger); }
+  .catalyst-type.medium { background: #fef7e0; color: #b06000; }
+  .catalyst-type.low { background: #e8f0fe; color: var(--primary); }
+
+  /* Tab System */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+  .tab-btn { padding: 10px 20px; border: none; background: var(--card-bg); border-radius: 8px 8px 0 0; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text-secondary); box-shadow: var(--shadow); transition: all 0.2s; }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); background: white; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .footer { text-align: center; font-size: 12px; color: var(--text-secondary); padding: 20px 0; margin-top: 20px; border-top: 1px solid var(--border); }
+
+  @media (max-width: 768px) {
+    .dual-header, .grade-row { grid-template-columns: 1fr; }
+    .dims { grid-template-columns: 1fr 1fr; }
+    .price-cards { grid-template-columns: 1fr; }
+  }
+
+  /* Data freshness */
+  .freshness-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 11px; font-weight: 600;
+  }
+  .freshness-badge.fresh { background: #e6f4ea; color: var(--success); }
+  .freshness-badge.stale { background: #fef7e0; color: #b06000; }
+
+  /* Industry callout */
+  .callout {
+    padding: 16px 20px; border-radius: 10px; margin: 16px 0;
+    font-size: 13px; line-height: 1.8;
+  }
+  .callout.blue { background: #e8f0fe; border-left: 4px solid var(--primary); }
+  .callout.green { background: #e6f4ea; border-left: 4px solid var(--success); }
+  .callout.amber { background: #fef7e0; border-left: 4px solid var(--warning); }
+  .callout.red { background: #fce8e6; border-left: 4px solid var(--danger); }
+  .callout strong { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>建滔系母子双雄 综合研究分析报告</h1>
+    <div class="subtitle">建滔集团（00148.HK）× 建滔积层板（01888.HK）| 电子/覆铜板（CCL）制造</div>
+    <div class="meta">
+      <span>报告日期：2026-05-08</span>
+      <span>数据截止：2025年报（2025-12-31）· 收盘价：2026-05-08</span>
+      <span class="highlight-tag">AI超级周期 · CCL量价齐升</span>
+    </div>
+    <div class="meta">
+      <span>建滔集团持有建滔积层板约68%股权（母子关系）</span>
+      <span>花旗上调建滔集团目标价至65港元（2026-05-08）</span>
+    </div>
+  </div>
+
+  <!-- Dual Stock Price Cards -->
+  <div class="dual-header">
+    <div class="stock-card">
+      <div class="stock-name">建滔集团</div>
+      <div class="stock-code">00148.HK | 控股平台（CCL+PCB+化工+地产+投资）</div>
+      <div class="stock-price">
+        51.85 港元
+        <span class="change up">▲ +6.64%</span>
+      </div>
+      <div class="stock-meta">
+        <div><span class="label">总市值</span><br><span class="value">~575亿港元</span></div>
+        <div><span class="label">总股本</span><br><span class="value">11.08亿股</span></div>
+        <div><span class="label">PE(TTM GAAP)</span><br><span class="value">13.1x</span></div>
+        <div><span class="label">PE(TTM 调整后)</span><br><span class="value">11.5x</span></div>
+        <div><span class="label">2025年EPS(GAAP)</span><br><span class="value">3.971港元</span></div>
+        <div><span class="label">2025年股息率</span><br><span class="value">4.24%</span></div>
+      </div>
+    </div>
+    <div class="stock-card accent-green">
+      <div class="stock-name">建滔积层板</div>
+      <div class="stock-code">01888.HK | 核心子公司（纯CCL制造商）</div>
+      <div class="stock-price">
+        43.28 港元
+        <span class="change up">▲ +5.00%</span>
+      </div>
+      <div class="stock-meta">
+        <div><span class="label">总市值</span><br><span class="value">~1,350亿港元</span></div>
+        <div><span class="label">总股本</span><br><span class="value">~31.2亿股</span></div>
+        <div><span class="label">PE(TTM)</span><br><span class="value">54.2x</span></div>
+        <div><span class="label">净现金</span><br><span class="value">74.3亿港元</span></div>
+        <div><span class="label">2025年EPS</span><br><span class="value">0.799港元</span></div>
+        <div><span class="label">2025年股息率</span><br><span class="value">1.57%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab System -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('tab-aesthetic')">📊 审美评分</button>
+    <button class="tab-btn" onclick="switchTab('tab-financial')">📈 财务分析</button>
+    <button class="tab-btn" onclick="switchTab('tab-business')">🏭 业务拆解</button>
+    <button class="tab-btn" onclick="switchTab('tab-valuation')">📐 估值与结论</button>
+  </div>
+
+  <!-- ===== TAB 1: Aesthetic Score ===== -->
+  <div id="tab-aesthetic" class="tab-content active">
+
+    <!-- Grade Row -->
+    <div class="grade-row">
+      <div class="grade-box">
+        <div class="grade-circle grade-b">B</div>
+        <div class="grade-info">
+          <h4>建滔集团 — B级</h4>
+          <div class="score">综合得分 <strong>78.5</strong>/100 | 4/6 项通过</div>
+          <div class="advice b">纳入观察 · 等待时机</div>
+        </div>
+      </div>
+      <div class="grade-box">
+        <div class="grade-circle grade-b">B</div>
+        <div class="grade-info">
+          <h4>建滔积层板 — B级</h4>
+          <div class="score">综合得分 <strong>66.9</strong>/100 | 3/6 项通过</div>
+          <div class="advice b">谨慎参与 · 控制仓位</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Batch Comparison -->
+    <div class="card">
+      <h3>📊 六维审美评分对比（Stock Aesthetic Checker）</h3>
+      <table class="batch-table">
+        <thead>
+          <tr>
+            <th>维度</th>
+            <th>权重</th>
+            <th>建滔集团</th>
+            <th>建滔积层板</th>
+            <th>差异分析</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>D1 内部人增持</strong></td>
+            <td>12%</td>
+            <td class="positive"><strong>90分 ✅</strong></td>
+            <td><strong>70分 ✅</strong></td>
+            <td>集团控股股东持续增持；积层板由母公司控股</td>
+          </tr>
+          <tr>
+            <td><strong>D2 股息+回购</strong></td>
+            <td>20%</td>
+            <td class="positive"><strong>80分 ✅</strong></td>
+            <td><strong>55分 ⚠️</strong></td>
+            <td>集团股息率4.24%远优于积层板1.57%</td>
+          </tr>
+          <tr>
+            <td><strong>D3 竞争优势</strong></td>
+            <td>28%</td>
+            <td><strong>88分 ✅</strong></td>
+            <td class="positive"><strong>90分 ✅</strong></td>
+            <td>积层板业务更纯正，CCL龙头地位更清晰</td>
+          </tr>
+          <tr>
+            <td><strong>D4 市盈率</strong></td>
+            <td>20%</td>
+            <td class="positive"><strong>65分 ⚠️</strong></td>
+            <td><strong>30分 ❌</strong></td>
+            <td>集团PE 13.1x合理；积层板PE 54.2x偏贵</td>
+          </tr>
+          <tr>
+            <td><strong>D5 成长动能</strong></td>
+            <td>12%</td>
+            <td><strong>90分 ✅</strong></td>
+            <td class="positive"><strong>92分 ✅</strong></td>
+            <td>积层板净利润+85%领先集团+170%（含一次性收益）</td>
+          </tr>
+          <tr>
+            <td><strong>D6 财务健康</strong></td>
+            <td>8%</td>
+            <td><strong>50分 ⚠️</strong></td>
+            <td class="positive"><strong>78分 ✅</strong></td>
+            <td>积层板净现金74亿；集团地产减值+短期负债偏高</td>
+          </tr>
+          <tr class="best">
+            <td><strong>加权总分</strong></td>
+            <td><strong>100%</strong></td>
+            <td><strong>78.5分 B级</strong></td>
+            <td><strong>66.9分 B级</strong></td>
+            <td>集团综合评分更高</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Dimension Details -->
+    <div class="card">
+      <h3>🔍 各维度详细分析</h3>
+
+      <h4>D1: 内部人增持</h4>
+      <div class="dims">
+        <div class="dim-card pass">
+          <div class="dim-title">建滔集团</div>
+          <div class="dim-score">90</div>
+          <div class="dim-weight">✅ 通过</div>
+        </div>
+        <div class="dim-card pass">
+          <div class="dim-title">建滔积层板</div>
+          <div class="dim-score">70</div>
+          <div class="dim-weight">✅ 通过</div>
+        </div>
+      </div>
+      <div style="font-size:13px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
+        <strong>集团</strong>：控股股东Hallgain Management 2025-2026年多次增持（2025年6月增持1,199.7万股，2026年4月连续增持共约530万股），大股东持股约43%，零质押。<br>
+        <strong>积层板</strong>：母公司建滔集团持有约68%，实际控制人一致行动，但子公司层面增持活动较少。
+      </div>
+
+      <h4>D2: 股息+回购回报率</h4>
+      <div class="dims">
+        <div class="dim-card pass">
+          <div class="dim-title">建滔集团</div>
+          <div class="dim-score">80</div>
+          <div class="dim-weight">✅ 通过</div>
+        </div>
+        <div class="dim-card partial">
+          <div class="dim-title">建滔积层板</div>
+          <div class="dim-score">55</div>
+          <div class="dim-weight">⚠️ 部分通过</div>
+        </div>
+      </div>
+      <div style="font-size:13px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
+        <strong>集团</strong>：2025年全年股息2.20港元/股（中期0.69+末期1.11+特别0.40），同比+57%，股息率4.24%。连续多年派息+特别股息。<br>
+        <strong>积层板</strong>：2025年全年股息0.68港元/股（中期0.15+末期0.25+特别0.28），同比+36%，股息率仅1.57%。派息率高（~85%）但收益率偏低。两公司均未进行股份回购。
+      </div>
+
+      <h4>D3: 竞争优势</h4>
+      <div class="dims">
+        <div class="dim-card pass">
+          <div class="dim-title">建滔集团</div>
+          <div class="dim-score">88</div>
+          <div class="dim-weight">✅ 通过</div>
+        </div>
+        <div class="dim-card pass">
+          <div class="dim-title">建滔积层板</div>
+          <div class="dim-score">90</div>
+          <div class="dim-weight">✅ 通过</div>
+        </div>
+      </div>
+      <div style="font-size:13px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
+        全球最大覆铜板(CCL)生产商，垂直一体化（铜箔→玻璃纤维布→CCL→PCB）成本优势显著。<br>
+        建滔积层板在CCL主业上更为聚焦，客户覆盖英伟达、华为等头部企业，M6/M8/M9高端产品研发进展领先。<br>
+        2025年AI电子玻璃纤维布利润超6亿港元(+70%)，高端产品对业绩贡献快速提升。
+      </div>
+
+      <h4>D4: 市盈率估值</h4>
+      <div class="dims">
+        <div class="dim-card partial">
+          <div class="dim-title">建滔集团</div>
+          <div class="dim-score">65</div>
+          <div class="dim-weight">⚠️ 部分通过</div>
+        </div>
+        <div class="dim-card fail">
+          <div class="dim-title">建滔积层板</div>
+          <div class="dim-score">30</div>
+          <div class="dim-weight">❌ 未通过</div>
+        </div>
+      </div>
+      <div style="font-size:13px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
+        <strong>集团</strong>：PE(TTM GAAP) 13.1x，PE(调整后) 11.5x。周期调整PE(5年平均利润44亿)约13.1x。估值合理偏低，花旗目标价65港元对应PE约16x，看好AI驱动盈利结构性提升。<br>
+        <strong>积层板</strong>：PE(TTM) 54.2x，周期调整PE(4年平均利润16.9亿)约80x。估值显著偏高，市场已充分定价2025-2027年AI成长预期，安全边际不足。
+      </div>
+
+      <h4>D5: 成长动能</h4>
+      <div class="dims">
+        <div class="dim-card pass">
+          <div class="dim-title">建滔集团</div>
+          <div class="dim-score">90</div>
+          <div class="dim-weight">✅ 通过</div>
+        </div>
+        <div class="dim-card pass">
+          <div class="dim-title">建滔积层板</div>
+          <div class="dim-score">92</div>
+          <div class="dim-weight">✅ 通过</div>
+        </div>
+      </div>
+      <div style="font-size:13px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
+        两大核心驱动力：<br>
+        <strong>① AI超级周期</strong>：CCL供需紧张预计持续至2027年以后，高端CCL（M6/M8）进入量产/验证阶段。<br>
+        <strong>② 涨价周期</strong>：积层板2025年提价5次(累计15-20%)，2026年初至今再提价2轮(累计25-30%)。<br>
+        2025年CCL交货周期从2周延长至最长6周，部分海外供应商价格上调约30%。
+      </div>
+
+      <h4>D6: 财务健康与筹码结构</h4>
+      <div class="dims">
+        <div class="dim-card partial">
+          <div class="dim-title">建滔集团</div>
+          <div class="dim-score">50</div>
+          <div class="dim-weight">⚠️ 部分通过</div>
+        </div>
+        <div class="dim-card pass">
+          <div class="dim-title">建滔积层板</div>
+          <div class="dim-score">78</div>
+          <div class="dim-weight">✅ 通过</div>
+        </div>
+      </div>
+      <div style="font-size:13px; color:var(--text-secondary); line-height:1.8;">
+        <strong>集团</strong>：净负债率28%，短期借贷占比升至53%（121亿港元1年内到期），贸易应收周转期延长至70天；房地产业务亏损9.44亿港元（含13.21亿减值）。财务压力增大。<br>
+        <strong>积层板</strong>：净现金74.3亿港元，净负债率仅9%（2024年），资产负债结构健康，无地产包袱。财务安全性显著优于母公司。
+      </div>
+    </div>
+
+    <!-- Risk Flags -->
+    <div class="card">
+      <h3>⚠️ 风险提示</h3>
+
+      <div class="risk-flag fatal">
+        <span class="flag-icon">🔴</span>
+        <span class="flag-text"><strong>[建滔积层板] 估值透支风险：</strong>PE 53x已充分定价未来2-3年增长，若AI需求不及预期或CCL涨价幅度收窄，估值可能大幅回调。</span>
+      </div>
+      <div class="risk-flag watch">
+        <span class="flag-icon">🟡</span>
+        <span class="flag-text"><strong>[建滔集团] 地产减值风险：</strong>房地产部门2025年亏损9.44亿港元（含13.21亿减值拨备），后续仍有减值可能。</span>
+      </div>
+      <div class="risk-flag watch">
+        <span class="flag-icon">🟡</span>
+        <span class="flag-text"><strong>[建滔集团] 投资收入可持续性存疑：</strong>投资分部2025年盈利30.16亿港元（扭亏为盈），但该收入受市场波动影响大，不可持续。</span>
+      </div>
+      <div class="risk-flag watch">
+        <span class="flag-icon">🟡</span>
+        <span class="flag-text"><strong>[建滔集团] 短期偿债压力：</strong>短期借贷占比升至53%，1年内到期银行借贷121亿港元，需关注再融资风险。</span>
+      </div>
+      <div class="risk-flag watch">
+        <span class="flag-icon">🟡</span>
+        <span class="flag-text"><strong>[共同风险] 周期见顶风险：</strong>CCL属强周期行业，若AI资本开支放缓或全球经济衰退，CCL需求将大幅回落。</span>
+      </div>
+      <div class="risk-flag info">
+        <span class="flag-icon">🔵</span>
+        <span class="flag-text"><strong>[共同风险] 原材料价格波动：</strong>铜价、环氧树脂等原材料价格上涨虽可通过涨价传导，但存在时间差和传导不完全的风险。</span>
+      </div>
+      <div class="risk-flag info">
+        <span class="flag-icon">🔵</span>
+        <span class="flag-text"><strong>[共同风险] 海外产能风险：</strong>越南和泰国PCB/CCL新产能建设（2026-2027年投产）存在建设期和地缘政治风险。</span>
+      </div>
+    </div>
+
+    <!-- Catalysts -->
+    <div class="card">
+      <h3>⏰ 近期催化剂看点</h3>
+      <div class="catalyst-item">
+        <span class="catalyst-icon">🔥</span>
+        <div>
+          <span class="catalyst-type high">高影响</span>
+          <strong>CCL持续涨价</strong> — 2026年4月最新涨价通知（铜价高企+供需缺口），年内已提价2轮累计25-30%
+          <div class="catalyst-timing">时间：已发生（2026年4月）</div>
+        </div>
+      </div>
+      <div class="catalyst-item">
+        <span class="catalyst-icon">📋</span>
+        <div>
+          <span class="catalyst-type high">高影响</span>
+          <strong>建滔积层板2026年一季报</strong> — 检验涨价效果和AI需求持续性
+          <div class="catalyst-timing">预计时间：2026年4-5月</div>
+        </div>
+      </div>
+      <div class="catalyst-item">
+        <span class="catalyst-icon">🏭</span>
+        <div>
+          <span class="catalyst-type high">高影响</span>
+          <strong>越南PCB产线投产</strong> — 首期60万平方尺/月产能
+          <div class="catalyst-timing">预计时间：2026年Q3</div>
+        </div>
+      </div>
+      <div class="catalyst-item">
+        <span class="catalyst-icon">🔬</span>
+        <div>
+          <span class="catalyst-type medium">中影响</span>
+          <strong>M6高端CCL大扩产 + M8客户送样</strong> — 高端CCL全年占比目标≥30%
+          <div class="catalyst-timing">预计时间：2026年Q2-Q3</div>
+        </div>
+      </div>
+      <div class="catalyst-item">
+        <span class="catalyst-icon">🎯</span>
+        <div>
+          <span class="catalyst-type medium">中影响</span>
+          <strong>英伟达/华为供应链认证进展</strong> — 有望进入巨头直接供应链
+          <div class="catalyst-timing">持续跟踪</div>
+        </div>
+      </div>
+      <div class="catalyst-item">
+        <span class="catalyst-icon">🏛️</span>
+        <div>
+          <span class="catalyst-type medium">中影响</span>
+          <strong>建滔集团股东周年大会</strong> — 审议末期股息派发（2.20港元/股）
+          <div class="catalyst-timing">预计时间：2026年6月</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 2: Financial Analysis ===== -->
+  <div id="tab-financial" class="tab-content">
+
+    <!-- Data Verification -->
+    <div class="card">
+      <h3>✅ 数据核查与数据源说明</h3>
+      <div class="callout green">
+        <strong>数据状态：通过 ✓</strong><br>
+        <strong>数据范围</strong>：2012-2025年历年财务数据，以2025年报（截至2025-12-31）为最新完整财报。<br>
+        <strong>数据来源</strong>：新浪财经、证券之星、华盛资讯、中商情报网、花旗研报、同花顺金融网<br>
+        <strong>建滔集团利润口径说明</strong>：GAAP归母净利润44.02亿港元（EPS 3.971），核心纯利(调整后)49.85亿港元（EPS 4.498），差异主要来自剔除房地产减值拨备（税后净额9.91亿港元）等一次性项目。<br>
+        <strong>股价数据</strong>：2026年5月8日收盘价（两只股票均创历史新高）
+      </div>
+    </div>
+
+    <!-- Core Financial Data -->
+    <div class="card">
+      <h3>📊 建滔集团（00148.HK）历年利润表</h3>
+      <p style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">单位：百万港元</p>
+      <table class="fin-table">
+        <thead>
+          <tr>
+            <th>科目\年份</th>
+            <th>2025</th>
+            <th>2024</th>
+            <th>2023</th>
+            <th>2022</th>
+            <th>2021</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="highlight">
+            <td><strong>营业收入</strong></td>
+            <td><strong>45,375</strong></td>
+            <td>43,093</td>
+            <td>39,713</td>
+            <td>49,376</td>
+            <td>56,755</td>
+          </tr>
+          <tr>
+            <td>同比增速</td>
+            <td class="positive">+5.3%</td>
+            <td class="positive">+8.5%</td>
+            <td class="negative">-19.6%</td>
+            <td class="negative">-13.0%</td>
+            <td class="positive">+30.4%</td>
+          </tr>
+          <tr>
+            <td>毛利</td>
+            <td>—</td>
+            <td>8,493</td>
+            <td>7,592</td>
+            <td>12,373</td>
+            <td>18,822</td>
+          </tr>
+          <tr>
+            <td><strong>毛利率</strong></td>
+            <td><strong>17.5%</strong></td>
+            <td>19.7%</td>
+            <td>19.1%</td>
+            <td>25.1%</td>
+            <td>33.2%</td>
+          </tr>
+          <tr>
+            <td>经营溢利</td>
+            <td>—</td>
+            <td>2,598</td>
+            <td>2,612</td>
+            <td>6,514</td>
+            <td>15,315</td>
+          </tr>
+          <tr>
+            <td><strong>归母净利润(GAAP)</strong></td>
+            <td><strong>4,402</strong></td>
+            <td>1,630</td>
+            <td>2,063</td>
+            <td>3,655</td>
+            <td>10,778</td>
+          </tr>
+          <tr>
+            <td>同比增速</td>
+            <td class="positive"><strong>+170%</strong></td>
+            <td class="negative">-21.0%</td>
+            <td class="negative">-43.6%</td>
+            <td class="negative">-66.1%</td>
+            <td class="positive">+129%</td>
+          </tr>
+          <tr>
+            <td><strong>核心纯利(调整后)</strong></td>
+            <td><strong>4,985</strong></td>
+            <td>1,622</td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>EPS (港元)</td>
+            <td><strong>3.971</strong></td>
+            <td>1.471</td>
+            <td>~1.86</td>
+            <td>~3.30</td>
+            <td>~9.72</td>
+          </tr>
+          <tr>
+            <td>全年股息(港元/股)</td>
+            <td class="positive"><strong>2.20</strong></td>
+            <td>1.40</td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr><td colspan="6">数据来源：新浪财经、华盛资讯、中商情报网。2025年毛利率17.5%下降但净利率提升，主因投资分部盈利30.16亿港元（属非经常性）。</td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>📊 建滔积层板（01888.HK）历年利润表</h3>
+      <p style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">单位：百万港元</p>
+      <table class="fin-table">
+        <thead>
+          <tr>
+            <th>科目\年份</th>
+            <th>2025</th>
+            <th>2024</th>
+            <th>2023</th>
+            <th>2022</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="highlight">
+            <td><strong>营业收入</strong></td>
+            <td><strong>20,400</strong></td>
+            <td>18,541</td>
+            <td>16,750</td>
+            <td>22,364</td>
+          </tr>
+          <tr>
+            <td>同比增速</td>
+            <td class="positive"><strong>+10.0%</strong></td>
+            <td class="positive">+10.7%</td>
+            <td class="negative">-25.1%</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>毛利润</td>
+            <td><strong>3,991</strong></td>
+            <td>3,280</td>
+            <td>2,676</td>
+            <td>5,092</td>
+          </tr>
+          <tr>
+            <td><strong>毛利率</strong></td>
+            <td><strong>19.6%</strong></td>
+            <td>17.68%</td>
+            <td>15.98%</td>
+            <td>22.76%</td>
+          </tr>
+          <tr>
+            <td><strong>归母净利润</strong></td>
+            <td><strong>2,494</strong></td>
+            <td>1,349</td>
+            <td>907</td>
+            <td>1,909</td>
+          </tr>
+          <tr>
+            <td>同比增速</td>
+            <td class="positive"><strong>+85%</strong></td>
+            <td class="positive">+36% / +46%</td>
+            <td class="negative">-52.5%</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><strong>净利率</strong></td>
+            <td><strong>12.0%</strong></td>
+            <td>7.15%</td>
+            <td>5.42%</td>
+            <td>8.54%</td>
+          </tr>
+          <tr>
+            <td>EPS (港元)</td>
+            <td><strong>0.799</strong></td>
+            <td>0.432</td>
+            <td>0.291</td>
+            <td>0.612</td>
+          </tr>
+          <tr>
+            <td>全年股息(港元/股)</td>
+            <td><strong>0.68</strong></td>
+            <td>0.50</td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr><td colspan="5">数据来源：新浪财经、证券之星。2024年净利润同比增速有36%和46%两个口径（不同数据源口径差异）。</td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- Dividend Table -->
+    <div class="card">
+      <h3>💰 分红对比</h3>
+      <table class="fin-table">
+        <thead>
+          <tr>
+            <th>项目</th>
+            <th>建滔集团 2025</th>
+            <th>建滔集团 2024</th>
+            <th>建滔积层板 2025</th>
+            <th>建滔积层板 2024</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>中期股息(港元)</td>
+            <td>0.69</td>
+            <td>0.40</td>
+            <td>0.15</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>末期股息(港元)</td>
+            <td><strong>1.11</strong></td>
+            <td>0.54</td>
+            <td><strong>0.25</strong></td>
+            <td>0.20</td>
+          </tr>
+          <tr>
+            <td>特别末期股息(港元)</td>
+            <td><strong>0.40</strong></td>
+            <td>0.46</td>
+            <td><strong>0.28</strong></td>
+            <td>0.30</td>
+          </tr>
+          <tr class="highlight">
+            <td><strong>全年合计(港元)</strong></td>
+            <td><strong>2.20</strong></td>
+            <td>1.40</td>
+            <td><strong>0.68</strong></td>
+            <td>0.50</td>
+          </tr>
+          <tr>
+            <td>同比增幅</td>
+            <td class="positive">+57.1%</td>
+            <td>—</td>
+            <td class="positive">+36%</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><strong>当前股息率</strong></td>
+            <td class="positive"><strong>4.24%</strong></td>
+            <td>—</td>
+            <td><strong>1.57%</strong></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>派息率</td>
+            <td>~55%</td>
+            <td>~95%</td>
+            <td>~85%</td>
+            <td>~116%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Balance Sheet -->
+    <div class="card">
+      <h3>🏦 资产负债状况对比</h3>
+      <table class="fin-table">
+        <thead>
+          <tr>
+            <th>指标</th>
+            <th>建滔集团 (2025/H1)</th>
+            <th>建滔集团 (2024)</th>
+            <th>建滔积层板 (2025)</th>
+            <th>建滔积层板 (2024)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>净现金/净负债</td>
+            <td class="negative">有息负债</td>
+            <td class="negative">净负债率28%</td>
+            <td class="positive"><strong>净现金74.3亿</strong></td>
+            <td class="positive">净负债率9%</td>
+          </tr>
+          <tr>
+            <td>短期借贷占比</td>
+            <td class="negative"><strong>53%</strong></td>
+            <td>41%</td>
+            <td>—</td>
+            <td>极低</td>
+          </tr>
+          <tr>
+            <td>贸易应收周转期</td>
+            <td class="negative">70天</td>
+            <td>61天</td>
+            <td>—</td>
+            <td>较健康</td>
+          </tr>
+          <tr>
+            <td>流动性风险</td>
+            <td class="negative">⚠️ 短期偿债压力增加</td>
+            <td>可控</td>
+            <td class="positive">✅ 健康</td>
+            <td class="positive">✅ 健康</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== TAB 3: Business Analysis ===== -->
+  <div id="tab-business" class="tab-content">
+
+    <div class="card">
+      <h3>🏭 业务结构与板块分析</h3>
+
+      <h4>建滔集团 — 2025年各业务板块表现</h4>
+      <table class="fin-table">
+        <thead>
+          <tr>
+            <th>业务板块</th>
+            <th>收入(亿港元)</th>
+            <th>同比变化</th>
+            <th>分部业绩(亿港元)</th>
+            <th>业绩变化</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="highlight">
+            <td><strong>① 覆铜面板</strong></td>
+            <td><strong>169.11</strong></td>
+            <td class="positive"><strong>+10.8%</strong></td>
+            <td><strong>28.37</strong></td>
+            <td class="positive"><strong>+34.8%</strong></td>
+          </tr>
+          <tr>
+            <td>② 印刷线路板(PCB)</td>
+            <td><strong>133.14</strong></td>
+            <td class="positive">+10.0%</td>
+            <td>—</td>
+            <td>订单饱满</td>
+          </tr>
+          <tr>
+            <td>③ 化工产品</td>
+            <td><strong>126.55</strong></td>
+            <td class="negative">-1.0%</td>
+            <td>4.68</td>
+            <td class="negative">-21.3%</td>
+          </tr>
+          <tr>
+            <td>④ 房地产</td>
+            <td>大幅下降</td>
+            <td class="negative">-62%</td>
+            <td><strong class="negative">-9.44</strong></td>
+            <td class="negative">由盈转亏</td>
+          </tr>
+          <tr>
+            <td>⑤ 投资分部</td>
+            <td>—</td>
+            <td>—</td>
+            <td class="positive"><strong>30.16</strong></td>
+            <td class="positive">扭亏为盈</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr><td colspan="5">总结：CCL+PCB贡献核心增长，投资分部贡献一次性利润，地产拖累显著。花旗预测积层板业务占集团净利比例将从2025年38%升至2028年87%。</td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>📈 建滔积层板 — 涨价与产能扩张</h3>
+
+      <div class="callout amber">
+        <strong>⚠️ 关注：涨价节奏</strong><br>
+        2025年全年发出<strong>5次涨价函</strong>，累计涨幅约<strong>15-20%</strong><br>
+        2026年初至今再发<strong>2轮涨价</strong>，累计涨幅约<strong>25-30%</strong><br>
+        中高端CCL交货周期从2周延长至<strong>最长6周</strong>，供需紧张可见一斑
+      </div>
+
+      <h4>高端产品进展</h4>
+      <table class="fin-table">
+        <thead>
+          <tr><th>产品</th><th>阶段</th><th>说明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>AI电子玻璃布库存</strong></td><td class="negative">仅剩700万米（3天用量）</td><td>月消耗5700万米，极度紧缺</td></tr>
+          <tr><td><strong>M6高端CCL</strong></td><td class="positive">2026年大扩产</td><td>目标高端CCL占比≥30%</td></tr>
+          <tr><td><strong>M8高端CCL</strong></td><td>2026Q1-Q2送样</td><td>Q3-Q4小批量供应</td></tr>
+          <tr><td><strong>M9高端CCL</strong></td><td>预研阶段</td><td>技术储备</td></tr>
+          <tr><td><strong>英伟达/华为认证</strong></td><td>进行中</td><td>有望进入直接供应链</td></tr>
+        </tbody>
+      </table>
+
+      <h4 style="margin-top:16px;">产能扩张计划</h4>
+      <table class="fin-table">
+        <thead>
+          <tr><th>项目</th><th>产能</th><th>时间</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>low DK玻璃纤维窑炉</td><td>500吨（已投产）+ 新建3座</td><td>2025H1投产 / 2026年</td></tr>
+          <tr><td>高端铜箔（广东）</td><td>2.1万吨（RTF/HB/VLP）</td><td>2027年中</td></tr>
+          <tr><td>PCB越南北宁</td><td>首期60万/二期110万平方尺/月</td><td><strong>2026年Q3</strong></td></tr>
+          <tr><td>PCB泰国大城</td><td>首期60万/二期120万平方尺/月</td><td>2027年</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>🌐 行业周期定位与驱动因素</h3>
+      <div class="callout blue">
+        <strong>AI驱动的CCL超级周期</strong><br>
+        山西证券（2026-05-08）："此次由AI驱动的超级周期具备很强的持续性，未来3-5年内仍将处于高速增长期"<br>
+        预计CCL供需紧张格局将维持到<strong>2027年甚至更久</strong>。
+      </div>
+
+      <h4>核心驱动逻辑</h4>
+      <div style="font-size:13px; color:var(--text-secondary); line-height:2;">
+        <strong>1. 需求端：</strong>AI服务器/数据中心 → 高频高速CCL需求暴增 → 高端产品占比提升<br>
+        <strong>2. 供给端：</strong>全球CCL产能扩张周期长（2-3年），短期无法快速释放 → 供需缺口持续<br>
+        <strong>3. 价格端：</strong>铜价高企 + 环氧树脂涨价 + 电子布紧缺 → 成本推动+需求拉动双驱动涨价<br>
+        <strong>4. 竞争格局：</strong>建滔系全球最大CCL生产商，垂直一体化成本优势在涨价周期中最为受益<br>
+        <strong>5. 价格对比（弹性空间）：</strong>传统电子布~7元/米 → 第一代low DK 27元/米 → 第二代low DK 121元/米（17倍差距）
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 4: Valuation & Conclusion ===== -->
+  <div id="tab-valuation" class="tab-content">
+
+    <!-- 建滔集团 Investment Conclusion -->
+    <div class="invest-conclusion" style="background: linear-gradient(135deg, #1a237e, #283593);">
+      <h3>🎯 建滔集团（00148.HK）— 投资结论</h3>
+
+      <div class="verdict-banner wait">
+        <span class="verdict-emoji">⏳</span>
+        <div>
+          <div class="verdict-text">纳入观察，等待更佳买点</div>
+          <div class="verdict-sub" style="font-size:13px; font-weight:400; opacity:0.85;">审美评分良好（78.5分B级），存在地产和短期负债风险，建议等待风险出清信号</div>
+        </div>
+      </div>
+
+      <div class="price-cards">
+        <div class="price-card buy-card">
+          <div class="price-label">建议买入价</div>
+          <div class="price-value">36-42 港元</div>
+          <div class="price-note">安全边际25-35% · EPS 3.971(GAAP)</div>
+        </div>
+        <div class="price-card target-card">
+          <div class="price-label">花旗目标价</div>
+          <div class="price-value">65 港元</div>
+          <div class="price-note">花旗2026-05-08上调 · 隐含PE~16x</div>
+        </div>
+        <div class="price-card fair-card">
+          <div class="price-label">合理价值区间</div>
+          <div class="price-value">48-55 港元</div>
+          <div class="price-note">当前价: 51.85 港元</div>
+        </div>
+      </div>
+
+      <div class="upside-bar">
+        <span class="upside-label">较花旗目标价上行空间</span>
+        <span class="upside-value positive">+25.4%</span>
+      </div>
+
+      <div class="callout" style="background:rgba(255,255,255,0.08); border-left:3px solid rgba(255,255,255,0.3); border-radius:8px; padding:16px; margin-bottom:16px; font-size:12px; color:rgba(255,255,255,0.8); line-height:1.8;">
+        <strong>估值逻辑：</strong><br>
+        PE历史中枢10-15x，当前13.1x处于中枢偏低位置。花旗上调逻辑：积层板业务占集团净利比从38%升至87%（2028E），盈利结构向高增长CCL倾斜，合理PE应上移。<br>
+        周期调整PE（5年平均净利~44亿）= 12.7x，与当前估值基本一致。<br>
+        <strong>安全边际考虑</strong>：建议买入价需考虑地产风险溢价（折价25-35%），即36-42港元区间。
+      </div>
+
+      <div class="conclusion-text">
+        <strong>核心逻辑</strong>：AI CCL超级周期+估值合理(PE 13.1x)+高股息(4.24%)+花旗明确看多(目标价65港元)。<br>
+        <strong>主要制约</strong>：地产业务持续减值是最大不确定性（2025年亏损9.44亿），投资收入30亿不可持续，短期负债压力增加。<br>
+        <strong>操作策略</strong>：当前价51.85港元已接近合理区间上沿，不急于追高。建议等待地产减值风险更明朗时（关注中报地产业务），在36-42港元区间分批建仓。若持有则以时间换空间逻辑成立。
+      </div>
+    </div>
+
+    <!-- 建滔积层板 Investment Conclusion -->
+    <div class="invest-conclusion" style="background: linear-gradient(135deg, #1b5e20, #2e7d32);">
+      <h3>🎯 建滔积层板（01888.HK）— 投资结论</h3>
+
+      <div class="verdict-banner watch">
+        <span class="verdict-emoji">👁️</span>
+        <div>
+          <div class="verdict-text">观察为主，等待回调时机</div>
+          <div class="verdict-sub" style="font-size:13px; font-weight:400; opacity:0.85;">业务最纯正CCL龙头，但PE 53x已充分定价，安全边际不足</div>
+        </div>
+      </div>
+
+      <div class="price-cards">
+        <div class="price-card buy-card">
+          <div class="price-label">建议买入价</div>
+          <div class="price-value">28-34 港元</div>
+          <div class="price-note">安全边际20-35% · EPS 0.799</div>
+        </div>
+        <div class="price-card target-card">
+          <div class="price-label">合理目标价</div>
+          <div class="price-value">40-45 港元</div>
+          <div class="price-note">合理PE 50-56x · 需高成长消化估值</div>
+        </div>
+        <div class="price-card fair-card">
+          <div class="price-label">合理价值</div>
+          <div class="price-value">~36 港元</div>
+          <div class="price-note">当前价: 43.28 港元</div>
+        </div>
+      </div>
+
+      <div class="upside-bar">
+        <span class="upside-label">当前价较合理价值</span>
+        <span class="upside-value" style="color:#fff59d;">偏高~19%</span>
+      </div>
+
+      <div class="callout" style="background:rgba(255,255,255,0.08); border-left:3px solid rgba(255,255,255,0.3); border-radius:8px; padding:16px; margin-bottom:16px; font-size:12px; color:rgba(255,255,255,0.8); line-height:1.8;">
+        <strong>估值逻辑：</strong><br>
+        PE(TTM) 54.2x显著高于历史中枢（15-25x）和行业均值（~30x）。市场定价隐含2026年净利润翻倍以上的预期。<br>
+        如果2026年净利润达45-50亿港元（较2025年翻倍），对应前瞻PE将降至26-30x，趋于合理。<br>
+        但若CCL涨价或AI需求不及预期，高估值面临较大回调风险。<br>
+        <strong>安全边际考虑</strong>：建议买入价需预留20-35%安全边际，即28-34港元区间。
+      </div>
+
+      <div class="conclusion-text">
+        <strong>核心逻辑</strong>：全球CCL最纯正龙头+AI超级周期核心受益+净现金74亿+净利率持续提升。<br>
+        <strong>主要制约</strong>：PE 53x已充分反映未来2-3年AI预期，估值没有安全边际。一旦行业需求放缓或涨价不及预期，估值将大幅压缩。<br>
+        <strong>操作策略</strong>：当前价位不推荐买入。若出现以下情况可考虑参与：① 股价回调至28-34港元区间；② 2026Q1/Q2业绩持续超预期验证成长逻辑；③ 行业出现新的催化因素（如英伟达认证、M8量产等）。
+      </div>
+    </div>
+
+    <!-- Final Comparison -->
+    <div class="card">
+      <h3>⚖️ 二选一怎么选？</h3>
+
+      <div class="callout blue">
+        <strong>如果您是价值型投资者（看重估值、股息和安全边际）</strong><br>
+        → <strong style="font-size:16px;">选建滔集团</strong>（PE 13.1x, 股息率4.24%, 花旗目标价65港元隐含+25%空间）
+      </div>
+      <div class="callout green" style="margin-top:12px;">
+        <strong>如果您是成长型投资者（看重赛道纯度、成长弹性）</strong><br>
+        → <strong style="font-size:16px;">选建滔积层板</strong>（CCL纯正标的, 2025年利润+85%, 涨价弹性大, 但需等待合理价格）
+      </div>
+      <div class="callout amber" style="margin-top:12px;">
+        <strong>最佳组合策略</strong><br>
+        → 以建滔集团为底仓（估值合理+高股息），等待建滔积层板回调后作为弹性仓位补充。两公司协同受益于同一AI CCL超级周期，但集团提供了更好的安全边际。
+      </div>
+    </div>
+
+    <!-- Key Tracking Indicators -->
+    <div class="card">
+      <h3>📋 关键跟踪指标</h3>
+      <table class="fin-table">
+        <thead>
+          <tr><th>序号</th><th>指标</th><th>当前状态</th><th>跟踪频率</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>CCL产品价格月度走势（涨价函频率）</td><td class="positive">2026年已2轮涨价，累计25-30%</td><td>月度</td></tr>
+          <tr><td>2</td><td>中高端CCL交货周期</td><td class="negative">延长至最长6周（正常2周）</td><td>月度</td></tr>
+          <tr><td>3</td><td>建滔集团地产业务减值进展</td><td class="negative">2025年亏损9.44亿，风险未出清</td><td>中期报告</td></tr>
+          <tr><td>4</td><td>建滔积层板M6/M8高端CCL量产进度</td><td>M6扩产中，M8送样中</td><td>季度</td></tr>
+          <tr><td>5</td><td>英伟达/华为供应链认证进展</td><td>进行中</td><td>季度</td></tr>
+          <tr><td>6</td><td>AI服务器出货量及PCB/CCL需求数据</td><td class="positive">高速增长</td><td>月度</td></tr>
+          <tr><td>7</td><td>铜价、环氧树脂等原材料价格</td><td class="negative">持续走高</td><td>周度</td></tr>
+          <tr><td>8</td><td>建滔集团短期负债/再融资进展</td><td class="negative">短期借贷占比53%</td><td>季度</td></tr>
+          <tr><td>9</td><td>越南/泰国海外产能建设进度</td><td>越南2026Q3投产，泰国2027年</td><td>中期报告</td></tr>
+          <tr><td>10</td><td>台耀火灾后产能恢复（同业影响）</td><td>CCL供应进一步趋紧</td><td>月度</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Peer Comparison -->
+    <div class="card">
+      <h3>📈 可比公司估值对比（CCL行业）</h3>
+      <table class="fin-table">
+        <thead>
+          <tr>
+            <th>公司</th>
+            <th>市值</th>
+            <th>PE(TTM)</th>
+            <th>营收增速</th>
+            <th>净利率</th>
+            <th>股息率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="highlight">
+            <td><strong>建滔集团(00148.HK)</strong></td>
+            <td>561亿</td>
+            <td class="positive"><strong>13.1x</strong></td>
+            <td>+5.3%</td>
+            <td>11.3%</td>
+            <td class="positive"><strong>4.24%</strong></td>
+          </tr>
+          <tr>
+            <td><strong>建滔积层板(01888.HK)</strong></td>
+            <td>1,333亿</td>
+            <td><strong>54.2x</strong></td>
+            <td class="positive">+10.0%</td>
+            <td class="positive">12.0%</td>
+            <td>1.57%</td>
+          </tr>
+          <tr>
+            <td>生益科技(600183.SH)</td>
+            <td>~500亿</td>
+            <td>~30x</td>
+            <td>~10%</td>
+            <td>~8%</td>
+            <td>~2%</td>
+          </tr>
+          <tr>
+            <td>金安国纪(002636.SZ)</td>
+            <td>~150亿</td>
+            <td>~25x</td>
+            <td>~8%</td>
+            <td>~5%</td>
+            <td>~1%</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr><td colspan="6">红色数值表示优于可比公司均值，绿色表示劣于均值（A股涨跌色惯例）。数据来源：NeoData/公开数据，截至2026-05-08。</td></tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <strong>免责声明：</strong>本报告基于公开数据自动生成，仅供研究参考，不构成任何投资建议。报告中的买入建议、目标价、合理价值等均为基于历史数据和估值模型的推算，不代表未来实际表现。投资有风险，入市需谨慎。<br>
+    <strong>数据来源：</strong>新浪财经、华盛资讯、证券之星、中商情报网、花旗研报、同花顺金融网、东方财富、腾讯新闻<br>
+    <strong>分析框架：</strong>Earnings Review × Listed Company Analyst × Stock Aesthetic Checker<br>
+    数据截止：2025年报（2025-12-31）| 收盘价：2026-05-08（集团51.85港元/积层板43.28港元）| 报告生成时间：2026-05-08 20:00 HKT
+  </div>
+</div>
+
+<script>
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>磷化工四标的对比分析与综合投资意见</title>
+<style>
+  :root {
+    --primary: #1a73e8;
+    --success: #34a853;
+    --warning: #fbbc04;
+    --danger: #ea4335;
+    --bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --text: #202124;
+    --text-secondary: #5f6368;
+    --border: #e0e0e0;
+    --metric-positive: #cf1322;
+    --metric-negative: #3f8600;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6; padding: 20px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1a237e, #0d47a1, #1565c0);
+    color: white; border-radius: 12px; padding: 32px; margin-bottom: 24px;
+  }
+  .header h1 { font-size: 28px; margin-bottom: 8px; }
+  .header .subtitle { opacity: 0.85; font-size: 14px; }
+  .header .meta { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; font-size: 13px; opacity: 0.9; }
+  .header .meta span { background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; }
+
+  .card {
+    background: var(--card-bg); border-radius: 12px; padding: 24px;
+    margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+  .card h3 { font-size: 18px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+
+  /* Batch Summary Table */
+  .rank-banner {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;
+  }
+  .rank-item {
+    border-radius: 10px; padding: 20px; text-align: center; color: white;
+  }
+  .rank-item.rank-1 { background: linear-gradient(135deg, #1a237e, #283593); }
+  .rank-item.rank-2 { background: linear-gradient(135deg, #1565c0, #1976d2); }
+  .rank-item.rank-3 { background: linear-gradient(135deg, #e65100, #ef6c00); }
+  .rank-item.rank-4 { background: linear-gradient(135deg, #c62828, #d32f2f); }
+  .rank-item .rank-num { font-size: 13px; opacity: 0.8; }
+  .rank-item .rank-name { font-size: 20px; font-weight: 700; margin: 4px 0; }
+  .rank-item .rank-score { font-size: 14px; opacity: 0.9; }
+  .rank-item .rank-grade { display: inline-block; margin-top: 6px; padding: 2px 12px; border-radius: 12px; font-size: 18px; font-weight: 700; background: rgba(255,255,255,0.2); }
+
+  .batch-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .batch-table th { background: #f1f3f4; padding: 10px; text-align: center; font-weight: 600; border-bottom: 2px solid var(--border); }
+  .batch-table td { padding: 10px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+  .batch-table .best { background: #e8f0fe; font-weight: 700; }
+  .batch-table .worst { background: #fce8e6; }
+  .batch-table .positive { color: var(--metric-positive); font-weight: 600; }
+  .batch-table .negative { color: var(--metric-negative); }
+
+  .score-bar-mini { height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden; margin-top: 4px; min-width: 60px; }
+  .score-bar-mini-fill { height: 100%; border-radius: 3px; }
+
+  .dimension-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 16px;
+  }
+  .dim-card {
+    border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center;
+  }
+  .dim-card .dim-name { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+  .dim-card .dim-score { font-size: 24px; font-weight: 700; }
+  .dim-card.pass .dim-score { color: var(--success); }
+  .dim-card.partial .dim-score { color: #e65100; }
+  .dim-card.fail .dim-score { color: var(--danger); }
+
+  /* Company Detail Cards */
+  .company-header {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 16px;
+  }
+  .company-header .company-badge {
+    width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 700; color: white; flex-shrink: 0;
+  }
+  .company-header .company-badge.grade-b { background: var(--primary); }
+  .company-header .company-badge.grade-d { background: var(--danger); }
+  .company-header .company-name { font-size: 20px; font-weight: 700; }
+  .company-header .company-sub { font-size: 13px; color: var(--text-secondary); }
+
+  .company-detail-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .data-item { padding: 8px 12px; background: #fafafa; border-radius: 6px; font-size: 13px; }
+  .data-item .data-label { color: var(--text-secondary); font-size: 11px; }
+  .data-item .data-value { font-weight: 600; }
+
+  /* Radar SVG */
+  .radar-container { display: flex; justify-content: center; margin: 20px 0; }
+
+  .criterion-list { margin-top: 12px; }
+  .criterion-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid #f5f5f5; font-size: 13px;
+  }
+  .criterion-item:last-child { border-bottom: none; }
+  .criterion-item .c-name { color: var(--text-secondary); }
+  .criterion-item .c-score { font-weight: 600; }
+
+  .invest-conclusion {
+    background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+    color: white; border-radius: 12px; padding: 28px 32px; margin-bottom: 20px;
+  }
+  .invest-conclusion h3 { color: white; border-bottom-color: rgba(255,255,255,0.2); }
+  .conclusion-content { font-size: 14px; line-height: 2; color: rgba(255,255,255,0.9); padding: 16px 20px; background: rgba(255,255,255,0.06); border-radius: 8px; margin-top: 16px; }
+  .conclusion-content strong { color: white; }
+
+  .recommendation {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 16px;
+  }
+  .rec-card {
+    border-radius: 10px; padding: 20px; text-align: center; border: 2px solid;
+  }
+  .rec-card.buy { background: rgba(52,168,83,0.1); border-color: var(--success); }
+  .rec-card.watch { background: rgba(251,188,4,0.1); border-color: var(--warning); }
+  .rec-card.avoid { background: rgba(234,67,53,0.1); border-color: var(--danger); }
+  .rec-card .rec-label { font-size: 11px; color: var(--text-secondary); }
+  .rec-card .rec-verdict { font-size: 18px; font-weight: 700; margin: 6px 0; }
+  .rec-card .rec-note { font-size: 12px; color: var(--text-secondary); }
+
+  .risk-flags { margin-top: 16px; }
+  .risk-flag {
+    display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px;
+    margin-bottom: 8px; border-radius: 6px; font-size: 13px;
+  }
+  .risk-flag.fatal { background: #fff5f5; border-left: 3px solid #d32f2f; }
+  .risk-flag.watch { background: #fff8e1; border-left: 3px solid #f57c00; }
+  .risk-flag.info { background: #e8f0fe; border-left: 3px solid var(--primary); }
+  .risk-flag .flag-icon { font-size: 16px; }
+
+  .footer { text-align: center; font-size: 12px; color: var(--text-secondary); padding: 20px 0; margin-top: 20px; border-top: 1px solid var(--border); }
+
+  @media (max-width: 768px) {
+    .rank-banner, .dimension-grid, .recommendation, .company-detail-grid { grid-template-columns: 1fr 1fr; }
+    .rank-banner { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>磷化工四标的对比分析与综合投资意见</h1>
+    <div class="subtitle">云天化（600096.SH）· 川恒股份（002895.SZ）· 芭田股份（002170.SZ）· ST司特（002538.SZ）</div>
+    <div class="subtitle" style="margin-top:6px;">基于 Stock Aesthetic Checker 六维审美分析框架</div>
+    <div class="meta">
+      <span>📅 分析日期：2026-05-08</span>
+      <span>🏭 申万行业：基础化工 · 农化制品</span>
+      <span>📊 周期属性：强周期（磷矿石价格驱动）</span>
+      <span>📋 六维权重：D1=12% D2=20% D3=28% D4=20% D5=12% D6=8%</span>
+    </div>
+  </div>
+
+  <!-- Ranking Banner -->
+  <div class="card">
+    <h3>🏆 综合排名</h3>
+    <div class="rank-banner">
+      <div class="rank-item rank-1">
+        <div class="rank-num">🥇 第1名</div>
+        <div class="rank-name">云天化</div>
+        <div class="rank-score">68分 · 等级B</div>
+        <div class="rank-grade">B</div>
+      </div>
+      <div class="rank-item rank-2">
+        <div class="rank-num">🥈 第2名</div>
+        <div class="rank-name">芭田股份</div>
+        <div class="rank-score">64分 · 等级B</div>
+        <div class="rank-grade">B</div>
+      </div>
+      <div class="rank-item rank-3">
+        <div class="rank-num">🥉 第3名</div>
+        <div class="rank-name">川恒股份</div>
+        <div class="rank-score">62分 · 等级B</div>
+        <div class="rank-grade">B</div>
+      </div>
+      <div class="rank-item rank-4">
+        <div class="rank-num">第4名</div>
+        <div class="rank-name">ST司特</div>
+        <div class="rank-score">35分 · 等级D</div>
+        <div class="rank-grade">D</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Batch Comparison Table -->
+  <div class="card">
+    <h3>📊 四标的核心数据对比</h3>
+    <table class="batch-table">
+      <thead>
+        <tr>
+          <th>指标</th>
+          <th>云天化</th>
+          <th>川恒股份</th>
+          <th>芭田股份</th>
+          <th>ST司特</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>股票代码</strong></td>
+          <td class="best">600096.SH</td>
+          <td>002895.SZ</td>
+          <td>002170.SZ</td>
+          <td class="worst">002538.SZ</td>
+        </tr>
+        <tr>
+          <td><strong>总市值（亿元）</strong></td>
+          <td class="best">~640</td>
+          <td>~217</td>
+          <td>~132</td>
+          <td class="worst">~62</td>
+        </tr>
+        <tr>
+          <td><strong>最新股价（元）</strong></td>
+          <td>35.10</td>
+          <td>35.88</td>
+          <td>13.62</td>
+          <td>7.33</td>
+        </tr>
+        <tr>
+          <td><strong>2025年营收（亿元）</strong></td>
+          <td class="best">484.15</td>
+          <td>83.28</td>
+          <td>50.57</td>
+          <td class="worst">46.62</td>
+        </tr>
+        <tr>
+          <td><strong>2025年净利润（亿元）</strong></td>
+          <td class="best">51.56</td>
+          <td>12.60</td>
+          <td>9.12</td>
+          <td class="worst">1.65</td>
+        </tr>
+        <tr>
+          <td><strong>营收增速(2025)</strong></td>
+          <td class="negative">-21.47%</td>
+          <td class="positive">+41.02%</td>
+          <td class="positive best">+52.62%</td>
+          <td class="positive">+8.80%</td>
+        </tr>
+        <tr>
+          <td><strong>净利润增速(2025)</strong></td>
+          <td class="negative">-3.40%</td>
+          <td class="positive">+31.76%</td>
+          <td class="positive best">+122.79%</td>
+          <td class="negative">-47.06%</td>
+        </tr>
+        <tr>
+          <td><strong>2026Q1营收增速</strong></td>
+          <td class="negative">-8.06%</td>
+          <td class="positive">+22.14%</td>
+          <td class="positive">+19.42%</td>
+          <td class="positive best">+27.04%</td>
+        </tr>
+        <tr>
+          <td><strong>2026Q1净利润增速</strong></td>
+          <td class="positive">+10.39%</td>
+          <td class="negative">-6.62%</td>
+          <td class="positive best">+60.26%</td>
+          <td class="positive">+81.14%</td>
+        </tr>
+        <tr>
+          <td><strong>毛利率</strong></td>
+          <td>17.50%</td>
+          <td class="positive best">33.13%</td>
+          <td>~22%</td>
+          <td class="negative">13.33%</td>
+        </tr>
+        <tr>
+          <td><strong>ROE(2024/2025)</strong></td>
+          <td class="best">23.85%</td>
+          <td>15.49%</td>
+          <td>~15%</td>
+          <td class="negative">~3%</td>
+        </tr>
+        <tr>
+          <td><strong>资产负债率</strong></td>
+          <td class="negative">52.26%</td>
+          <td class="watch">44.06%</td>
+          <td class="watch">~40%</td>
+          <td class="positive best">21.22%</td>
+        </tr>
+        <tr>
+          <td><strong>PE(TTM)(倍)</strong></td>
+          <td class="positive best">~12x</td>
+          <td>~17x</td>
+          <td>~14x</td>
+          <td class="negative">~37x</td>
+        </tr>
+        <tr>
+          <td><strong>PB(倍)</strong></td>
+          <td class="negative">2.46</td>
+          <td class="negative">2.75</td>
+          <td class="watch">2.44</td>
+          <td class="positive best">1.18</td>
+        </tr>
+        <tr>
+          <td><strong>股息率(2025年报)</strong></td>
+          <td>~3.4%(10派12元)</td>
+          <td class="positive best">~4.2%(10派15元)</td>
+          <td>~4.2%(10派5.7元)</td>
+          <td class="negative">~1.6%(10派1.2元)</td>
+        </tr>
+        <tr>
+          <td><strong>磷矿资源</strong></td>
+          <td class="best">储量丰富<br>矿肥一体化龙头</td>
+          <td>自有磷矿<br>300万吨/年</td>
+          <td>磷矿产能释放<br>收入+206%</td>
+          <td>外购磷矿<br>无自有矿</td>
+        </tr>
+        <tr>
+          <td><strong>特殊风险</strong></td>
+          <td>营收持续下滑</td>
+          <td>增收不增利</td>
+          <td>涨幅较大<br>短期回调风险</td>
+          <td class="worst">⚠️ ST处理<br>职务侵占调查</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="data-item" style="margin-top:12px;">
+      <span style="color:var(--metric-positive);font-weight:600;">● 红色</span> = 优/优于同行
+      <span style="color:var(--metric-negative);font-weight:600;margin-left:16px;">● 绿色</span> = 劣/需关注
+    </div>
+  </div>
+
+  <!-- Dimension Comparison -->
+  <div class="card">
+    <h3>📐 六维审美评分对比</h3>
+    <table class="batch-table">
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>权重</th>
+          <th>云天化</th>
+          <th>川恒股份</th>
+          <th>芭田股份</th>
+          <th>ST司特</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>D1 内部人增持</td>
+          <td>12%</td>
+          <td class="best">30分(部分)</td>
+          <td>30分(部分)</td>
+          <td>30分(部分)</td>
+          <td class="positive">55分(部分)</td>
+        </tr>
+        <tr>
+          <td>D2 股息+回购</td>
+          <td>20%</td>
+          <td class="positive">70分(通过)</td>
+          <td class="positive best">80分(通过)</td>
+          <td>65分(部分)</td>
+          <td class="negative">30分(部分)</td>
+        </tr>
+        <tr>
+          <td>D3 竞争优势</td>
+          <td>28%</td>
+          <td class="positive best">85分(通过)</td>
+          <td>70分(通过)</td>
+          <td>65分(部分)</td>
+          <td class="negative">35分(部分)</td>
+        </tr>
+        <tr>
+          <td>D4 市盈率(周期调整)</td>
+          <td>20%</td>
+          <td class="positive best">75分(通过)</td>
+          <td>60分(部分)</td>
+          <td>70分(通过)</td>
+          <td class="negative">20分(未通过)</td>
+        </tr>
+        <tr>
+          <td>D5 成长动能</td>
+          <td>12%</td>
+          <td>65分(部分)</td>
+          <td>55分(部分)</td>
+          <td class="positive best">85分(通过)</td>
+          <td class="negative">40分(部分)</td>
+        </tr>
+        <tr>
+          <td>D6 财务健康</td>
+          <td>8%</td>
+          <td>45分(部分)</td>
+          <td>55分(部分)</td>
+          <td class="positive best">60分(部分)</td>
+          <td>50分(部分)</td>
+        </tr>
+        <tr style="background:#f1f8e9;font-weight:700;">
+          <td>📊 总分</td>
+          <td>100%</td>
+          <td class="best">67.8分 → B</td>
+          <td>62.2分 → B</td>
+          <td>63.8分 → B</td>
+          <td class="negative">35.2分 → D</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Radar Chart - 4-overlay SVG -->
+    <div class="radar-container">
+      <svg width="500" height="460" viewBox="0 0 500 460">
+        <defs>
+          <marker id="arrowhead" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+            <polygon points="0 0, 6 2, 0 4" fill="#999" />
+          </marker>
+        </defs>
+        
+        <g transform="translate(250, 230)">
+          <!-- Grid rings -->
+          <circle cx="0" cy="0" r="30" fill="none" stroke="#e0e0e0" stroke-width="0.5"/>
+          <circle cx="0" cy="0" r="60" fill="none" stroke="#e0e0e0" stroke-width="0.5"/>
+          <circle cx="0" cy="0" r="90" fill="none" stroke="#e0e0e0" stroke-width="0.5"/>
+          <circle cx="0" cy="0" r="120" fill="none" stroke="#ccc" stroke-width="1"/>
+          
+          <!-- Axis lines -->
+          <!-- D1: top (-90°) -->
+          <line x1="0" y1="0" x2="0" y2="-130" stroke="#bbb" stroke-width="0.5"/>
+          <!-- D2: top-right (-30°) -->
+          <line x1="0" y1="0" x2="112.6" y2="-65" stroke="#bbb" stroke-width="0.5"/>
+          <!-- D3: bottom-right (30°) -->
+          <line x1="0" y1="0" x2="112.6" y2="65" stroke="#bbb" stroke-width="0.5"/>
+          <!-- D4: bottom (90°) -->
+          <line x1="0" y1="0" x2="0" y2="130" stroke="#bbb" stroke-width="0.5"/>
+          <!-- D5: bottom-left (150°) -->
+          <line x1="0" y1="0" x2="-112.6" y2="65" stroke="#bbb" stroke-width="0.5"/>
+          <!-- D6: top-left (210°) -->
+          <line x1="0" y1="0" x2="-112.6" y2="-65" stroke="#bbb" stroke-width="0.5"/>
+          
+          <!-- Axis Labels -->
+          <text x="0" y="-138" text-anchor="middle" font-size="12" font-weight="600" fill="#333">D1 内部人增持</text>
+          <text x="122" y="-72" text-anchor="middle" font-size="12" font-weight="600" fill="#333">D2 股息+回购</text>
+          <text x="122" y="80" text-anchor="middle" font-size="12" font-weight="600" fill="#333">D3 竞争优势</text>
+          <text x="0" y="148" text-anchor="middle" font-size="12" font-weight="600" fill="#333">D4 市盈率</text>
+          <text x="-122" y="80" text-anchor="middle" font-size="12" font-weight="600" fill="#333">D5 成长动能</text>
+          <text x="-122" y="-72" text-anchor="middle" font-size="12" font-weight="600" fill="#333">D6 财务健康</text>
+          
+          <!-- Grid labels -->
+          <text x="2" y="-34" font-size="9" fill="#999">25</text>
+          <text x="2" y="-64" font-size="9" fill="#999">50</text>
+          <text x="2" y="-94" font-size="9" fill="#999">75</text>
+
+          <!-- Helper function in JS would be nice but SVG can't do that, so hardcoded -->
+          
+          <!-- === 云天化 (blue #1a73e8) === -->
+          <!-- D1=30, D2=70, D3=85, D4=75, D5=65, D6=45 -->
+          <!-- Convert to radii: score/100*120 -->
+          <!-- D1: 0,-36; D2: 33.7*0.7=33.7*0.7=... -->
+          <!-- D1: x=0, y=-36 -->
+          <!-- D2: x=120*0.7*cos(-30°)=84*0.866=72.7, y=-84*0.5=-42 -->
+          <!-- D3: x=120*0.85*cos(30°)=102*0.866=88.3, y=102*0.5=51 -->
+          <!-- D4: x=0, y=120*0.75=90 -->
+          <!-- D5: x=-120*0.65*cos(30°)=-78*0.866=-67.5, y=78*0.5=39 -->
+          <!-- D6: x=-120*0.45*cos(30°)=-54*0.866=-46.8, y=-54*0.5=-27 -->
+          
+          <polygon points="0,-36 72.7,-42 88.3,51 0,90 -67.5,39 -46.8,-27" 
+                   fill="rgba(26,115,232,0.25)" stroke="#1a73e8" stroke-width="2.5" stroke-dasharray="0"/>
+          <text x="10" y="-42" font-size="11" fill="#1a73e8" font-weight="600">云天化</text>
+          
+          <!-- === 芭田股份 (green #34a853) === -->
+          <!-- D1=30, D2=65, D3=65, D4=70, D5=85, D6=60 -->
+          <!-- D1: 0,-36 -->
+          <!-- D2: 120*0.65*0.866=67.5, -120*0.65*0.5=-39 -->
+          <!-- D3: 120*0.65*0.866=67.5, 120*0.65*0.5=39 -->
+          <!-- D4: 0, 84 -->
+          <!-- D5: -120*0.85*0.866=-88.3, 120*0.85*0.5=51 -->
+          <!-- D6: -120*0.6*0.866=-62.4, -120*0.6*0.5=-36 -->
+          
+          <polygon points="0,-36 67.5,-39 67.5,39 0,84 -88.3,51 -62.4,-36"
+                   fill="rgba(52,168,83,0.2)" stroke="#34a853" stroke-width="2" stroke-dasharray="4,3"/>
+          <text x="60" y="10" font-size="11" fill="#34a853" font-weight="600">芭田股份</text>
+          
+          <!-- === 川恒股份 (orange #e65100) === -->
+          <!-- D1=30, D2=80, D3=70, D4=60, D5=55, D6=55 -->
+          <!-- D1: 0,-36 -->
+          <!-- D2: 120*0.8*0.866=83.1, -120*0.8*0.5=-48 -->
+          <!-- D3: 120*0.7*0.866=72.7, 120*0.7*0.5=42 -->
+          <!-- D4: 0, 72 -->
+          <!-- D5: -120*0.55*0.866=-57.1, 120*0.55*0.5=33 -->
+          <!-- D6: -120*0.55*0.866=-57.1, -120*0.55*0.5=-33 -->
+          
+          <polygon points="0,-36 83.1,-48 72.7,42 0,72 -57.1,33 -57.1,-33"
+                   fill="rgba(230,81,0,0.15)" stroke="#e65100" stroke-width="2" stroke-dasharray="6,3"/>
+          <text x="-30" y="-48" font-size="11" fill="#e65100" font-weight="600">川恒股份</text>
+          
+          <!-- Legend -->
+          <circle cx="150" cy="120" r="6" fill="none" stroke="#1a73e8" stroke-width="2"/>
+          <text x="160" y="124" font-size="11" fill="#555">云天化(68分)</text>
+          <circle cx="150" cy="138" r="6" fill="none" stroke="#34a853" stroke-width="2" stroke-dasharray="4,3"/>
+          <text x="160" y="142" font-size="11" fill="#555">芭田股份(64分)</text>
+          <circle cx="150" cy="156" r="6" fill="none" stroke="#e65100" stroke-width="2" stroke-dasharray="6,3"/>
+          <text x="160" y="160" font-size="11" fill="#555">川恒股份(62分)</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Company Details -->
+  <div class="card">
+    <h3>🏢 个股分析详情</h3>
+
+    <!-- 云天化 -->
+    <div class="criterion-list" style="margin-bottom:24px; border:2px solid #1a73e8; border-radius:10px; padding:16px;">
+      <div class="company-header">
+        <div class="company-badge grade-b">B</div>
+        <div>
+          <div class="company-name">云天化（600096.SH）</div>
+          <div class="company-sub">磷化工龙头 · 矿肥一体化 · 总评分68分</div>
+        </div>
+      </div>
+      <div class="company-detail-grid">
+        <div class="data-item"><div class="data-label">2025年营收/净利润</div><div class="data-value">484.15亿 / 51.56亿</div></div>
+        <div class="data-item"><div class="data-label">2026Q1营收/净利润增速</div><div class="data-value">119.81亿(-8.06%) / 14.25亿(+10.39%)</div></div>
+        <div class="data-item"><div class="data-label">PE(TTM) / PB</div><div class="data-value">~12倍 / 2.46倍</div></div>
+        <div class="data-item"><div class="data-label">ROE(2025)</div><div class="data-value">17.6%</div></div>
+        <div class="data-item"><div class="data-label">股息率</div><div class="data-value">~3.4%（10派12元）</div></div>
+        <div class="data-item"><div class="data-label">资产负债率</div><div class="data-value">52.26%</div></div>
+      </div>
+      <div style="margin-top:12px; font-size:13px; color:var(--text-secondary);">
+        <strong>核心逻辑：</strong>磷化工绝对龙头，国内最大磷肥生产商，磷矿储量丰富。2025年主动收缩低毛利商贸业务（营收-21%），但利润仅微降3.4%，盈利能力持续提升。2026Q1净利润+10.4%（营收-8%），利润弹性持续释放。PE仅12倍，为四标中最低估值。分红稳定，连续多年10派12元。<br>
+        <strong>主要风险：</strong>资产负债率52%偏高；营收持续下滑趋势未扭转；磷化工周期下行风险。
+      </div>
+    </div>
+
+    <!-- 芭田股份 -->
+    <div class="criterion-list" style="margin-bottom:24px; border:2px solid #34a853; border-radius:10px; padding:16px;">
+      <div class="company-header">
+        <div class="company-badge grade-b" style="background:#34a853;">B</div>
+        <div>
+          <div class="company-name">芭田股份（002170.SZ）</div>
+          <div class="company-sub">高速成长标的 · 磷矿产能释放 · 总评分64分</div>
+        </div>
+      </div>
+      <div class="company-detail-grid">
+        <div class="data-item"><div class="data-label">2025年营收/净利润</div><div class="data-value">50.57亿(+52.6%) / 9.12亿(+122.8%)</div></div>
+        <div class="data-item"><div class="data-label">2026Q1营收/净利润增速</div><div class="data-value">13.28亿(+19.4%) / 2.74亿(+60.3%)</div></div>
+        <div class="data-item"><div class="data-label">PE(2025) / PB</div><div class="data-value">~14倍 / 2.44倍</div></div>
+        <div class="data-item"><div class="data-label">股息率</div><div class="data-value">~4.2%（10派5.7元）</div></div>
+        <div class="data-item"><div class="data-label">磷矿石收入增速</div><div class="data-value">+206.35%（2025年报）</div></div>
+        <div class="data-item"><div class="data-label">新能源收入增速</div><div class="data-value">+764.77%（低基数）</div></div>
+      </div>
+      <div style="margin-top:12px; font-size:13px; color:var(--text-secondary);">
+        <strong>核心逻辑：</strong>业绩弹性最大的磷化工标的。磷矿产能释放带来收入+206%的爆发式增长，复合肥主业稳定，新能源布局初现。2025年净利润暴增122.8%，2026Q1继续+60.3%，成长动能居四标之首。PE仅14倍，高成长低估值组合。<br>
+        <strong>主要风险：</strong>股价短期上涨后回调压力；磷矿品位和产量稳定性；新能源业务尚处起步阶段。
+      </div>
+    </div>
+
+    <!-- 川恒股份 -->
+    <div class="criterion-list" style="margin-bottom:24px; border:2px solid #e65100; border-radius:10px; padding:16px;">
+      <div class="company-header">
+        <div class="company-badge grade-b" style="background:#e65100;">B</div>
+        <div>
+          <div class="company-name">川恒股份（002895.SZ）</div>
+          <div class="company-sub">磷化工中型龙头 · 高毛利率 · 总评分62分</div>
+        </div>
+      </div>
+      <div class="company-detail-grid">
+        <div class="data-item"><div class="data-label">2025年营收/净利润</div><div class="data-value">83.28亿(+41%) / 12.6亿(+31.8%)</div></div>
+        <div class="data-item"><div class="data-label">2026Q1营收/净利润增速</div><div class="data-value">18.24亿(+22.1%) / 1.89亿(-6.6%)</div></div>
+        <div class="data-item"><div class="data-label">PE(2025) / PB</div><div class="data-value">~17倍 / 2.75倍</div></div>
+        <div class="data-item"><div class="data-label">毛利率(2024)</div><div class="data-value">33.13%（四标最高）</div></div>
+        <div class="data-item"><div class="data-label">股息率</div><div class="data-value">~4.2%（10派15元）</div></div>
+        <div class="data-item"><div class="data-label">资产负债率(2024)</div><div class="data-value">44.06%</div></div>
+      </div>
+      <div style="margin-top:12px; font-size:13px; color:var(--text-secondary);">
+        <strong>核心逻辑：</strong>毛利率33%为四标最高，反映产品附加值优势。磷酸铁/磷酸铁锂新能源材料布局明确，2025年营收+41%、利润+31.8%保持较高增速。高分红（10派15元）股息率约4.2%，股东回报意识强。<br>
+        <strong>主要风险：</strong>2026Q1增收不增利（营收+22%、利润-6.6%），成本端承压明显；PE估值17倍高于云天化和芭田；磷酸铁竞争加剧风险。
+      </div>
+    </div>
+
+    <!-- ST司特 -->
+    <div class="criterion-list" style="border:2px solid var(--danger); border-radius:10px; padding:16px;">
+      <div class="company-header">
+        <div class="company-badge grade-d" style="background:var(--danger);">D</div>
+        <div>
+          <div class="company-name">ST司特（002538.SZ）</div>
+          <div class="company-sub">被ST处理 · 低负债率 · 总评分35分</div>
+        </div>
+      </div>
+      <div class="company-detail-grid">
+        <div class="data-item"><div class="data-label">2025年营收/净利润</div><div class="data-value">46.62亿(+8.8%) / 1.65亿(-47.1%)</div></div>
+        <div class="data-item"><div class="data-label">2026Q1营收/净利润增速</div><div class="data-value">13.73亿(+27%) / 6912万(+81.1%)</div></div>
+        <div class="data-item"><div class="data-label">PE(2025) / PB</div><div class="data-value">~37倍 / 1.18倍</div></div>
+        <div class="data-item"><div class="data-label">毛利率(2025)</div><div class="data-value">13.33%（四标最低）</div></div>
+        <div class="data-item"><div class="data-label">资产负债率</div><div class="data-value">21.22%（四标最低）</div></div>
+        <div class="data-item"><div class="data-label">ST状态</div><div class="data-value" style="color:var(--danger);">⚠️ ST处理 · 职务侵占调查</div></div>
+      </div>
+      <div style="margin-top:12px; font-size:13px; color:var(--text-secondary);">
+        <strong>唯一亮点：</strong>资产负债率21%为四标最低，财务结构保守；2025年实控人袁泽荣在5-6元区间多次增持；2026Q1利润+81%低基数反弹。<br>
+        <strong>致命风险：</strong>⚠️ ST处理（被实施特别处理）；存在职务侵占犯罪调查；2025年净利润大幅下滑47%；无自有磷矿资源；毛利率仅13%远逊于同行；PE 37倍严重高估。
+      </div>
+    </div>
+  </div>
+
+  <!-- Risk Flags -->
+  <div class="card">
+    <h3>⚠️ 风险提示</h3>
+    <div class="risk-flags">
+      <div class="risk-flag fatal">
+        <span class="flag-icon">🔴</span>
+        <span><strong>【致命风险：ST司特】</strong>被实施ST特别处理，存在职务侵占犯罪案件调查。2025年净利润暴跌47%，投资价值严重受损，任何情况下不建议参与。</span>
+      </div>
+      <div class="risk-flag watch">
+        <span class="flag-icon">🟡</span>
+        <span><strong>【周期下行风险（全体）】</strong>磷化工为强周期行业，磷矿石价格自2022年以来维持高位，若磷矿石价格回落，全行业盈利将承压。</span>
+      </div>
+      <div class="risk-flag watch">
+        <span class="flag-icon">🟡</span>
+        <span><strong>【云天化：营收持续下滑】</strong>2025年营收-21.5%、2026Q1营收-8.1%，虽依靠结构优化维持利润，但规模收缩趋势需持续关注。</span>
+      </div>
+      <div class="risk-flag watch">
+        <span class="flag-icon">🟡</span>
+        <span><strong>【川恒股份：增收不增利】</strong>2026Q1营收+22%但利润-6.6%，毛利率同比下降6.87pct，成本端压力明显，需关注后续毛利率走势。</span>
+      </div>
+      <div class="risk-flag watch">
+        <span class="flag-icon">🟡</span>
+        <span><strong>【芭田股份：涨幅过大回调风险】</strong>近一年股价从低位大幅上涨，短期存在获利回吐压力。磷矿产能释放持续性需时间验证。</span>
+      </div>
+      <div class="risk-flag info">
+        <span class="flag-icon">🟢</span>
+        <span><strong>【磷化工行业景气度】</strong>2025-2027年国内磷矿石供需缺口持续存在（2025年供需比98.3%），高品位磷矿价格预计维持高位，行业基本面支撑较强。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Investment Conclusion -->
+  <div class="invest-conclusion">
+    <h3>🎯 综合投资意见</h3>
+
+    <div class="recommendation">
+      <div class="rec-card buy">
+        <div class="rec-label">首选推荐</div>
+        <div class="rec-verdict" style="color:var(--success);">云天化</div>
+        <div class="rec-note">核心底仓 · PE 12倍</div>
+      </div>
+      <div class="rec-card buy">
+        <div class="rec-label">弹性配置</div>
+        <div class="rec-verdict" style="color:var(--success);">芭田股份</div>
+        <div class="rec-note">磷矿爆发 · 高成长</div>
+      </div>
+      <div class="rec-card watch">
+        <div class="rec-label">等待时机</div>
+        <div class="rec-verdict" style="color:#e65100;">川恒股份</div>
+        <div class="rec-note">增收不增利 · 等利润拐点</div>
+      </div>
+      <div class="rec-card avoid">
+        <div class="rec-label">坚决回避</div>
+        <div class="rec-verdict" style="color:var(--danger);">ST司特</div>
+        <div class="rec-note">ST处理 · 不参与</div>
+      </div>
+    </div>
+
+    <div class="conclusion-content">
+      <p><strong>一、首选：云天化（600096.SH）</strong></p>
+      <p>综合评分68分（B等），磷化工绝对龙头，核心优势在于"矿肥一体化+低估值+稳定分红"。PE仅12倍为四标最低，ROE 17.6%处于行业较高水平。2025年主动收缩低毛利业务后利润质量明显改善，2026Q1实现利润+10.4%的良好开局。建议作为磷化工板块核心底仓配置，当前价位安全边际充足。</p>
+      <p style="margin-top:12px;"><strong>建议仓位：5%-10%，分2-3批建仓。</strong> 合理价值区间40-45元（对应PE 14-16倍），当前35元具备上行空间。</p>
+      
+      <p style="margin-top:16px;"><strong>二、弹性配置：芭田股份（002170.SZ）</strong></p>
+      <p>综合评分64分（B等），四标中成长动能最强（D5=85分）。磷矿产能释放带来收入爆发式增长，2025年净利润+122.8%，2026Q1继续+60.3%。PE约14倍，在高速增长背景下估值合理。适合作为弹性品种适量配置。</p>
+      <p style="margin-top:12px;"><strong>建议仓位：3%-5%小仓位。</strong> 注意短期股价波动较大的风险。</p>
+      
+      <p style="margin-top:16px;"><strong>三、等待时机：川恒股份（002895.SZ）</strong></p>
+      <p>综合评分62分（B等）。毛利率33%为四标最高，高分红（股息率4.2%）是亮点。但2026Q1增收不增利的问题需重点关注，待毛利率企稳、利润恢复正增长后再考虑介入。当前PE 17倍在同类中偏高。</p>
+      
+      <p style="margin-top:16px;"><strong>四、坚决回避：ST司特（002538.SZ）</strong></p>
+      <p>综合评分仅35分（D等）。ST处理叠加职务侵占案件调查，基本面存在致命风险。虽有实控人增持和低资产负债率等积极因素，但无法抵消ST风险带来的不确定性。不建议参与。</p>
+      
+      <p style="margin-top:16px;"><strong>行业整体判断：</strong>磷化工行业处于景气高位，磷矿石供需缺口持续（2025年供需比98.3%），高品位磷矿价格预计维持高位。四标中云天化作为龙头具备最大安全边际，芭田股份弹性最大。建议关注磷矿石价格走势作为行业跟踪核心指标。</p>
+    </div>
+  </div>
+
+  <!-- Key Catalysts -->
+  <div class="card">
+    <h3>⏰ 后续关键跟踪节点</h3>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div class="data-item">
+        <div class="data-label">云天化</div>
+        <div class="data-value">磷肥出口政策变化；磷矿石价格走势；2026年半年报(预计8月)</div>
+      </div>
+      <div class="data-item">
+        <div class="data-label">芭田股份</div>
+        <div class="data-value">磷矿产能释放节奏；2026年半年报毛利率变化；新能源业务进展</div>
+      </div>
+      <div class="data-item">
+        <div class="data-label">川恒股份</div>
+        <div class="data-value">毛利率能否企稳；磷酸铁盈利情况；2026年半年报利润拐点信号</div>
+      </div>
+      <div class="data-item">
+        <div class="data-label">ST司特</div>
+        <div class="data-value">ST摘帽进展；职务侵占案件调查结论；重大资产重组可能性</div>
+      </div>
+    </div>
+    <div style="margin-top:16px; font-size:13px; color:var(--text-secondary);">
+      <strong>行业关键指标：</strong>磷矿石(30%品位)价格、磷酸一铵/二铵价格、磷肥出口政策、新能源磷酸铁需求
+    </div>
+  </div>
+
+  <div class="footer">
+    本报告基于公开数据自动生成，仅供研究参考，不构成任何投资建议。<br>
+    报告中的评分、建议均为基于历史数据的模型推算，不代表未来实际表现。投资有风险，入市需谨慎。<br>
+    数据来源：Web搜索公开数据、NeoData金融数据 | 数据截止：2026-05-08 | 分析框架：Stock Aesthetic Checker
+  </div>
+
+</div>
+</body>
+</html>
