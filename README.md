@@ -2,8 +2,6 @@
 
 基于华研究体系的 AI 研究平台，覆盖 A 股、美股、港股的券商级研究报告。
 
-> 🚀 GitHub Pages 部署中，请稍候...
-
 🌐 **GitHub Pages**: `https://FDUJiaG.github.io/HuaStock/`
 
 ---

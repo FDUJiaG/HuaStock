@@ -670,6 +670,94 @@ function generateIndex(reports, categoryRawCounts) {
 </html>`;
 }
 
+// ─── Back-to-Home Button Injection ─────────────────────────────────
+// Injects a floating "返回首页" button into each report HTML file.
+// Returns true if injected, false if already present (idempotent).
+function injectBackButton(filePath) {
+  const absPath = path.join(__dirname, filePath);
+  let content = fs.readFileSync(absPath, 'utf-8');
+
+  // Skip if already injected (idempotent)
+  if (content.indexOf('huastock-back-btn') !== -1) return false;
+
+  // Calculate relative path to root (where index.html lives)
+  // filePath = "Stocks/A-Shares/xxx.html" → depth=2 → "../index.html"
+  const segments = filePath.split('/').filter(s => s.length > 0);
+  let indexPath;
+  if (segments.length <= 1) {
+    indexPath = 'index.html';
+  } else {
+    const ups = segments.slice(0, -1).map(() => '..').join('/');
+    indexPath = ups + '/index.html';
+  }
+
+  const btnHTML =
+    `\n<!-- HuaStock: back-to-home button -->\n` +
+    `<a href="${indexPath}" class="huastock-back-btn" target="_self">\n` +
+    `  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">\n` +
+    `    <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>\n` +
+    `  </svg>\n` +
+    `  返回首页\n` +
+    `</a>\n` +
+    `<style>\n` +
+    `  .huastock-back-btn {\n` +
+    `    position: fixed !important;\n` +
+    `    bottom: 28px !important;\n` +
+    `    right: 28px !important;\n` +
+    `    z-index: 99999 !important;\n` +
+    `    display: inline-flex !important;\n` +
+    `    align-items: center !important;\n` +
+    `    gap: 6px !important;\n` +
+    `    padding: 10px 22px !important;\n` +
+    `    background: rgba(10, 22, 40, 0.75) !important;\n` +
+    `    color: #c9a84c !important;\n` +
+    `    border: 1px solid rgba(201, 168, 76, 0.25) !important;\n` +
+    `    border-radius: 999px !important;\n` +
+    `    font-family: "Inter", "Noto Sans SC", system-ui, sans-serif !important;\n` +
+    `    font-size: 13px !important;\n` +
+    `    font-weight: 600 !important;\n` +
+    `    text-decoration: none !important;\n` +
+    `    backdrop-filter: blur(8px) !important;\n` +
+    `    -webkit-backdrop-filter: blur(8px) !important;\n` +
+    `    box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important;\n` +
+    `    transition: all 0.25s ease !important;\n` +
+    `    cursor: pointer !important;\n` +
+    `    user-select: none !important;\n` +
+    `  }\n` +
+    `  .huastock-back-btn:hover {\n` +
+    `    background: rgba(10, 22, 40, 0.95) !important;\n` +
+    `    border-color: rgba(201, 168, 76, 0.5) !important;\n` +
+    `    box-shadow: 0 6px 28px rgba(201, 168, 76, 0.18) !important;\n` +
+    `    transform: translateY(-2px) !important;\n` +
+    `  }\n` +
+    `  .huastock-back-btn svg {\n` +
+    `    transition: transform 0.2s ease !important;\n` +
+    `  }\n` +
+    `  .huastock-back-btn:hover svg {\n` +
+    `    transform: translateX(-3px) !important;\n` +
+    `  }\n` +
+    `</style>\n`;
+
+  // Inject before </body>, or as fallback before </html>
+  const closeBody = '</body>';
+  const closeHtml = '</html>';
+  const insertPos = content.lastIndexOf(closeBody);
+  if (insertPos !== -1) {
+    content = content.slice(0, insertPos) + btnHTML + '\n' + content.slice(insertPos);
+  } else {
+    const pos = content.lastIndexOf(closeHtml);
+    if (pos !== -1) {
+      content = content.slice(0, pos) + btnHTML + '\n' + content.slice(pos);
+    } else {
+      // No </body> or </html> — append at end
+      content += '\n' + btnHTML;
+    }
+  }
+
+  fs.writeFileSync(absPath, content, 'utf-8');
+  return true;
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────
 function main() {
   console.log('🔍 扫描研究报告...');
@@ -729,12 +817,32 @@ function main() {
   const html = generateIndex(reports, categoryRawCounts);
   fs.writeFileSync(OUTPUT_HTML, html, 'utf-8');
 
+  // Inject back-to-home button into each report HTML
+  console.log('🔗 注入返回首页按钮...');
+  let injected = 0;
+  let skipped = 0;
+  const seenPaths = new Set();
+  for (const f of raw) {
+    if (seenPaths.has(f.filePath)) continue;
+    seenPaths.add(f.filePath);
+    try {
+      if (injectBackButton(f.filePath)) {
+        injected++;
+      } else {
+        skipped++;
+      }
+    } catch (e) {
+      console.warn('   ⚠️  注入失败: ' + f.fileName);
+    }
+  }
+
   const sizeKb = (Buffer.byteLength(html, 'utf-8') / 1024).toFixed(1);
   const uniqueCount = reports.length;
   const rawCount = Object.values(categoryRawCounts).reduce((a, b) => a + b, 0);
-  console.log(`✅ 构建完成！index.html (${sizeKb} KB) 已生成`);
-  console.log(`   📊 ${uniqueCount} 份独立报告${rawCount > uniqueCount ? `（${rawCount} 次文件分布，已去重）` : ''}`);
-  console.log(`🌐 打开 index.html 即可浏览研究报告库`);
+  console.log('✅ 构建完成！index.html (' + sizeKb + ' KB) 已生成');
+  console.log('   📊 ' + uniqueCount + ' 份独立报告' + (rawCount > uniqueCount ? '（' + rawCount + ' 次文件分布，已去重）' : ''));
+  console.log('   🔗 返回首页按钮: ' + injected + ' 份注入' + (skipped > 0 ? '（' + skipped + ' 份已有，已跳过）' : ''));
+  console.log('🌐 打开 index.html 即可浏览研究报告库');
 }
 
 main();
