@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>元隆雅图(002878.SZ) 综合分析报告</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --primary: #c0392b;
+    --primary-dark: #96281b;
+    --accent: #e74c3c;
+    --bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+    --border: #e0e0e0;
+    --positive: #e74c3c;
+    --negative: #27ae60;
+    --warning: #f39c12;
+    --info: #3498db;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Microsoft YaHei', 'PingFang SC', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+  }
+  .header {
+    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 50%, #96281b 100%);
+    color: #fff;
+    padding: 48px 0 36px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+    animation: pulse 8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  .header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 2px;
+  }
+  .header .subtitle {
+    font-size: 16px;
+    opacity: 0.9;
+    margin-top: 8px;
+    position: relative;
+    z-index: 1;
+  }
+  .header .meta {
+    font-size: 13px;
+    opacity: 0.7;
+    margin-top: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
+  .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    padding: 28px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
+  .card-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-title .badge {
+    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 12px;
+    background: var(--primary);
+    color: #fff;
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  /* Summary Banner */
+  .summary-banner {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: #fff;
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 24px;
+    align-items: center;
+  }
+  .summary-banner .grade-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    font-weight: 800;
+    border: 4px solid #fff;
+    background: rgba(255,255,255,0.1);
+  }
+  .grade-circle.grade-d { border-color: #e74c3c; color: #e74c3c; background: rgba(231,76,60,0.15); }
+  .grade-circle.grade-c { border-color: #f39c12; color: #f39c12; background: rgba(243,156,18,0.15); }
+  .summary-banner .info h2 { font-size: 22px; margin-bottom: 6px; }
+  .summary-banner .info p { font-size: 14px; opacity: 0.85; line-height: 1.6; }
+  .summary-banner .verdict { text-align: right; }
+  .summary-banner .verdict .tag {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .tag.avoid { background: #e74c3c; color: #fff; }
+  .tag.hold { background: #f39c12; color: #fff; }
+  .tag.watch { background: #3498db; color: #fff; }
+  .tag.buy { background: #27ae60; color: #fff; }
+
+  /* Score Bar */
+  .score-bar-wrap { margin: 6px 0; }
+  .score-bar-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 3px; }
+  .score-bar { height: 8px; background: #ecf0f1; border-radius: 4px; overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+  .fill-high { background: linear-gradient(90deg, #27ae60, #2ecc71); }
+  .fill-medium { background: linear-gradient(90deg, #f39c12, #e67e22); }
+  .fill-low { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+
+  /* Status Badge */
+  .status-badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+  .status-pass { background: #d4edda; color: #155724; }
+  .status-partial { background: #fff3cd; color: #856404; }
+  .status-fail { background: #f8d7da; color: #721c24; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #eee; }
+  th { background: #f8f9fa; font-weight: 600; color: #555; }
+  .positive { color: var(--positive); font-weight: 600; }
+  .negative { color: var(--negative); font-weight: 600; }
+  .highlight { background: #fff9f0; }
+
+  /* Financial Cards */
+  .fin-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+  .fin-card .value { font-size: 22px; font-weight: 700; margin: 4px 0; }
+  .fin-card .label { font-size: 12px; color: #7f8c8d; }
+  .fin-card .change { font-size: 13px; font-weight: 600; }
+
+  /* Radar Chart */
+  .chart-container { max-width: 400px; margin: 0 auto; }
+
+  /* Risk Flags */
+  .risk-item {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border-left: 4px solid;
+  }
+  .risk-fatal { background: #fdf0ef; border-color: #e74c3c; }
+  .risk-watch { background: #fef9e7; border-color: #f39c12; }
+  .risk-info { background: #eaf2f8; border-color: #3498db; }
+
+  /* Catalyst */
+  .catalyst-item {
+    display: flex; gap: 12px; padding: 10px 0;
+    border-bottom: 1px solid #eee;
+  }
+  .catalyst-item:last-child { border-bottom: none; }
+  .catalyst-icon { font-size: 20px; }
+  .catalyst-type {
+    display: inline-block; font-size: 11px; padding: 1px 8px;
+    border-radius: 8px; margin-bottom: 4px;
+  }
+  .catalyst-high { background: #d4edda; color: #155724; }
+  .catalyst-mid { background: #fff3cd; color: #856404; }
+  .catalyst-low { background: #e2e3e5; color: #383d41; }
+
+  /* Verdict Box */
+  .verdict-box {
+    text-align: center; padding: 32px;
+    border-radius: 12px; margin-bottom: 20px;
+  }
+  .verdict-box.buy { background: linear-gradient(135deg, #d4edda, #c3e6cb); }
+  .verdict-box.hold { background: linear-gradient(135deg, #fff3cd, #ffeaa7); }
+  .verdict-box.avoid { background: linear-gradient(135deg, #f8d7da, #f5c6cb); }
+  .verdict-box .big { font-size: 48px; margin-bottom: 8px; }
+  .verdict-box h2 { font-size: 24px; margin-bottom: 6px; }
+  .verdict-box p { color: #666; font-size: 14px; }
+
+  /* Section */
+  .section-title {
+    font-size: 18px; font-weight: 700; color: var(--primary);
+    margin: 28px 0 14px; padding-left: 12px;
+    border-left: 4px solid var(--primary);
+  }
+  .subsection-title {
+    font-size: 16px; font-weight: 600; color: #444;
+    margin: 18px 0 10px;
+  }
+
+  /* Dimension Box */
+  .dim-box {
+    padding: 18px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+    margin-bottom: 14px;
+  }
+
+  /* Insights */
+  .insight-list { margin: 8px 0; padding-left: 20px; }
+  .insight-list li { margin-bottom: 6px; font-size: 14px; }
+  .check { color: var(--positive); }
+  .cross { color: var(--negative); }
+
+  /* Price Target */
+  .price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .price-item { text-align: center; padding: 12px; border-radius: 8px; background: #f8f9fa; }
+  .price-item .num { font-size: 24px; font-weight: 700; color: var(--primary); }
+  .price-item .lbl { font-size: 12px; color: #7f8c8d; margin-top: 4px; }
+
+  /* 30维标签 */
+  .dim-tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; margin: 2px; }
+  .dim-excellent { background: #d4edda; color: #155724; }
+  .dim-good { background: #d1ecf1; color: #0c5460; }
+  .dim-fair { background: #fff3cd; color: #856404; }
+  .dim-poor { background: #f8d7da; color: #721c24; }
+
+  .two-col { display: flex; gap: 20px; }
+  .two-col > * { flex: 1; }
+  @media (max-width: 768px) { .two-col { flex-direction: column; } }
+
+  .footnote { text-align: center; padding: 20px; color: #95a5a6; font-size: 12px; border-top: 1px solid #eee; margin-top: 30px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📊 元隆雅图 (002878.SZ) 综合分析报告</h1>
+  <div class="subtitle">融合股票审美六维度 · 业绩点评 · 30维度深度分析</div>
+  <div class="meta">报告日期：2026年5月8日 ｜ 数据截止：2026年5月8日 ｜ 来源：NeoData / 公开信息</div>
+</div>
+
+<div class="container">
+
+<!-- ====== 综合分析打分概要 ====== -->
+<div class="summary-banner">
+  <div class="grade-circle grade-d">D</div>
+  <div class="info">
+    <h2>元隆雅图 · 综合评分 23.8 / 100</h2>
+    <p>公司当前处于战略转型期，连续两年亏损 (2024-2025)，盈利能力承压。但营收保持增长，IP文创+特许业务布局有亮点，2026年体育大年（世运会、全运会、世界杯）构成潜在催化。当前估值因亏损无意义（PE为负），需等待业绩拐点信号。</p>
+  </div>
+  <div class="verdict">
+    <div class="tag avoid">🚫 暂不参与</div>
+    <div style="font-size:12px;opacity:0.7;margin-top:6px;">D级 · 等待业绩拐点</div>
+  </div>
+</div>
+
+<!-- ====== 核心数据速览 ====== -->
+<div class="card">
+  <div class="card-title">📋 公司速览</div>
+  <div class="grid-3">
+    <div class="fin-card">
+      <div class="value">¥19.80</div>
+      <div class="label">最新股价 (2026/05/08)</div>
+      <div class="change positive">+2.11%</div>
+    </div>
+    <div class="fin-card">
+      <div class="value">51.87亿</div>
+      <div class="label">总市值</div>
+      <div class="change">流通市值 46.71亿</div>
+    </div>
+    <div class="fin-card">
+      <div class="value">-139.81x</div>
+      <div class="label">PE(TTM)</div>
+      <div class="change" style="color:#e74c3c;">亏损 · 估值无效</div>
+    </div>
+    <div class="fin-card">
+      <div class="value">4.15x</div>
+      <div class="label">PB(市净率)</div>
+      <div class="change">高于行业中位数</div>
+    </div>
+    <div class="fin-card">
+      <div class="value">0.00%</div>
+      <div class="label">股息率 (TTM)</div>
+      <div class="change">近三年仅1次分红</div>
+    </div>
+    <div class="fin-card">
+      <div class="value">30.08亿</div>
+      <div class="label">2025年营收</div>
+      <div class="change positive">+11.00% YoY</div>
+    </div>
+  </div>
+  <div style="margin-top:12px; font-size:13px; color:#7f8c8d; background:#f8f9fa; padding:10px; border-radius:6px;">
+    <strong>申万行业：</strong>传媒 — 广告营销 — 营销代理 ｜ <strong>上市日期：</strong>2017-06-06
+    ｜ <strong>实控人：</strong>孙震 ｜ <strong>注册地：</strong>北京
+    ｜ <strong>概念标签：</strong>IP文创 · 谷子经济 · 世界杯 · 亚冬会 · 虚拟现实 · AI营销 · 抖音概念
+  </div>
+</div>
+
+<!-- ====== 股票审美六维度评分 ====== -->
+<div class="card">
+  <div class="card-title">🧬 股票审美六维度评分 <span class="badge">Aesthetic Checker</span></div>
+  <p style="font-size:13px; color:#7f8c8d; margin-bottom:14px;">基于价值投资审美框架，六大维度加权评分。A股红色=正面，绿色=负面。</p>
+
+  <div class="dim-box" style="border-left: 4px solid #e74c3c;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <div><strong>D1. 内部人增持</strong> <span class="status-badge status-fail">FAIL 15/100</span></div>
+      <span style="font-size:13px; color:#7f8c8d;">权重 12% · 加权得分 1.8</span>
+    </div>
+    <div class="score-bar-wrap">
+      <div class="score-bar"><div class="score-bar-fill fill-low" style="width:15%"></div></div>
+    </div>
+    <ul class="insight-list" style="margin-top:6px;">
+      <li><span class="cross">✗</span> 近三年未发现大股东/高管实质性增持行为</li>
+      <li><span class="cross">✗</span> 控股股东质押率 6.21%，虽不高但存在质押延期</li>
+      <li><span class="check">✓</span> 第二期员工持股计划已于2026年5月出售完毕</li>
+    </ul>
+  </div>
+
+  <div class="dim-box" style="border-left: 4px solid #e74c3c;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <div><strong>D2. 股息率+回购注销</strong> <span class="status-badge status-fail">FAIL 10/100</span></div>
+      <span style="font-size:13px; color:#7f8c8d;">权重 20% · 加权得分 2.0</span>
+    </div>
+    <div class="score-bar-wrap">
+      <div class="score-bar"><div class="score-bar-fill fill-low" style="width:10%"></div></div>
+    </div>
+    <ul class="insight-list" style="margin-top:6px;">
+      <li><span class="cross">✗</span> 2024、2025年连续两年"不分配不转增"</li>
+      <li><span class="cross">✗</span> 近三年仅2023年分红10派0.5元（合计约1,250万元）</li>
+      <li><span class="cross">✗</span> 未发现股份回购注销记录</li>
+      <li><span class="check">✓</span> 累计派现募资比45.84%（上市以来累计派现4.00亿），历史分红记录尚可</li>
+    </ul>
+  </div>
+
+  <div class="dim-box" style="border-left: 4px solid #f39c12;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <div><strong>D3. 竞争优势</strong> <span class="status-badge status-partial">PARTIAL 42/100</span></div>
+      <span style="font-size:13px; color:#7f8c8d;">权重 28% · 加权得分 11.8</span>
+    </div>
+    <div class="score-bar-wrap">
+      <div class="score-bar"><div class="score-bar-fill fill-medium" style="width:42%"></div></div>
+    </div>
+    <ul class="insight-list" style="margin-top:6px;">
+      <li><span class="check">✓</span> 国内促销品/礼赠品行业龙头，深耕B端大客户（快消、互联网等行业）</li>
+      <li><span class="check">✓</span> 环球影业、NBA、上影元等头部IP合作资源，形成"国潮+国际"IP矩阵</li>
+      <li><span class="check">✓</span> 拥有亚冬会、世运会、全运会等重大赛会特许经营资质，壁垒较高</li>
+      <li><span class="cross">✗</span> 毛利率仅12.42% (2025)，在广告营销行业中偏低（行业均值17.91%）</li>
+      <li><span class="cross">✗</span> 行业竞争激烈，新媒体营销受字节、腾讯等平台挤压</li>
+      <li><span class="cross">✗</span> 海外收入占比不明，但整体业务以国内为主</li>
+    </ul>
+  </div>
+
+  <div class="dim-box" style="border-left: 4px solid #e74c3c;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <div><strong>D4. TTM市盈率</strong> <span class="status-badge status-fail">FAIL 0/100</span></div>
+      <span style="font-size:13px; color:#7f8c8d;">权重 20% · 加权得分 0.0</span>
+    </div>
+    <div class="score-bar-wrap">
+      <div class="score-bar"><div class="score-bar-fill fill-low" style="width:0%"></div></div>
+    </div>
+    <ul class="insight-list" style="margin-top:6px;">
+      <li><span class="cross">✗</span> PE(TTM) = -139.81x（亏损公司，PE无效）</li>
+      <li><span class="cross">✗</span> 连续两年归母净利润为负（2024年-2.45亿，2025年-0.30亿）</li>
+      <li><span class="cross">✗</span> 亏损公司自动得分为0（按审美规则）</li>
+      <li><span class="check">✓</span> PB=4.15x，处于近5年60.3%分位，略高于行业中位数</li>
+      <li><span class="check">✓</span> 从营收增长和亏损收窄趋势看，估值底部或已出现</li>
+    </ul>
+  </div>
+
+  <div class="dim-box" style="border-left: 4px solid #f39c12;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <div><strong>D5. 成长动能</strong> <span class="status-badge status-partial">PARTIAL 45/100</span></div>
+      <span style="font-size:13px; color:#7f8c8d;">权重 12% · 加权得分 5.4</span>
+    </div>
+    <div class="score-bar-wrap">
+      <div class="score-bar"><div class="score-bar-fill fill-medium" style="width:45%"></div></div>
+    </div>
+    <ul class="insight-list" style="margin-top:6px;">
+      <li><span class="check">✓</span> 2025年营收30.08亿（+11.00%），连续三年增长</li>
+      <li><span class="check">✓</span> 亏损大幅收窄：归母净利润从-2.45亿收窄至-0.30亿（+87.92%）</li>
+      <li><span class="check">✓</span> 特许纪念品业务高增（25H1 +74.50%），受益于赛会经济</li>
+      <li><span class="check">✓</span> 2026年体育大年：世运会、大湾区全运会、世界杯IP催化</li>
+      <li><span class="check">✓</span> 券商预测25-27年归母净利0.78~1.64亿（华金证券），拐点在即</li>
+      <li><span class="cross">✗</span> 2026Q1营收同比-8.50%，归母净利润-302万（同比-166.68%）</li>
+      <li><span class="cross">✗</span> 新媒体营销竞争加剧，收入大幅下滑</li>
+      <li><span class="cross">✗</span> 3年营收CAGR为-2.95%，长期增长乏力</li>
+    </ul>
+  </div>
+
+  <div class="dim-box" style="border-left: 4px solid #f39c12;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <div><strong>D6. 财务健康与筹码结构</strong> <span class="status-badge status-partial">PARTIAL 35/100</span></div>
+      <span style="font-size:13px; color:#7f8c8d;">权重 8% · 加权得分 2.8</span>
+    </div>
+    <div class="score-bar-wrap">
+      <div class="score-bar"><div class="score-bar-fill fill-medium" style="width:35%"></div></div>
+    </div>
+    <ul class="insight-list" style="margin-top:6px;">
+      <li><span class="check">✓</span> 经营现金流尚可：2025年经营活动现金流净额2.35亿</li>
+      <li><span class="check">✓</span> 流动比率1.84，速动比率1.55，短期偿债能力良好</li>
+      <li><span class="check">✓</span> 商誉已清零（2024年全额计提1.71亿减值），未来减值风险消除</li>
+      <li><span class="cross">✗</span> 有息负债率50.86%，负债率偏高</li>
+      <li><span class="cross">✗</span> 股东户数持续增长（4.07万→4.39万），筹码分散</li>
+      <li><span class="cross">✗</span> 机构持股仅0.57%，主流机构关注度极低</li>
+      <li><span class="cross">✗</span> 自由现金流为负（2025年自由现金流-1.70亿）</li>
+    </ul>
+  </div>
+
+  <div style="margin-top:12px; padding:14px; background:#f8f9fa; border-radius:8px;">
+    <strong>加权总分：</strong>15×12% + 10×20% + 42×28% + 0×20% + 45×12% + 35×8%
+    = 1.8 + 2.0 + 11.8 + 0.0 + 5.4 + 2.8 = <strong style="font-size:20px; color:#e74c3c;">23.8</strong> / 100
+    → <strong>D级 · 暂不参与</strong>
+  </div>
+</div>
+
+<!-- ====== 雷达图 ====== -->
+<div class="card">
+  <div class="card-title">🕸️ 六维度雷达图</div>
+  <div class="chart-container">
+    <canvas id="radarChart"></canvas>
+  </div>
+</div>
+
+<!-- ====== 业绩点评 ====== -->
+<div class="card">
+  <div class="card-title">📈 业绩点评 <span class="badge">Earnings Review</span></div>
+
+  <h3 class="section-title">一、核心财务数据</h3>
+  <table>
+    <thead>
+      <tr><th>指标</th><th>2022年</th><th>2023年</th><th>2024年</th><th>2025年</th><th>2026Q1</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>营业收入（亿元）</td>
+        <td>32.90</td>
+        <td>26.74</td>
+        <td>27.10</td>
+        <td class="positive">30.08</td>
+        <td>6.00</td>
+      </tr>
+      <tr>
+        <td>营收同比</td>
+        <td class="positive">+7.59%</td>
+        <td class="negative">-18.72%</td>
+        <td class="positive">+1.35%</td>
+        <td class="positive">+11.00%</td>
+        <td class="negative">-8.50%</td>
+      </tr>
+      <tr>
+        <td>归母净利润（亿元）</td>
+        <td class="positive">1.67</td>
+        <td class="positive">0.08</td>
+        <td class="negative">-2.45</td>
+        <td class="negative">-0.30</td>
+        <td class="negative">-0.03</td>
+      </tr>
+      <tr>
+        <td>归母净利润同比</td>
+        <td class="positive">+29.46%</td>
+        <td class="negative">-95.00%</td>
+        <td class="negative">-3,023%</td>
+        <td class="positive">+87.92%</td>
+        <td class="negative">-166.68%</td>
+      </tr>
+      <tr>
+        <td>毛利率</td>
+        <td>17.58%</td>
+        <td>15.45%</td>
+        <td>12.22%</td>
+        <td>12.42%</td>
+        <td>12.37%</td>
+      </tr>
+      <tr>
+        <td>净利率</td>
+        <td class="positive">5.08%</td>
+        <td>0.31%</td>
+        <td class="negative">-9.04%</td>
+        <td class="negative">-0.76%</td>
+        <td class="negative">-0.50%</td>
+      </tr>
+      <tr>
+        <td>经营性现金流（亿元）</td>
+        <td>-</td>
+        <td>-</td>
+        <td class="positive">2.47</td>
+        <td class="positive">2.35</td>
+        <td>0.26</td>
+      </tr>
+      <tr>
+        <td>EPS（元/股）</td>
+        <td class="positive">0.75</td>
+        <td>0.04</td>
+        <td class="negative">-0.94</td>
+        <td class="negative">-0.11</td>
+        <td class="negative">-0.01</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="font-size:12px; color:#95a5a6; margin-top:6px;">数据来源：NeoData, 公司年报/季报。A股红涨绿跌惯例：红色=正面，绿色=负面。</div>
+
+  <h3 class="section-title">二、分业务分析</h3>
+  <table>
+    <thead>
+      <tr><th>业务板块</th><th>2025年收入(亿元)</th><th>占比</th><th>增长趋势</th><th>毛利率水平</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>礼赠品(促销品)</td>
+        <td>12.45</td>
+        <td>41.38%</td>
+        <td class="positive">稳健增长</td>
+        <td>中等</td>
+      </tr>
+      <tr>
+        <td>促销服务</td>
+        <td>9.85</td>
+        <td>32.74%</td>
+        <td class="positive">高增长（虚拟兑换驱动）</td>
+        <td style="color:#e74c3c;">较低（拉低综合毛利）</td>
+      </tr>
+      <tr>
+        <td>新媒体营销服务</td>
+        <td>6.45</td>
+        <td>21.43%</td>
+        <td class="negative">下滑（竞争加剧）</td>
+        <td>较高（但占比下降）</td>
+      </tr>
+      <tr>
+        <td>IP文创产品</td>
+        <td>0.64</td>
+        <td>2.14%</td>
+        <td class="positive">快速增长</td>
+        <td>较高</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600;">特许纪念品</td>
+        <td>0.58</td>
+        <td>1.93%</td>
+        <td class="positive">+74.50% (25H1)</td>
+        <td class="positive">30.84%（高毛利）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="section-title">三、业绩亮点与隐忧</h3>
+  <div class="two-col">
+    <div style="background:#d4edda; padding:14px; border-radius:8px;">
+      <strong style="color:#155724;">✅ 业绩亮点</strong>
+      <ul style="margin-top:8px; padding-left:18px; font-size:14px;">
+        <li>2025年营收重回30亿，连续8个季度同比增长</li>
+        <li>亏损大幅收窄87.92%，盈利拐点渐近</li>
+        <li>礼赠品+促销服务合计增长63.89% (25H1)</li>
+        <li>特许纪念品毛利率30.84%，盈利质量高</li>
+        <li>2024年商誉已全额减值，包袱卸下</li>
+        <li>经营现金流连续两年为正</li>
+      </ul>
+    </div>
+    <div style="background:#f8d7da; padding:14px; border-radius:8px;">
+      <strong style="color:#721c24;">❌ 核心隐忧</strong>
+      <ul style="margin-top:8px; padding-left:18px; font-size:14px;">
+        <li>连续两年亏损，扣非净利润未见好转</li>
+        <li>毛利率持续承压（从17.58%降至12.42%）</li>
+        <li>2026Q1营收同比-8.50%，开局不利</li>
+        <li>员工职务侵占案（涉1575万减值）</li>
+        <li>新媒体营销业务大幅萎缩</li>
+        <li>股权结构分散，机构关注度低</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 30维度深度分析摘要 ====== -->
+<div class="card">
+  <div class="card-title">🔬 30维度深度分析摘要 <span class="badge">30-D Analysis</span></div>
+  <p style="font-size:13px; color:#7f8c8d; margin-bottom:12px;">基于六大模块30个维度的系统性评估（完整版见内部分析文档）</p>
+
+  <table>
+    <thead>
+      <tr><th>模块</th><th>维度</th><th>评分</th><th>核心判断</th></tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td rowspan="2"><strong>业务可理解性</strong></td>
+        <td>1. 业务清晰度</td>
+        <td><span class="dim-tag dim-good">良</span></td>
+        <td>促销品+IP文创双轮驱动，商业模式易于理解</td>
+      </tr>
+      <tr>
+        <td>2. 行业吸引力</td>
+        <td><span class="dim-tag dim-fair">中</span></td>
+        <td>广告营销行业竞争激烈，进入壁垒不高</td>
+      </tr>
+      <tr>
+        <td rowspan="3"><strong>商业模式</strong></td>
+        <td>3. 客户集中度</td>
+        <td><span class="dim-tag dim-fair">中</span></td>
+        <td>大客户依赖度较高，快消/互联网客户集中</td>
+      </tr>
+      <tr>
+        <td>4. 收入可预测性</td>
+        <td><span class="dim-tag dim-fair">中</span></td>
+        <td>促销服务周期性较强，赛会特许收入弹性大</td>
+      </tr>
+      <tr>
+        <td>5. 定价权</td>
+        <td><span class="dim-tag dim-poor">差</span></td>
+        <td>毛利率持续下滑，缺乏明显定价权</td>
+      </tr>
+      <tr>
+        <td rowspan="4"><strong>竞争优势</strong></td>
+        <td>6. 品牌/IP资源</td>
+        <td><span class="dim-tag dim-good">良</span></td>
+        <td>环球、NBA、亚冬会等IP合作是核心壁垒</td>
+      </tr>
+      <tr>
+        <td>7. 供应链整合</td>
+        <td><span class="dim-tag dim-good">良</span></td>
+        <td>礼品行业深耕多年，供应链管理能力突出</td>
+      </tr>
+      <tr>
+        <td>8. 行业地位</td>
+        <td><span class="dim-tag dim-fair">中</span></td>
+        <td>促销品细分赛道龙头，但行业整体门槛低</td>
+      </tr>
+      <tr>
+        <td>9. 竞争格局</td>
+        <td><span class="dim-tag dim-poor">差</span></td>
+        <td>广告营销行业高度分散，价格竞争激烈</td>
+      </tr>
+      <tr>
+        <td rowspan="5"><strong>财务质量</strong></td>
+        <td>10. 盈利能力</td>
+        <td><span class="dim-tag dim-poor">差</span></td>
+        <td>连续亏损，ROE-2.34%，净利率-0.76%</td>
+      </tr>
+      <tr>
+        <td>11. 成长性</td>
+        <td><span class="dim-tag dim-fair">中</span></td>
+        <td>营收增长但利润承压，3年CAGR为负</td>
+      </tr>
+      <tr>
+        <td>12. 现金流</td>
+        <td><span class="dim-tag dim-good">良</span></td>
+        <td>经营现金流连续为正，但自由现金流为负</td>
+      </tr>
+      <tr>
+        <td>13. 资产负债</td>
+        <td><span class="dim-tag dim-fair">中</span></td>
+        <td>负债率46%，有息负债率51%，偏高</td>
+      </tr>
+      <tr>
+        <td>14. 商誉风险</td>
+        <td><span class="dim-tag dim-good">良</span></td>
+        <td>商誉已清零，未来减值风险消除</td>
+      </tr>
+      <tr>
+        <td rowspan="3"><strong>管理层/治理</strong></td>
+        <td>15. 实控人控制力</td>
+        <td><span class="dim-tag dim-good">良</span></td>
+        <td>孙震直接+间接持股约44%，控制力较强</td>
+      </tr>
+      <tr>
+        <td>16. 内部治理</td>
+        <td><span class="dim-tag dim-poor">差</span></td>
+        <td>员工职务侵占案暴露内控缺陷</td>
+      </tr>
+      <tr>
+        <td>17. 股权激励</td>
+        <td><span class="dim-tag dim-fair">中</span></td>
+        <td>有员工持股计划，但已全部出售</td>
+      </tr>
+      <tr>
+        <td rowspan="4"><strong>估值/增长</strong></td>
+        <td>18. 估值水平</td>
+        <td><span class="dim-tag dim-poor">差</span></td>
+        <td>PE无效，PB高于行业中位数</td>
+      </tr>
+      <tr>
+        <td>19. 增长前景</td>
+        <td><span class="dim-tag dim-fair">中</span></td>
+        <td>IP文创+赛会特许+世界杯催化，但待验证</td>
+      </tr>
+      <tr>
+        <td>20. 股东回报</td>
+        <td><span class="dim-tag dim-poor">差</span></td>
+        <td>连续两年不分红，无回购</td>
+      </tr>
+      <tr>
+        <td>21. 事件催化</td>
+        <td><span class="dim-tag dim-good">良</span></td>
+        <td>2026年多个赛会+世界杯构成催化剂</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ====== 投资结论与估值 ====== -->
+<div class="card">
+  <div class="card-title">💰 投资结论与估值 <span class="badge">Investment Conclusion</span></div>
+
+  <div class="verdict-box avoid">
+    <div class="big">🚫</div>
+    <h2>暂不参与 — 等待业绩拐点信号</h2>
+    <p>元隆雅图连续两年亏损，PE无效，估值难以定价。公司处于战略转型期，IP文创业务虽有亮点但规模尚小（占比<5%），尚不足以驱动整体盈利拐点。建议等待以下信号确认后再做评估。</p>
+  </div>
+
+  <div class="section-title">预估合理估值</div>
+  <div style="font-size:13px; color:#7f8c8d; margin-bottom:10px;">
+    基于券商一致预期（2026E EPS约0.30~0.47元）与可比公司PE中位数55x~60x
+  </div>
+  <div class="price-grid">
+    <div class="price-item">
+      <div class="num">—</div>
+      <div class="lbl">当前合理价值<br><span style="font-size:11px;">(亏损无法定价)</span></div>
+    </div>
+    <div class="price-item">
+      <div class="num">16.5~25.8元</div>
+      <div class="lbl">券商目标价区间<br><span style="font-size:11px;">(华泰/华金)</span></div>
+    </div>
+    <div class="price-item">
+      <div class="num" style="color:#f39c12;">< 15.0元</div>
+      <div class="lbl">安全买入价（参考）<br><span style="font-size:11px;">(D级需25%+安全边际)</span></div>
+    </div>
+  </div>
+  <div style="font-size:12px; color:#7f8c8d; margin-top:8px;">
+    * 当前股价19.80元，处于券商目标价区间中上部。以D级评分需25%以上安全边际计算，安全买入价约15元以下。需等待盈利拐点确认后重新评估。
+  </div>
+
+  <div class="section-title">核心观察清单（待确认信号）</div>
+  <div style="background:#fef9e7; padding:16px; border-radius:8px; border-left:4px solid #f39c12;">
+    <ul style="padding-left:20px;">
+      <li><strong>🟡 盈利拐点确认：</strong>2026年单季度归母净利润转正，且连续两个季度维持正利润</li>
+      <li><strong>🟡 毛利率企稳回升：</strong>综合毛利率回升至14%以上，结构性改善</li>
+      <li><strong>🟡 IP文创规模化：</strong>IP文创+特许纪念品占比突破10%，收入贡献达3亿+</li>
+      <li><strong>🟡 赛会特许收入兑现：</strong>世运会、全运会、世界杯特许收入超预期</li>
+      <li><strong>🟡 分红/回购重启：</strong>恢复现金分红或启动股份回购（注销式）</li>
+      <li><strong>🟡 内控改善：</strong>职务侵占案结案、内控缺陷整改完成</li>
+    </ul>
+  </div>
+
+  <div class="section-title">催化剂事件</div>
+  <div id="catalystList">
+    <div class="catalyst-item">
+      <span class="catalyst-icon">🏆</span>
+      <div>
+        <span class="catalyst-type catalyst-high">高影响</span>
+        <strong>2026年成都世运会（8月）</strong> — 特许纪念品收入高峰
+        <div class="catalyst-timing" style="font-size:12px; color:#7f8c8d;">预计兑现时间：2026Q3</div>
+      </div>
+    </div>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">⚽</span>
+      <div>
+        <span class="catalyst-type catalyst-high">高影响</span>
+        <strong>2026年美加墨世界杯（6-7月）</strong> — 营销大客户投放增加
+        <div class="catalyst-timing" style="font-size:12px; color:#7f8c8d;">预计兑现时间：2026Q2-Q3</div>
+      </div>
+    </div>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">🏅</span>
+      <div>
+        <span class="catalyst-type catalyst-high">高影响</span>
+        <strong>粤港澳大湾区全运会（11月）</strong> — 特许生产+零售资质
+        <div class="catalyst-timing" style="font-size:12px; color:#7f8c8d;">预计兑现时间：2026Q4</div>
+      </div>
+    </div>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">🎬</span>
+      <div>
+        <span class="catalyst-type catalyst-mid">中影响</span>
+        <strong>C端"元隆元创"零售扩张</strong> — 线下门店+自动贩售机+电商
+      </div>
+    </div>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">🤖</span>
+      <div>
+        <span class="catalyst-type catalyst-mid">中影响</span>
+        <strong>AI垂类模型商业化</strong> — 营销AIGC降本增效
+      </div>
+    </div>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">🎭</span>
+      <div>
+        <span class="catalyst-type catalyst-low">低影响</span>
+        <strong>圆明园VR沉浸式体验</strong> — 数字IP运营新探索
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 券商观点 ====== -->
+<div class="card">
+  <div class="card-title">📚 券商观点汇总</div>
+  <table>
+    <thead>
+      <tr><th>券商</th><th>评级</th><th>25E EPS</th><th>26E EPS</th><th>目标价</th><th>核心逻辑</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>华泰证券</td>
+        <td class="positive">增持</td>
+        <td>0.36元</td>
+        <td>0.43元</td>
+        <td>21.65元</td>
+        <td>大IP+科技战略推进，IP业务亮眼</td>
+      </tr>
+      <tr>
+        <td>华金证券</td>
+        <td class="positive">买入</td>
+        <td>0.30元</td>
+        <td>0.46元</td>
+        <td>—</td>
+        <td>收入增长稳健，关注特许纪念品与C端</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="font-size:12px; color:#95a5a6; margin-top:6px;">注：上述盈利预测及目标价为券商观点，不构成投资建议。实际业绩可能与预测存在显著偏差。</div>
+</div>
+
+<!-- ====== 风险提示 ====== -->
+<div class="card">
+  <div class="card-title">⚠️ 风险提示</div>
+  <div class="risk-item risk-fatal">
+    <strong>🔴 致命风险：持续亏损与盈利拐点不确定性</strong>
+    <div style="font-size:13px; color:#666; margin-top:4px;">公司已连续两年亏损，2026Q1开局仍亏损。IP文创/特许业务能否驱动整体盈利存在较大不确定性。若赛会特许收入不及预期，盈利拐点可能推迟至2027年或更晚。</div>
+  </div>
+  <div class="risk-item risk-fatal">
+    <strong>🔴 致命风险：内控缺陷与法律诉讼风险</strong>
+    <div style="font-size:13px; color:#666; margin-top:4px;">员工职务侵占案（涉1575万元）暴露内控缺陷，投资者索赔已启动（凡2024.4.19-2025.7.11期间买入者可索赔），存在潜在赔偿风险。</div>
+  </div>
+  <div class="risk-item risk-watch">
+    <strong>🟡 关注风险：毛利率持续承压</strong>
+    <div style="font-size:13px; color:#666; margin-top:4px;">毛利率从2022年17.58%持续下滑至12.42%，低毛利促销服务（虚拟兑换）占比提升，高毛利新媒体营销萎缩，结构性恶化趋势未扭转。</div>
+  </div>
+  <div class="risk-item risk-watch">
+    <strong>🟡 关注风险：行业竞争加剧</strong>
+    <div style="font-size:13px; color:#666; margin-top:4px;">广告营销行业竞争白热化，蓝色光标、三人行等巨头挤压。新媒体营销收入持续下滑，核心子公司谦玛网络增长乏力。</div>
+  </div>
+  <div class="risk-item risk-watch">
+    <strong>🟡 关注风险：有息负债率偏高</strong>
+    <div style="font-size:13px; color:#666; margin-top:4px;">有息负债率50.86%，自由现金流为负，连续亏损状态下财务灵活性受限。</div>
+  </div>
+  <div class="risk-item risk-info">
+    <strong>ℹ️ 信息提示：股权筹码分散</strong>
+    <div style="font-size:13px; color:#666; margin-top:4px;">股东户数持续增长（4.07万→4.39万），机构持股仅0.57%，主流资金关注度极低，短期缺乏资金驱动力。</div>
+  </div>
+</div>
+
+<!-- ====== 关键跟踪指标 ====== -->
+<div class="card">
+  <div class="card-title">📌 关键跟踪指标</div>
+  <table>
+    <thead>
+      <tr><th>指标</th><th>当前值</th><th>目标/触发值</th><th>跟踪频率</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>单季度归母净利润</td>
+        <td style="color:#e74c3c;">-302万 (26Q1)</td>
+        <td style="color:#27ae60;">转正 >0</td>
+        <td>季度</td>
+      </tr>
+      <tr>
+        <td>综合毛利率</td>
+        <td>12.42%</td>
+        <td>回升至14%+</td>
+        <td>季度</td>
+      </tr>
+      <tr>
+        <td>特许纪念品收入</td>
+        <td>0.58亿 (2025全年)</td>
+        <td>突破1.5亿</td>
+        <td>半年报/年报</td>
+      </tr>
+      <tr>
+        <td>IP文创收入占比</td>
+        <td>4.46%</td>
+        <td>突破10%</td>
+        <td>季度</td>
+      </tr>
+      <tr>
+        <td>经营现金流/净利润</td>
+        <td>2.35亿 / -0.30亿</td>
+        <td>现金流持续为正</td>
+        <td>季度</td>
+      </tr>
+      <tr>
+        <td>股东户数趋势</td>
+        <td>持续增加中</td>
+        <td>企稳或减少</td>
+        <td>月度</td>
+      </tr>
+      <tr>
+        <td>机构持股比例</td>
+        <td>0.57%</td>
+        <td>提升至3%+</td>
+        <td>季度</td>
+      </tr>
+      <tr>
+        <td>内控缺陷整改</td>
+        <td>案件处理中</td>
+        <td>结案+内控审计无保留</td>
+        <td>关注公告</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ====== 综合结论 ====== -->
+<div class="card" style="background: linear-gradient(135deg, #fff, #fdf2f2);">
+  <div class="card-title">📝 综合结论</div>
+  <div style="font-size:14px; line-height:1.8;">
+    <p><strong>元隆雅图（002878.SZ）</strong>是一家正处于战略转型关键期的营销+IP文创企业。</p>
+    <br>
+    <p><strong>【审美评分】</strong>六维度总分<strong>23.8分（D级）</strong>，六个维度中无一通过。核心短板在于：连续两年亏损导致D4自动得零分，分红缺失（D2仅10分），内部人增持不足（D1仅15分），以及竞争优势尚不足以形成足够护城河。</p>
+    <br>
+    <p><strong>【投资建议】</strong>当前不建议入场。主要理由：①公司仍在亏损，估值难以衡量；②2026Q1营收同比下滑，开局不利；③IP文创及特许业务虽有亮点但规模太小（占比<5%），尚无法驱动整体盈利拐点；④职务侵占案带来的内控和诉讼风险未解除。</p>
+    <br>
+    <p><strong>【等待信号】</strong>若能出现以下信号，可重新评估：单季盈利转正 → 毛利率企稳回升 → IP文创占比突破10% → 赛会特许业务放量 → 机构关注度提升。其中关键中的关键是<strong>盈利拐点的确认</strong>。</p>
+  </div>
+</div>
+
+<div class="footnote">
+  <strong>免责声明：</strong>本报告基于公开数据和信息整理，仅供研究参考，不构成任何投资建议。数据来源包括NeoData金融数据、公司年报/季报、券商研报及公开新闻报道。报告日期：2026-05-08。<br>
+  © 2026 综合分析报告 · 自动生成
+</div>
+
+</div>
+
+<script>
+  // Radar Chart
+  new Chart(document.getElementById('radarChart'), {
+    type: 'radar',
+    data: {
+      labels: ['D1.内部人增持', 'D2.股息回购', 'D3.竞争优势', 'D4.市盈率', 'D5.成长动能', 'D6.财务健康'],
+      datasets: [{
+        label: '元隆雅图',
+        data: [15, 10, 42, 0, 45, 35],
+        backgroundColor: 'rgba(231,76,60,0.2)',
+        borderColor: 'rgba(231,76,60,0.8)',
+        borderWidth: 2,
+        pointBackgroundColor: ['#e74c3c','#e74c3c','#f39c12','#e74c3c','#f39c12','#f39c12'],
+        pointRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        r: {
+          min: 0,
+          max: 100,
+          ticks: { stepSize: 20, font: { size: 10 } },
+          pointLabels: { font: { size: 11, family: 'Microsoft YaHei' } },
+          grid: { color: 'rgba(0,0,0,0.08)' }
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+</script>
+
+
+<!-- HuaStock: back-to-home button -->
+<a href="../../index.html" class="huastock-back-btn" target="_self">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+  </svg>
+  返回首页
+</a>
+<style>
+  .huastock-back-btn {
+    position: fixed !important;
+    bottom: 28px !important;
+    right: 28px !important;
+    z-index: 99999 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 10px 22px !important;
+    background: rgba(10, 22, 40, 0.75) !important;
+    color: #c9a84c !important;
+    border: 1px solid rgba(201, 168, 76, 0.25) !important;
+    border-radius: 999px !important;
+    font-family: "Inter", "Noto Sans SC", system-ui, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important;
+    transition: all 0.25s ease !important;
+    cursor: pointer !important;
+    user-select: none !important;
+  }
+  .huastock-back-btn:hover {
+    background: rgba(10, 22, 40, 0.95) !important;
+    border-color: rgba(201, 168, 76, 0.5) !important;
+    box-shadow: 0 6px 28px rgba(201, 168, 76, 0.18) !important;
+    transform: translateY(-2px) !important;
+  }
+  .huastock-back-btn svg {
+    transition: transform 0.2s ease !important;
+  }
+  .huastock-back-btn:hover svg {
+    transform: translateX(-3px) !important;
+  }
+</style>
+
+</body>
+</html>

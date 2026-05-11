@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoreWeave (CRWV) 深度分析报告 — Q1 2026季报点评 | 2026.05.11</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Inter:wght@400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Serif SC', 'SimSun', 'KaiTi', serif; background: #fff; color: #1a1a1a; font-size: 11pt; line-height: 1.8; }
+  .en { font-family: 'Inter', 'Times New Roman', Georgia, serif; }
+  .text-red { color: #c41e3a; }
+  .bg-red { background: #c41e3a; }
+  .border-red { border-color: #c41e3a; }
+  .hover\:bg-red-dark:hover { background: #a0182e; }
+  .accent-red { accent-color: #c41e3a; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 10pt; font-weight: 600; }
+  .badge-green { background: #16a34a; color: #fff; }
+  .badge-yellow { background: #ca8a04; color: #fff; }
+  .badge-red { background: #dc2626; color: #fff; }
+  .badge-gray { background: #6b7280; color: #fff; }
+  .badge-blue { background: #2563eb; color: #fff; }
+  .section-title { font-size: 14pt; font-weight: 700; color: #c41e3a; border-bottom: 2px solid #c41e3a; padding-bottom: 6px; margin-top: 32px; margin-bottom: 16px; }
+  .subsection-title { font-size: 12pt; font-weight: 700; color: #333; margin-top: 20px; margin-bottom: 10px; padding-left: 8px; border-left: 3px solid #c41e3a; }
+  .data-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 10.5pt; }
+  .data-table th { background: #f8f0f0; color: #c41e3a; font-weight: 700; padding: 8px 10px; border: 1px solid #ddd; text-align: center; }
+  .data-table td { padding: 7px 10px; border: 1px solid #ddd; text-align: right; }
+  .data-table td:first-child { text-align: left; font-weight: 600; }
+  .data-table tr:nth-child(even) { background: #fafafa; }
+  .data-table tr:hover { background: #fef2f2; }
+  .positive { color: #c41e3a; font-weight: 600; }
+  .negative { color: #16a34a; font-weight: 600; }
+  .neutral { color: #2563eb; }
+  .highlight-box { background: linear-gradient(135deg, #fef2f2, #fff); border-left: 4px solid #c41e3a; padding: 16px 20px; margin: 16px 0; border-radius: 0 8px 8px 0; }
+  .info-box { background: #f0f4ff; border-left: 4px solid #2563eb; padding: 14px 18px; margin: 14px 0; border-radius: 0 8px 8px 0; }
+  .warn-box { background: #fffbeb; border-left: 4px solid #d97706; padding: 14px 18px; margin: 14px 0; border-radius: 0 8px 8px 0; }
+  .dimension-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; margin: 14px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .dimension-card:hover { box-shadow: 0 4px 12px rgba(196,30,58,0.1); border-color: #fca5a5; }
+  .score-ring { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14pt; color: #fff; flex-shrink: 0; }
+  .score-bar-outer { height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; flex: 1; }
+  .score-bar-inner { height: 100%; border-radius: 4px; transition: width 1s ease; }
+  .kpi-card { text-align: center; padding: 16px; border-radius: 10px; border: 1px solid #e5e7eb; }
+  .kpi-card .value { font-size: 18pt; font-weight: 900; }
+  .kpi-card .label { font-size: 9pt; color: #666; margin-top: 4px; }
+  .kpi-card .sub { font-size: 8pt; color: #999; }
+  .risk-item { padding: 12px 16px; border-radius: 8px; margin: 8px 0; }
+  .risk-high { background: #fef2f2; border-left: 4px solid #dc2626; }
+  .risk-mid { background: #fffbeb; border-left: 4px solid #d97706; }
+  .risk-low { background: #f0f4ff; border-left: 4px solid #2563eb; }
+  .verdict-buy { background: linear-gradient(135deg, #dcfce7, #f0fdf4); border: 2px solid #16a34a; }
+  .verdict-watch { background: linear-gradient(135deg, #fef2f2, #fef9c3); border: 2px solid #c41e3a; }
+  .timeline-dot { width: 12px; height: 12px; border-radius: 50%; background: #c41e3a; }
+  .print-break { page-break-before: always; }
+  @media print { body { font-size: 10pt; } .section-title { font-size: 13pt; } }
+  /* Radar chart styles */
+  .radar-container { display: flex; justify-content: center; margin: 20px 0; }
+</style>
+</head>
+<body>
+
+<div class="max-w-5xl mx-auto px-6 py-8">
+
+<!-- ===== HEADER ===== -->
+<div class="text-center mb-10 pb-6 border-b-2 border-gray-200">
+  <div class="en text-xs text-gray-400 mb-2">Independent Research Report</div>
+  <h1 class="text-2xl font-black text-red mb-2">CoreWeave（CRWV.US）深度分析报告</h1>
+  <h2 class="text-lg font-semibold text-gray-700 mb-4">2026年第一季度（10-Q）业绩点评 + 30维度综合评估</h2>
+  <div class="flex justify-center gap-6 text-sm text-gray-500">
+    <span>报告日期：2026年5月11日</span>
+    <span>数据来源：SEC 10-Q / CNBC / StockAnalysis</span>
+    <span>行业：AI云基础设施 / GPU即服务</span>
+  </div>
+  <div class="flex justify-center gap-3 mt-4">
+    <span class="badge badge-blue">纳斯达克上市</span>
+    <span class="badge badge-yellow">高增长阶段</span>
+    <span class="badge badge-red">尚未盈利</span>
+  </div>
+</div>
+
+<!-- ===== 一级股价概览 ===== -->
+<div class="grid grid-cols-5 gap-4 mb-8">
+  <div class="kpi-card"><div class="value text-red">$114.15</div><div class="label">最新收盘价</div><div class="sub">2026/05/08</div></div>
+  <div class="kpi-card"><div class="value text-red">$62.3B</div><div class="label">总市值</div><div class="sub">545.6M流通股</div></div>
+  <div class="kpi-card"><div class="value text-gray-600">N/A</div><div class="label">PE (TTM)</div><div class="sub">GAAP亏损中</div></div>
+  <div class="kpi-card"><div class="value text-red">$6.23B</div><div class="label">营收 (TTM)</div><div class="sub">+129.9% YoY</div></div>
+  <div class="kpi-card"><div class="value text-gray-600">-$1.59B</div><div class="label">净利润 (TTM)</div><div class="sub">GAAP净亏损</div></div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 第一部分：业绩点评（基于 earnings-review 框架） -->
+<!-- ================================================================ -->
+
+<h2 class="section-title">一、Q1 2026 业绩点评</h2>
+
+<div class="info-box">
+  <p class="text-sm font-semibold">报告期：2026年1月1日—3月31日 | 发布日期：2026年5月7日 | 对比基准：Q1 2025</p>
+</div>
+
+<!-- 1.1 核心财务概览 -->
+<h3 class="subsection-title">1.1 核心财务数据</h3>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th style="width:30%">指标（百万美元）</th>
+      <th>Q1 2026</th>
+      <th>Q1 2025</th>
+      <th>YoY变化</th>
+      <th>市场预期</th>
+      <th>vs预期</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>营业收入</td>
+      <td class="positive">2,078</td>
+      <td>982</td>
+      <td class="positive">+111.6%</td>
+      <td>$1,970M</td>
+      <td class="positive">✅ 超预期</td>
+    </tr>
+    <tr>
+      <td>营收成本</td>
+      <td class="positive">716</td>
+      <td>262</td>
+      <td class="positive">+173.3%</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>技术及基础设施开支</td>
+      <td class="positive">1,273</td>
+      <td>561</td>
+      <td class="positive">+126.9%</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>销售及市场费用</td>
+      <td class="positive">69</td>
+      <td>11</td>
+      <td class="positive">+527.3%</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>研发费用</td>
+      <td class="positive">104</td>
+      <td>70</td>
+      <td class="positive">+48.6%</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>管理及行政费用</td>
+      <td class="negative">164</td>
+      <td>175</td>
+      <td class="negative">-6.3%</td>
+      <td>—</td>
+      <td class="negative">✅ 费用控制</td>
+    </tr>
+    <tr>
+      <td>折旧与摊销</td>
+      <td class="positive">1,147</td>
+      <td>443</td>
+      <td class="positive">+158.9%</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr style="border-top:2px solid #c41e3a;">
+      <td><strong>营业亏损</strong></td>
+      <td class="negative"><strong>-144</strong></td>
+      <td class="negative"><strong>-27</strong></td>
+      <td class="negative"><strong>亏损扩大433%</strong></td>
+      <td>—</td>
+      <td class="negative">略低于预期</td>
+    </tr>
+    <tr>
+      <td>利息支出（债务）</td>
+      <td class="positive">427</td>
+      <td>257</td>
+      <td class="positive">+66.1%</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>税前亏损</td>
+      <td class="negative">-656</td>
+      <td class="negative">-269</td>
+      <td class="negative">亏损扩大143.9%</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>所得税抵免</td>
+      <td class="negative">-84</td>
+      <td class="negative">-46</td>
+      <td class="negative">+82.6%</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr style="border-top:2px solid #c41e3a;">
+      <td><strong>净亏损（GAAP）</strong></td>
+      <td class="negative"><strong>-740</strong></td>
+      <td class="negative"><strong>-315</strong></td>
+      <td class="negative"><strong>亏损扩大135%</strong></td>
+      <td>-$425M</td>
+      <td class="negative">❌ 低于预期</td>
+    </tr>
+    <tr>
+      <td>调整后EPS</td>
+      <td class="negative">-$1.12</td>
+      <td class="negative">-$0.66</td>
+      <td class="negative">亏损扩大</td>
+      <td>-$0.90</td>
+      <td class="negative">❌ 低于预期</td>
+    </tr>
+    <tr>
+      <td>GAAP EPS</td>
+      <td class="negative">-$1.40</td>
+      <td class="negative">-$1.40<sup>*</sup></td>
+      <td class="neutral">持平</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  </tbody>
+</table>
+<p class="text-xs text-gray-400 mt-1">注：<sup>*</sup> Q1 2025基本EPS受优先股股息调整，实际可归属普通股净亏损为$343M（$315M + $28M优先股股息）/ 246M = -$1.40。调整后EPS为Non-GAAP口径。</p>
+
+<!-- 1.2 分部数据 -->
+<h3 class="subsection-title">1.2 地理分部收入</h3>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>区域</th>
+      <th>Q1 2026</th>
+      <th>占比</th>
+      <th>Q1 2025</th>
+      <th>占比</th>
+      <th>YoY增长</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>美国</td>
+      <td class="positive">$1,900M</td>
+      <td>91.4%</td>
+      <td>$929M</td>
+      <td>94.6%</td>
+      <td class="positive">+104.5%</td>
+    </tr>
+    <tr>
+      <td>非美国</td>
+      <td class="positive">$178M</td>
+      <td>8.6%</td>
+      <td>$53M</td>
+      <td>5.4%</td>
+      <td class="positive">+235.8%</td>
+    </tr>
+    <tr style="font-weight:700;">
+      <td>合计</td>
+      <td>$2,078M</td>
+      <td>100%</td>
+      <td>$982M</td>
+      <td>100%</td>
+      <td class="positive">+111.6%</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="highlight-box">
+  <p class="font-bold text-red">核心看点：营收$2.08B超预期$110M，但净亏损扩大至$740M，且Q2指引逊于共识。</p>
+  <p class="text-sm mt-2">营收增速+112%仍属极高水平，但成本端增速更快（营收成本+173%/折旧+159%/利息+66%）。销售费用暴增527%，反映公司正大力扩张销售团队以获取新客户。经营现金流大幅改善至+$2.98B（去年同期仅+$61M），主因客户预付款和递延收入增加。</p>
+</div>
+
+<!-- 1.3 资产负债表分析 -->
+<h3 class="subsection-title">1.3 资产负债状况</h3>
+
+<table class="data-table">
+  <thead>
+    <tr><th>项目（百万美元）</th><th>2026/03/31</th><th>2025/12/31</th><th>变化</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>总资产</td><td>$55,573</td><td>$49,302</td><td class="positive">+12.7%</td></tr>
+    <tr><td>现金及现金等价物</td><td>$2,244</td><td>$3,127</td><td class="negative">-28.2%</td></tr>
+    <tr><td>应收账款（净额）</td><td>$2,120</td><td>$3,169</td><td class="negative">-33.1%</td></tr>
+    <tr><td>不动产、厂房及设备</td><td>$36,424</td><td>$30,557</td><td class="positive">+19.2%</td></tr>
+    <tr><td>商誉</td><td>$1,101</td><td>$1,101</td><td class="neutral">持平</td></tr>
+    <tr><td>无形资产</td><td>$224</td><td>$235</td><td class="negative">-4.7%</td></tr>
+    <tr><td>总负债</td><td>$50,814</td><td>$45,967</td><td class="positive">+10.5%</td></tr>
+    <tr><td>长期债务（总额）</td><td>$24,859</td><td>$21,373</td><td class="positive">+16.3%</td></tr>
+    <tr><td style="padding-left:20px;">— 流动部分</td><td>$7,547</td><td>$6,708</td><td class="positive">+12.5%</td></tr>
+    <tr><td style="padding-left:20px;">— 非流动部分</td><td>$17,312</td><td>$14,665</td><td class="positive">+18.1%</td></tr>
+    <tr style="background:#fef2f2;">
+      <td><strong>股东权益</strong></td><td><strong>$4,759</strong></td><td><strong>$3,335</strong></td><td class="positive"><strong>+42.7%</strong></td></tr>
+    </tr>
+  </tbody>
+</table>
+
+<div class="warn-box">
+  <p class="font-bold">⚠️ 债务风险突出：</p>
+  <p class="text-sm">总负债$50.8B，资产负债率91.4%（$50,814/$55,573）。长期债务$24.9B，其中$7.5B须在一年内偿还。公司处于大规模举债扩张阶段，2026年Q1内又新增$8.5B债务融资。利息支出$427M/季，年化超$1.7B。若AI算力需求增速放缓，高杠杆将成为致命风险。</p>
+</div>
+
+<!-- 1.4 现金流 -->
+<h3 class="subsection-title">1.4 现金流分析</h3>
+
+<table class="data-table">
+  <thead>
+    <tr><th>项目（百万美元）</th><th>Q1 2026</th><th>Q1 2025</th><th>YoY变化</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>经营活动现金流</td><td class="positive">$2,984</td><td>$61</td><td class="positive">+4,791.8%</td></tr>
+    <tr><td>投资活动现金流</td><td class="negative">-$7,708</td><td>-$1,433</td><td class="negative">流出扩大438%</td></tr>
+    <tr><td style="padding-left:20px;">其中：资本开支</td><td class="negative">$7,695</td><td>$1,407</td><td class="negative">+447.0%</td></tr>
+    <tr><td>筹资活动现金流</td><td class="positive">$3,914</td><td>$1,854</td><td class="positive">+111.1%</td></tr>
+    <tr><td style="padding-left:20px;">其中：新发长期债务</td><td class="positive">$3,290</td><td>$785</td><td class="positive">+319.1%</td></tr>
+    <tr><td style="padding-left:20px;">其中：私募股权融资</td><td class="positive">$1,985</td><td>—</td><td class="positive">新增</td></tr>
+    <tr><td>自由现金流（经营-资本开支）</td><td class="negative">-$4,711</td><td>-$1,346</td><td class="negative">流出扩大250%</td></tr>
+  </tbody>
+</table>
+
+<div class="info-box">
+  <p class="font-semibold">💡 经营现金流分析：</p>
+  <p class="text-sm">Q1经营现金流$2.98B的改善幅度惊人（去年同期$61M），但需注意这主要来自客户预付款和递延收入增加（合同负债增长$575M vs 去年同期仅$16M）。这意味着大量未来收入已被提前收取，而非营运效率提升带来的内生现金流改善。自由现金流仍为-$4.71B，资本开支强度远超经营现金流能力。</p>
+</div>
+
+<!-- 1.5 管理层指引 -->
+<h3 class="subsection-title">1.5 管理层业绩指引</h3>
+
+<table class="data-table">
+  <thead>
+    <tr><th>指标</th><th>Q2 2026指引</th><th>市场共识</th><th>vs预期</th><th>FY2026指引</th><th>市场共识</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>营收</td>
+      <td>$2.45B-$2.6B</td>
+      <td>$2.69B</td>
+      <td class="negative">❌ 低于预期</td>
+      <td>$12-13B</td>
+      <td>$12.53B</td>
+    </tr>
+    <tr>
+      <td>营业利润</td>
+      <td>$30M-$90M</td>
+      <td>—</td>
+      <td>—</td>
+      <td>$900M-$1.1B</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>资本开支</td>
+      <td>$7-9B</td>
+      <td>—</td>
+      <td>—</td>
+      <td>$31-35B</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>年末在线产能</td>
+      <td colspan="5">重申1.7 GW目标</td>
+    </tr>
+    <tr>
+      <td>2027年营收年化运行率</td>
+      <td colspan="5">重申> $30B目标</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="highlight-box">
+  <p class="font-bold text-red">📉 市场反应：</p>
+  <p class="text-sm">财报发布后股价盘后下跌约10%。尽管Q1营收超预期，但Q2指引中点$2.53B与共识$2.69B存在明显缺口，叠加全年资本开支上调至$31-35B上限，投资者对短期盈利前景和烧钱速度产生担忧。不过分析师仍在财报后上调了部分目标价（德银$135、Roth $150、富国$155）。</p>
+</div>
+
+<!-- ================================================================ -->
+<!-- 第二部分：经营 & 行业分析 -->
+<!-- ================================================================ -->
+
+<h2 class="section-title">二、经营情况与行业分析</h2>
+
+<h3 class="subsection-title">2.1 业务模式解析</h3>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+  <div class="dimension-card">
+    <h4 class="font-bold text-red">核心业务</h4>
+    <p class="text-sm mt-2">CoreWeave运营GPU加速云计算平台，以NVIDIA H100/B200 GPU为核心硬件，向AI开发者、研究实验室和企业提供高性能计算资源。不同于传统云厂商，CoreWeave从创立之初就专注于AI/ML工作负载，提供Kubernetes编排、模型开发工具（含Weights & Biases平台）等差异化服务。</p>
+  </div>
+  <div class="dimension-card">
+    <h4 class="font-bold text-red">竞争定位</h4>
+    <p class="text-sm mt-2">定位"AI超大规模云"（AI Hyperscaler），与AWS/ Azure/ GCP形成差异化竞争。核心卖点：更低价格（GPU定价约为AWS的30-50%）、更高密度集群、专为AI优化的网络架构。客户包括微软（占营收67%）、OpenAI（$11.9B合同）和Meta等。</p>
+  </div>
+  <div class="dimension-card">
+    <h4 class="font-bold text-red">收入模式</h4>
+    <p class="text-sm mt-2">按需/预留GPU算力租赁 + 增值服务。大型客户签长期合同并预付租金（体现为递延收入）。合同期限通常3-5年，收入可见性强。截至Q1 2026，营收积压（Backlog）高达$99.4B，为未来2-3年收入提供了高度可预见性。</p>
+  </div>
+  <div class="dimension-card">
+    <h4 class="font-bold text-red">竞争壁垒</h4>
+    <p class="text-sm mt-2">1）与NVIDIA战略合作关系（NVIDIA在Q1买入$2B CoreWeave股份）；2）大规模GPU集群调度优化软件；3）已签约3.5GW电力容量及在建数据中心网络；4）先发锁定核心客户长期合同。但技术壁垒相对较低，云巨头可复制。</p>
+  </div>
+</div>
+
+<h3 class="subsection-title">2.2 行业景气度与竞争格局</h3>
+
+<div class="dimension-card">
+  <h4 class="font-bold text-red">AI基础设施市场</h4>
+  <div class="grid grid-cols-3 gap-4 mt-3 text-sm">
+    <div>
+      <p class="font-semibold">市场规模</p>
+      <p>全球AI云基础设施市场预计2026年超$200B，CAGR 40%+</p>
+    </div>
+    <div>
+      <p class="font-semibold">竞争格局</p>
+      <p>AWS/ Azure/ GCP占据约70%份额；CoreWeave/Lambda等专业GPU云占比约5-8%，但增速远高于大盘</p>
+    </div>
+    <div>
+      <p class="font-semibold">周期位置</p>
+      <p>AI算力需求仍处于早期爆发阶段，大模型训练和推理需求双轮驱动。但GPU供给瓶颈正在缓解，价格竞争可能加剧</p>
+    </div>
+  </div>
+</div>
+
+<div class="dimension-card">
+  <h4 class="font-bold text-red">可比公司对比</h4>
+  <table class="data-table mt-2">
+    <thead>
+      <tr><th>公司</th><th>产品</th><th>估值/GMV</th><th>增长</th><th>盈利状态</th><th>差异点</th></tr>
+    </thead>
+    <tbody>
+      <tr class="bg-red-50">
+        <td><strong>CoreWeave (CRWV)</strong></td><td>GPU云</td><td>$62B市值</td><td>+112%</td><td>亏损</td><td>专注AI云，与NVIDIA深度绑定</td>
+      </tr>
+      <tr>
+        <td>DigitalOcean (DOCN)</td><td>通用云</td><td>$5B市值</td><td>+12%</td><td>盈利</td><td>SMB市场，非GPU赛道</td>
+      </tr>
+      <tr>
+        <td>AWS (AMZN)</td><td>全栈云</td><td>$2T+市值</td><td>+19%</td><td>高盈利</td><td>自研芯片Trainium，生态完整</td>
+      </tr>
+      <tr>
+        <td>Lambda Labs</td><td>GPU云</td><td>未上市</td><td>~+100%</td><td>亏损</td><td>定价更低，规模较小</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ================================================================ -->
+<!-- 第三部分：30维度综合评估（基于 listed-company-analyst 框架） -->
+<!-- ================================================================ -->
+
+<h2 class="section-title print-break">三、30维度综合评估框架</h2>
+
+<p class="text-sm text-gray-600 mb-4">以下基于SEC 10-Q披露数据及公开信息，按六大模块30个维度对公司进行系统性评估。</p>
+
+<!-- 模块一 -->
+<h3 class="subsection-title">模块一：业务可理解性与行业吸引力（权重10%）</h3>
+
+<div class="dimension-card">
+  <div class="flex items-start gap-4">
+    <div class="score-ring" style="background:#2563eb;">90</div>
+    <div class="flex-1">
+      <h4 class="font-bold">维度1：业务可理解性</h4>
+      <span class="badge badge-blue text-xs">A 优</span>
+      <p class="text-sm mt-2">GPU云基础设施即服务业务模式清晰——公司采购NVIDIA GPU并部署于自建数据中心，再以订阅形式将算力资源租售给AI企业。收入来源和成本结构相对透明。唯一复杂性在于公司同时扮演数据中心运营商、云平台服务商和GPU集成商三重角色。</p>
+    </div>
+  </div>
+</div>
+
+<div class="dimension-card">
+  <div class="flex items-start gap-4">
+    <div class="score-ring" style="background:#2563eb;">85</div>
+    <div class="flex-1">
+      <h4 class="font-bold">维度2：行业吸引力</h4>
+      <span class="badge badge-blue text-xs">A 优</span>
+      <p class="text-sm mt-2">AI基础设施处于超级景气周期。全球企业AI采用率从2023年的30%快速上升至2026年的70%+，大模型训练和推理需求爆发式增长。行业进入壁垒：资本密集型（数据中心建设需数十亿美元）和供应稀缺（NVIDIA GPU配额）。但长期竞争将加剧——云巨头自研芯片、超大规模竞争者入场、GPU供给缓解后价格战风险。</p>
+    </div>
+  </div>
+</div>
+
+<!-- 模块二 -->
+<h3 class="subsection-title">模块二：商业模式与客户分析（权重20%）</h3>
+
+<div class="dimension-card">
+  <div class="flex items-start gap-4">
+    <div class="score-ring" style="background:#ca8a04;">55</div>
+    <div class="flex-1">
+      <h4 class="font-bold">维度3-4：商业模式质量 & 收入可预见性</h4>
+      <span class="badge badge-yellow text-xs">B 中</span>
+      <p class="text-sm mt-2">收入模式以长期合同+预付款为主，$99.4B的Backlog提供了极强的收入可见性（覆盖未来至少2-3年预测收入）。但商业模式存在隐忧：1）客户高度集中（微软占2025年营收67%），单一客户流失即可产生重大影响；2）产品本质是标准化GPU资源的转售，差异化有限；3）收入与企业AI投资周期高度相关。</p>
+    </div>
+  </div>
+</div>
+
+<div class="dimension-card">
+  <div class="flex items-start gap-4">
+    <div class="score-ring" style="background:#ca8a04;">50</div>
+    <div class="flex-1">
+      <h4 class="font-bold">维度5-6：客户集中度 & 客户粘性</h4>
+      <span class="badge badge-yellow text-xs">B- 一般</span>
+      <p class="text-sm mt-2"><strong>致命弱点：</strong>Microsoft占2025年营收67%，OpenAI为核心增长驱动。虽然最近与微软的合同已被修改且OpenAI承诺了$12B的长期协议，但过度依赖少数大客户仍是重大风险。客户迁移成本：一旦AI推理管线建立在CoreWeave基础设施上，短期切换成本较高，但并非不可替代。集群侧"集装箱化"趋势降低了供应商锁定风险。</p>
+    </div>
+  </div>
+</div>
+
+<div class="dimension-card">
+  <div class="flex items-start gap-4">
+    <div class="score-ring" style="background:#16a34a;">75</div>
+    <div class="flex-1">
+      <h4 class="font-bold">维度7-8：上下游议价能力 & 定价权</h4>
+      <span class="badge badge-green text-xs">B+ 良好</span>
+      <p class="text-sm mt-2">上游：对NVIDIA高度依赖。公司采购大量H100/B200 GPU，供需紧缺时议价能力弱。NVIDIA购入$2B股份属于深度绑定策略，但若GPU供需平衡逆转，价格折扣可能缩水。下游：在AI算力供不应求的环境下有一定定价权。但CoreWeave定价仅为AWS的30-50%，说明竞争仍以价格战为主要手段，定价权并不牢固。</p>
+    </div>
+  </div>
+</div>
+
+<!-- 模块三 -->
+<h3 class="subsection-title">模块三：竞争优势与行业格局（权重28%）</h3>
+
+<div class="dimension-card">
+  <div class="flex items-start gap-4">
+    <div class="score-ring" style="background:#ca8a04;">60</div>
+    <div class="flex-1">
+      <h4 class="font-bold">维度9-12：竞争优势深度评估</h4>
+      <span class="badge badge-yellow text-xs">B 中等</span>
+      <p class="text-sm mt-2">
+        <strong>规模经济：</strong>中等。大规模采购GPU可获NVIDIA折扣，但数据中心建设和运营成本边际递减有限。<br>
+        <strong>网络效应：</strong>弱。与平台型云厂商不同，CoreWeave的客户间不存在直接网络效应。<br>
+        <strong>技术优势：</strong>中等。自研Kubernetes编排和集群管理软件有一定技术含量，但巨头可以复制。<br>
+        <strong>品牌/先发优势：</strong>弱-中等。在AI云细分市场有先行者优势，但与AWS/ Azure的品牌认知度和生态差距巨大。<br>
+        <strong>综合判断：</strong>CoreWeave的竞争优势更多体现在资本充足度和NVDA合作关系上，而非技术护城河。长期需观察能否建立软硬件一体化生态。
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- 模块四 -->
+<h3 class="subsection-title">模块四：财务质量与资本效率（权重22%）</h3>
+
+<div class="dimension-card">
+  <div class="flex items-start gap-4">
+    <div class="score-ring" style="background:#dc2626;">25</div>
+    <div class="flex-1">
+      <h4 class="font-bold">维度13-16：盈利能力 & 现金流</h4>
+      <span class="badge badge-red text-xs">D 差</span>
+      <p class="text-sm mt-2">
+        <strong>盈利能力：</strong>差。GAAP净亏损$740M（Q1 2026），营业利润率-6.9%。虽然毛利率在改善（按COGS口径约65.5%），但D&A和利息支出吞噬了所有毛利。预计2026年全年营业利润$900M-$1.1B（隐含H2大幅改善），但当前仍严重亏损。<br>
+        <strong>自由现金流：</strong>极差。-$4.71B/季度的自由现金流缺口，完全依赖外部融资维持扩张。经营现金流（+$2.98B）改善主要由客户预付款驱动，非内生改善。<br>
+        <strong>ROE/ROIC：</strong>为负值。大规模投入尚未产生正回报。
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="dimension-card">
+  <div class="flex items-start gap-4">
+    <div class="score-ring" style="background:#dc2626;">20</div>
+    <div class="flex-1">
+      <h4 class="font-bold">维度17-20：资本结构 & 偿债能力</h4>
+      <span class="badge badge-red text-xs">D 差</span>
+      <p class="text-sm mt-2">
+        <strong>资产负债率：</strong>91.4%，极度不合理的高杠杆水平。<br>
+        <strong>债务规模：</strong>$24.9B总债务，且呈快速上升趋势（年初$21.4B）。利息支出年化约$1.7B。<br>
+        <strong>偿债能力：</strong>利息覆盖倍数为负（营业亏损/利息支出 = -0.34x）。完全依赖再融资续命。<br>
+        <strong>流动性：</strong>现金$2.24B面临$7.5B的短期债务，存在明显的期限错配风险。<br>
+        <strong>评价：</strong>这是投资CoreWeave最大的风险来源——公司处于"烧钱赌博"阶段：赌AI算力需求持续高增长，能够在债务到期前实现正向经营现金流并持续获得再融资。
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- 模块五 -->
+<h3 class="subsection-title">模块五：管理层评估与公司治理（权重10%）</h3>
+
+<div class="dimension-card">
+  <div class="flex items-start gap-4">
+    <div class="score-ring" style="background:#16a34a;">78</div>
+    <div class="flex-1">
+      <h4 class="font-bold">维度21-26：管理层综合评估</h4>
+      <span class="badge badge-green text-xs">B+ 良好</span>
+      <p class="text-sm mt-2">
+        <strong>创始团队：</strong>三人联合创始人团队（CEO Intrator / CDO McBee / CSO Venturo）有深厚的技术背景和执行力。从加密货币矿场成功转型为AI云服务商，体现了战略灵活性和执行力。<br>
+        <strong>资本配置：</strong>激进的资本策略——大规模举债建设数据中心。这种"重资产杠杆"策略在AI需求爆发期有效，但风险极高。<br>
+        <strong>治理结构：</strong>双层股权结构（Class A/B），创始人团队拥有控制权。NVIDIA作为战略股东持股约3-5%。<br>
+        <strong>激励：</strong>Q1 2026股权激励支出$153M（占营收7.4%），存在一定稀释风险。<br>
+        <strong>透明度：</strong>SEC常规披露，信息充分。Q1电话会议中管理层坦诚面对Q2指引不足的问题。
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- 模块六 -->
+<h3 class="subsection-title">模块六：增长前景与估值（权重10%）</h3>
+
+<div class="dimension-card">
+  <div class="flex items-start gap-4">
+    <div class="score-ring" style="background:#2563eb;">85</div>
+    <div class="flex-1">
+      <h4 class="font-bold">维度27-30：增长与估值评估</h4>
+      <span class="badge badge-blue text-xs">A- 优秀</span>
+      <p class="text-sm mt-2">
+        <strong>营收增长：</strong>A级。+112% YoY是TMT行业的顶尖增速。FY2026指引$12-13B意味着全年增速约+134-153%。管理层指引2027年营收运行率> $30B，预示着2027年仍可保持高增长。<br>
+        <strong>Backlog质量：</strong>$99.4B积压订单，为未来收入提供前所未有的可见性。<br>
+        <strong>估值：</strong>因尚未盈利，无法用PE估值。PS(TTM)约10x，对于>100%增长的科技公司而言并不极端（对比：Snowflake在类似增长阶段PS为40-60x）。但考虑到高杠杆和亏损状态，估值需大幅折价。<br>
+        <strong>成长天花板：</strong>取决于AI算力市场整体规模。若2027年达到$30B营收，则公司需要在全球AI云市场占据约10%份额，尚有较大实现空间。
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- 综合评分 -->
+<h3 class="subsection-title">综合评分表</h3>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>模块</th><th>权重</th><th>维度评分</th><th>加权得分</th><th>等级</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>模块一：业务理解 & 行业吸引力</td><td>10%</td><td>88</td><td class="positive">8.8</td><td><span class="badge badge-blue text-xs">A</span></td></tr>
+    <tr><td>模块二：商业模式 & 客户分析</td><td>20%</td><td>60</td><td class="positive">12.0</td><td><span class="badge badge-yellow text-xs">B</span></td></tr>
+    <tr><td>模块三：竞争优势 & 行业格局</td><td>28%</td><td>60</td><td class="positive">16.8</td><td><span class="badge badge-yellow text-xs">B</span></td></tr>
+    <tr><td>模块四：财务质量 & 资本效率</td><td>22%</td><td>23</td><td class="negative">5.1</td><td><span class="badge badge-red text-xs">D</span></td></tr>
+    <tr><td>模块五：管理层 & 公司治理</td><td>10%</td><td>78</td><td class="positive">7.8</td><td><span class="badge badge-green text-xs">B+</span></td></tr>
+    <tr><td>模块六：增长 & 估值</td><td>10%</td><td>85</td><td class="positive">8.5</td><td><span class="badge badge-blue text-xs">A-</span></td></tr>
+    <tr style="border-top:2px solid #c41e3a; font-weight:900;">
+      <td>综合评分</td><td>100%</td><td>—</td><td class="text-red" style="font-size:14pt;">59.0</td><td><span class="badge badge-yellow text-xs" style="font-size:11pt;">C级</span></td></tr>
+  </tbody>
+</table>
+
+<div class="highlight-box">
+  <p class="font-bold text-red">综合评级：C级（谨慎参与）</p>
+  <p class="text-sm mt-1">高增长与高杠杆的极端组合。业务逻辑清晰、行业景气度爆棚、管理层执行力强——但财务质量极度疲弱、客户集中度高、竞争优势护城河有限。C级评级反映了增长信号与风险信号的激烈拉锯。</p>
+</div>
+
+<!-- ================================================================ -->
+<!-- 第四部分：投资建议 -->
+<!-- ================================================================ -->
+
+<h2 class="section-title print-break">四、投资价值分析</h2>
+
+<h3 class="subsection-title">4.1 核心投资逻辑</h3>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <div class="dimension-card">
+    <p class="font-bold text-red text-lg">✅ 逻辑一</p>
+    <p class="font-semibold mt-1">AI算力需求的"卖铲人"</p>
+    <p class="text-sm mt-2">CoreWeave是AI时代最纯粹的"铲子公司"之一。大模型训练和推理算力需求正从指数级增长阶段转向持续高增长阶段，公司直接受益于整个AI产业的投资浪潮。</p>
+  </div>
+  <div class="dimension-card">
+    <p class="font-bold text-red text-lg">✅ 逻辑二</p>
+    <p class="font-semibold mt-1">$100B积压订单的确定性</p>
+    <p class="text-sm mt-2">历史上很少有初创企业能达到$99.4B的合同积压。这些合同多数来自微软、OpenAI等顶级企业，违约风险低，为公司提供了未来2-3年前所未有的收入可视化。</p>
+  </div>
+  <div class="dimension-card">
+    <p class="font-bold text-red text-lg">✅ 逻辑三</p>
+    <p class="font-semibold mt-1">2027盈利拐点预期</p>
+    <p class="text-sm mt-2">管理层指引2027年营收运行率> $30B，且全年营业利润可达$900M-$1.1B（2026年）。若2027年能实现$30B+营收和盈利，当前$62B市值对应PS< 2x，估值具备吸引力。</p>
+  </div>
+</div>
+
+<h3 class="subsection-title">4.2 核心风险清单</h3>
+
+<div class="risk-item risk-high">
+  <p class="font-bold text-red">🔴 致命风险 #1：高杠杆 / 再融资风险</p>
+  <p class="text-sm mt-1">总负债$50.8B，资产负债率91.4%。2026年资本开支$31-35B远超经营现金流能力（2026年预期经营利润仅$900M-$1.1B）。若资本市场对AI投资情绪降温、利率持续高企或信贷条件收紧，公司可能遭遇融资成本飙升或再融资困难。S&P虽调升评级展望至正面，但距离投资级仍有较大距离。</p>
+</div>
+
+<div class="risk-item risk-high">
+  <p class="font-bold text-red">🔴 致命风险 #2：客户高度集中</p>
+  <p class="text-sm mt-1">微软贡献2025年全年营收的67%。虽公司正通过OpenAI（$11.9B合同）和Meta等客户分散风险，但在可预见的未来，微软和OpenAI合计仍将占营收50%以上。任一客户的大幅削减合同将造成灾难性后果。</p>
+</div>
+
+<div class="risk-item risk-high">
+  <p class="font-bold text-red">🔴 致命风险 #3：AI算力需求增速放缓</p>
+  <p class="text-sm mt-1">公司目前的所有估值逻辑都建立在"AI算力需求持续高速增长"的假设上。如果出现以下任何一种情况——大模型能力达到瓶颈、企业AI ROI不及预期导致投资缩减、推理端优化大幅降低算力需求——CoreWeave将面临收入和盈利预期的双重打击。</p>
+</div>
+
+<div class="risk-item risk-mid">
+  <p class="font-bold text-yellow-600">🟡 关注风险 #4：竞争加剧 / 价格战</p>
+  <p class="text-sm mt-1">AWS自研Trainium芯片、Azure与NVIDIA深度绑定、Google TPU v6即将量产——三大云巨头正加速追赶GPU云市场。CoreWeave当前的价格优势（相当于AWS的30-50%）未来可能被压缩。若GPU供给大幅增加，算力价格将面临下行压力。</p>
+</div>
+
+<div class="risk-item risk-mid">
+  <p class="font-bold text-yellow-600">🟡 关注风险 #5：NVIDIA依赖度</p>
+  <p class="text-sm mt-1">公司几乎全部依赖NVIDIA GPU。NVIDIA既是供应商，又是股东（持股约3-5%），还是间接客户（通过微软和OpenAI渠道）。这种多重关系在GPU紧缺时可能保障供应，但也在GPU供需逆转时构成风险。AMD/Intel GPU的竞争可能削弱NVIDIA的定价权，但也可能损害CoreWeave的硬件生态。</p>
+</div>
+
+<div class="risk-item risk-low">
+  <p class="font-bold text-blue-600">🔵 信息风险 #6：股权稀释</p>
+  <p class="text-sm mt-1">IPO以来持续进行股权融资（Q1 2026私募融资$1.99B，NVIDIA买入$2B新股）。加权平均股数从Q1 2025的246M扩大至527M，稀释幅度达114%。未来可能需要进一步股权融资。</p>
+</div>
+
+<h3 class="subsection-title">4.3 关键跟踪指标</h3>
+
+<table class="data-table">
+  <thead>
+    <tr><th>指标</th><th>当前值</th><th>跟踪频率</th><th>关注要点</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>营收积压（Backlog）</td><td>$99.4B</td><td>季度</td><td>关注净新增 vs 已确认收入，趋势须持续增长</td></tr>
+    <tr><td>客户集中度（微软占比）</td><td>~67%</td><td>季度</td><td>目标年底降至< 50%，多元化进展是关键</td></tr>
+    <tr><td>营业利润率</td><td>-6.9%→目标3-4%</td><td>季度</td><td>FY2026指引$900M-$1.1B（约7-8%），关注季度改善趋势</td></tr>
+    <tr><td>自由现金流缺口</td><td>-$4.7B/季</td><td>季度</td><td>经营现金流是否能追上资本开支增速</td></tr>
+    <tr><td>债务/EBITDA</td><td>N/A（负EBITDA）</td><td>季度</td><td>首次转正时间点及后续降杠杆节奏</td></tr>
+    <tr><td>在线GPU容量</td><td>>1GW→1.7GW目标</td><td>季度</td><td>数据中心建设和上架速度</td></tr>
+    <tr><td>合同签署</td><td>—</td><td>持续</td><td>新的大客户合同是股价的核心催化剂</td></tr>
+  </tbody>
+</table>
+
+<h3 class="subsection-title">4.4 估值分析（相对估值法）</h3>
+
+<table class="data-table">
+  <thead>
+    <tr><th>估值指标</th><th>CoreWeave</th><th>可比公司</th><th>备注</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>PS (TTM)</td><td>~10.0x</td><td>AWS: ~3x (AMZN综合)<br>DOCN: ~5x</td><td>CoreWeave增速远高于同行，PS溢价合理</td></tr>
+    <tr><td>PS (FY2026指引)</td><td>~5.0x</td><td>—</td><td>基于$12.5B指引，估值倍数的下降取决于执行</td></tr>
+    <tr><td>PS (2027运行率)</td><td>~2.0x</td><td>—</td><td>若$30B运行率实现，估值极具吸引力</td></tr>
+    <tr><td>EV/营收</td><td>~14x TTM</td><td>—</td><td>考虑$25B净债务后的企业价值~$87B</td></tr>
+    <tr><td>P/B</td><td>~13x</td><td>—</td><td>主要反映GPU资产，高PB因持续亏损侵蚀账面值</td></tr>
+  </tbody>
+</table>
+
+<div class="info-box">
+  <p class="font-semibold">估值结论：</p>
+  <p class="text-sm">CoreWeave无法用传统PE估值。PS(TTM) 10x对于增长>100%的公司不算极端，但考量条件：1）需持续验证增长轨迹；2）必须最终实现盈利；3）高杠杆要求更高的股权风险溢价。当前市值约$62B，假设2027年$30B营收并实现10%净利率（$3B净利润），给予20x PE则目标市值$60B——与当前接近，说明当前估值已部分隐含了乐观的2027年预期。上行空间取决于实际增长是否超预期和盈利实现速度。</p>
+</div>
+
+<h3 class="subsection-title">4.5 催化剂与事件日历</h3>
+
+<div class="grid grid-cols-2 gap-4">
+  <div class="dimension-card">
+    <p class="font-bold text-green-600">📈 上行催化剂</p>
+    <ul class="text-sm mt-2 list-disc pl-4 space-y-1">
+      <li>与微软/OpenAI续签更大规模合同</li>
+      <li>新的大客户公告（如Google、Apple、Anthropic等）</li>
+      <li>Q2实际营收超指引（7月底/8月初发布）</li>
+      <li>毛利率持续改善或亏损显著收窄</li>
+      <li>信用评级上调至投资级</li>
+      <li>NVIDIA进一步增持或战略合作深化</li>
+      <li>行业层面：AI算力需求再超预期</li>
+    </ul>
+  </div>
+  <div class="dimension-card">
+    <p class="font-bold text-red">📉 下行风险事件</p>
+    <ul class="text-sm mt-2 list-disc pl-4 space-y-1">
+      <li>融资条件收紧/债务评级下调</li>
+      <li>微软或OpenAI削减合同规模</li>
+      <li>竞争对手（AWS/Azure）大幅降价</li>
+      <li>AI产业投资周期见顶信号</li>
+      <li>大量内部人解禁减持</li>
+      <li>GPU供给过剩导致价格崩塌</li>
+      <li>季度财报未能达到Backlog增长目标</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- 第五部分：战略框架 & 交易建议 -->
+<!-- ================================================================ -->
+
+<h2 class="section-title">五、战略框架与可执行交易建议</h2>
+
+<div class="dimension-card verdict-watch p-6">
+  <div class="flex items-center gap-3 mb-4">
+    <span class="text-3xl">👁️</span>
+    <div>
+      <p class="text-xl font-black">观望为主 — 等待更好入场点</p>
+      <p class="text-sm text-gray-600">综合评分 59.0 | C级 | 高增长无法掩盖高风险</p>
+    </div>
+  </div>
+</div>
+
+<h3 class="subsection-title">5.1 战略定位</h3>
+
+<p class="text-sm mb-3">CoreWeave是一只典型的"高端风险/高潜在回报"标的，适合风险承受能力极强的投资者小仓位配置。其本质是AI算力赛道的<strong>杠杆化押注</strong>——3倍于AI市场增速的收入增长伴随着同等比例的资产负债表扩张。</p>
+
+<h3 class="subsection-title">5.2 仓位建议</h3>
+
+<table class="data-table">
+  <thead>
+    <tr><th>投资者类型</th><th>建议</th><th>仓位上限</th><th>说明</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>保守型</td><td><span class="badge badge-red">不参与</span></td><td>0%</td><td>尚未盈利+高杠杆+客户集中，风险超过保守投资者承受范围</td></tr>
+    <tr><td>平衡型</td><td><span class="badge badge-yellow">小仓位观察</span></td><td>1-3%</td><td>仅在$90-100区间分批建仓，严格止损</td></tr>
+    <tr><td>进取型</td><td><span class="badge badge-green">逢低布局</span></td><td>3-5%</td><td>在$85-105区间分批建立底仓，利用波动做T降低成本</td></tr>
+  </tbody>
+</table>
+
+<h3 class="subsection-title">5.3 入场策略</h3>
+
+<div class="grid grid-cols-2 gap-4">
+  <div class="dimension-card">
+    <p class="font-bold text-red">📊 技术面参考</p>
+    <ul class="text-sm mt-2 space-y-1">
+      <li>52周区间：$50.18 — $187.00</li>
+      <li>IPO价格：$40.00（2025年3月）</li>
+      <li>当前价：$114.15（较上市涨185%）</li>
+      <li>分析师目标价均值：$129.91</li>
+      <li>技术支撑位：$100 / $80 / $65</li>
+      <li>技术阻力位：$130 / $150 / $187</li>
+      <li>建议首次建仓区间：$90-$100</li>
+      <li>建议加仓区间：$70-$85</li>
+    </ul>
+  </div>
+  <div class="dimension-card">
+    <p class="font-bold text-red">📋 分批建仓计划</p>
+    <div class="text-sm mt-2 space-y-2">
+      <div class="flex justify-between"><span>第一批（底仓40%）：</span><span>$95-105</span></div>
+      <div class="flex justify-between"><span>第二批（加仓30%）：</span><span>$80-90</span></div>
+      <div class="flex justify-between"><span>第三批（加仓30%）：</span><span>$65-75</span></div>
+      <div class="mt-2 p-2 bg-gray-50 rounded">
+        <p class="font-semibold">平均建仓成本目标：$85-90</p>
+        <p class="text-gray-500">止损线：均价下方15%</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3 class="subsection-title">5.4 交易策略</h3>
+
+<div class="highlight-box">
+  <p class="font-bold text-red">短线交易者（持有1-4周）：</p>
+  <p class="text-sm mt-1">当前财报冲击已消化约10%跌幅，Q2指引不及预期的负面情绪可能已大部分price in。可在$108-112区间小仓位博弈反弹至$125-135。设置$105止损。关注AI板块整体情绪和NVDA股价走势。</p>
+</div>
+
+<div class="highlight-box mt-3">
+  <p class="font-bold text-red">中线策略（持有1-6个月）：</p>
+  <p class="text-sm mt-1">等待7月底Q2财报窗口。若股价回调至$90-100区间，可建立中线仓位。关键观察点：Q2营收能否超预期回击指引担忧、新合同签署动态、经营利润率改善趋势。目标价$130-150，止损$80。</p>
+</div>
+
+<div class="highlight-box mt-3">
+  <p class="font-bold text-red">长线策略（持有6-24个月）：</p>
+  <p class="text-sm mt-1">若认可"AI算力长期需求不变"的大逻辑，CoreWeave在$80-100区间是值得小仓位布局的"彩票型"标的。核心验证点：2027年能否实现$30B+营收运行率和正向自由现金流。若这两个条件确认，当前市值的3-5倍空间并非不可能。但需要做好仓位管理，高杠杆公司的尾部风险不可忽视。</p>
+</div>
+
+<h3 class="subsection-title">5.5 总结</h3>
+
+<div class="dimension-card">
+  <p class="leading-relaxed">
+    <strong class="text-red">CoreWeave（CRWV）代表了这个时代最极端的"增长vs风险"组合之一。</strong> 
+    从积极面看：AI算力需求爆发、$100B合同积压、顶级客户背书、2000+人团队的执行力，构成了一个罕见的增长故事。从风险面看：91%的资产负债率、-$4.7B/季的自由现金流缺口、67%的客户集中度、未经验证的盈利路径，构成了一个令人不安的资产负债表故事。
+  </p>
+  <p class="leading-relaxed mt-3">
+    <strong>我们的判断是：CoreWeave是否值得投资，本质上是在赌"AI算力需求增速"这只木桶——如果它持续爆棚，当前的所有问题（债务、亏损、集中度）都能通过高速增长来消化；但如果增速哪怕只是放缓到"优秀"而非"卓越"，杠杆就会从增长加速器变成毁灭器。</strong> 我们的C级评分反映了这种不确定性：这是一只值得跟踪、值得研究、值得在合适价格参与，但绝不适合重仓持有的标的。
+  </p>
+  <p class="mt-4 text-sm text-gray-500 text-center">— 报告完 —</p>
+  <p class="text-xs text-gray-400 text-center mt-1">数据截至2026年5月11日 | 数据来源：SEC 10-Q、CNBC、StockAnalysis、公开资料 | 本报告不构成投资建议</p>
+</div>
+
+</div>
+
+<!-- HuaStock: back-to-home button -->
+<a href="../../index.html" class="huastock-back-btn" target="_self">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+  </svg>
+  返回首页
+</a>
+<style>
+  .huastock-back-btn {
+    position: fixed !important;
+    bottom: 28px !important;
+    right: 28px !important;
+    z-index: 99999 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 10px 22px !important;
+    background: rgba(10, 22, 40, 0.75) !important;
+    color: #c9a84c !important;
+    border: 1px solid rgba(201, 168, 76, 0.25) !important;
+    border-radius: 999px !important;
+    font-family: "Inter", "Noto Sans SC", system-ui, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important;
+    transition: all 0.25s ease !important;
+    cursor: pointer !important;
+    user-select: none !important;
+  }
+  .huastock-back-btn:hover {
+    background: rgba(10, 22, 40, 0.95) !important;
+    border-color: rgba(201, 168, 76, 0.5) !important;
+    box-shadow: 0 6px 28px rgba(201, 168, 76, 0.18) !important;
+    transform: translateY(-2px) !important;
+  }
+  .huastock-back-btn svg {
+    transition: transform 0.2s ease !important;
+  }
+  .huastock-back-btn:hover svg {
+    transform: translateX(-3px) !important;
+  }
+</style>
+
+</body>
+</html>
