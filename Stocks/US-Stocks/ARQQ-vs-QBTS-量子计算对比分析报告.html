@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARQQ vs QBTS — 量子计算双雄对比分析报告</title>
+<script src="https://cdn.tailwindcss.com">
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Serif SC', '楷体', 'KaiTi', serif;
+  background: #f8f9fa;
+  color: #1a1a2e;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Noto Serif SC', '楷体', 'KaiTi', serif;
+  font-weight: 700;
+}
+
+.eng { font-family: 'Times New Roman', 'Georgia', serif; }
+
+/* Hero section */
+.hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 60px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 50%, rgba(229, 57, 53, 0.08) 0%, transparent 50%),
+              radial-gradient(circle at 70% 50%, rgba(21, 101, 192, 0.08) 0%, transparent 50%);
+  animation: pulse 8s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+.hero h1 { font-size: 28px; color: #fff; position: relative; letter-spacing: 2px; }
+.hero .subtitle { font-size: 14px; color: rgba(255,255,255,0.7); margin-top: 12px; position: relative; }
+.hero .date { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 8px; position: relative; }
+
+/* Container */
+.container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+
+/* Section */
+.section { background: #fff; border-radius: 10px; padding: 28px 32px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.section-title { font-size: 18px; color: #c62828; border-left: 4px solid #c62828; padding-left: 14px; margin-bottom: 20px; font-weight: 900; letter-spacing: 1px; }
+.section-subtitle { font-size: 14px; color: #333; font-weight: 700; margin: 18px 0 10px; }
+
+/* Comparison Header */
+.compare-header {
+  display: grid;
+  grid-template-columns: 120px 1fr 1fr;
+  gap: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.compare-header .label-cell {
+  background: #1a1a2e;
+  color: #fff;
+  padding: 16px 14px;
+  font-weight: 700;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.compare-header .arqq-cell {
+  background: linear-gradient(135deg, #c62828, #e53935);
+  color: #fff;
+  padding: 20px 16px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+.compare-header .qbts-cell {
+  background: linear-gradient(135deg, #1565c0, #1976d2);
+  color: #fff;
+  padding: 20px 16px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+.compare-header .ticker { font-size: 24px; font-weight: 900; font-family: 'Times New Roman', serif; }
+.compare-header .price { font-size: 18px; margin-top: 4px; }
+.compare-header .mcap { font-size: 11px; margin-top: 2px; opacity: 0.85; }
+
+/* Comparison Table */
+.compare-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.compare-table th {
+  background: #1a1a2e;
+  color: #fff;
+  padding: 10px 12px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 11px;
+}
+.compare-table th:first-child { text-align: left; border-radius: 6px 0 0 0; }
+.compare-table th:last-child { border-radius: 0 6px 0 0; }
+.compare-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+  font-size: 12px;
+}
+.compare-table td:first-child { font-weight: 600; color: #555; background: #fafafa; }
+.compare-table .arqq-val { color: #c62828; font-weight: 700; text-align: center; font-family: 'Times New Roman', serif; }
+.compare-table .qbts-val { color: #1565c0; font-weight: 700; text-align: center; font-family: 'Times New Roman', serif; }
+.compare-table .winner-arqq { background: rgba(198,40,40,0.06); }
+.compare-table .winner-qbts { background: rgba(21,101,192,0.06); }
+.compare-table tr:hover td { background: #f5f5f5; }
+.compare-table tr:hover td:first-child { background: #f0f0f0; }
+
+/* Badge */
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; }
+.badge-red { background: #ffebee; color: #c62828; }
+.badge-blue { background: #e3f2fd; color: #1565c0; }
+.badge-green { background: #e8f5e9; color: #2e7d32; }
+.badge-orange { background: #fff3e0; color: #e65100; }
+
+/* Metric Card */
+.metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 16px 0; }
+.metric-card { background: #fafafa; border-radius: 8px; padding: 14px; border: 1px solid #eee; }
+.metric-card .label { font-size: 11px; color: #888; margin-bottom: 4px; }
+.metric-card .value { font-size: 16px; font-weight: 900; font-family: 'Times New Roman', serif; }
+.metric-card .sub { font-size: 10px; color: #666; margin-top: 2px; }
+.metric-card.arqq { border-left: 3px solid #c62828; }
+.metric-card.qbts { border-left: 3px solid #1565c0; }
+
+/* Radar Chart Container */
+.chart-container { display: flex; justify-content: center; margin: 20px 0; }
+
+/* Score Bar */
+.score-bar-wrap { display: flex; align-items: center; gap: 10px; margin: 4px 0; }
+.score-bar-bg { flex: 1; height: 10px; background: #eee; border-radius: 5px; overflow: hidden; }
+.score-bar-fill { height: 100%; border-radius: 5px; transition: width 1s ease; }
+.score-bar-fill.arqq { background: linear-gradient(90deg, #ef5350, #c62828); }
+.score-bar-fill.qbts { background: linear-gradient(90deg, #42a5f5, #1565c0); }
+
+/* Factors List */
+.factor-list { list-style: none; padding: 0; }
+.factor-list li { padding: 6px 0 6px 20px; position: relative; font-size: 12px; }
+.factor-list li::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 6px; height: 6px; border-radius: 50%; }
+.factor-list li.positive::before { background: #c62828; }
+.factor-list li.negative::before { background: #1565c0; }
+
+/* Risk */
+.risk-box { padding: 14px 18px; border-radius: 8px; margin: 8px 0; border-left: 4px solid; font-size: 12px; }
+.risk-high { background: #fff5f5; border-color: #c62828; }
+.risk-mid { background: #fff8e1; border-color: #f9a825; }
+.risk-low { background: #f5f5f5; border-color: #90a4ae; }
+
+/* Verdict */
+.verdict-box {
+  padding: 24px 28px;
+  border-radius: 10px;
+  text-align: center;
+  margin: 24px 0;
+}
+.verdict-box h3 { font-size: 14px; margin-bottom: 8px; }
+.verdict-box .score { font-size: 36px; font-weight: 900; font-family: 'Times New Roman', serif; }
+.verdict-box .desc { font-size: 12px; margin-top: 8px; line-height: 1.6; }
+
+/* Verdict colors */
+.verdict-arqq { background: linear-gradient(135deg, #fff5f5, #ffebee); border: 1px solid #ef9a9a; }
+.verdict-qbts { background: linear-gradient(135deg, #e3f2fd, #e8eaf6); border: 1px solid #90caf9; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .compare-header { grid-template-columns: 80px 1fr 1fr; }
+  .metric-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 20px; }
+}
+
+/* Dual column */
+.dual-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 768px) { .dual-col { grid-template-columns: 1fr; } }
+
+/* Highlight box */
+.highlight-box {
+  background: linear-gradient(135deg, #fff8e1, #fff3e0);
+  border: 1px solid #ffe082;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  font-size: 12px;
+}
+
+/* Timeline */
+.timeline { position: relative; padding-left: 24px; margin: 12px 0; }
+.timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: #ddd; }
+.timeline-item { position: relative; padding: 8px 0 8px 16px; font-size: 12px; }
+.timeline-item::before { content: ''; position: absolute; left: -20px; top: 12px; width: 10px; height: 10px; border-radius: 50%; }
+.timeline-item.arqq::before { background: #c62828; }
+.timeline-item.qbts::before { background: #1565c0; }
+.timeline-item .date { font-size: 10px; color: #888; font-weight: 700; }
+
+/* Verdict row in compare table */
+.winner-tag { font-size: 10px; padding: 1px 6px; border-radius: 3px; font-weight: 700; }
+.winner-tag.arqq { background: #ffebee; color: #c62828; }
+.winner-tag.qbts { background: #e3f2fd; color: #1565c0; }
+.winner-tag.tie { background: #f5f5f5; color: #666; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>⚛ 量子计算赛道 · 双雄对比分析</h1>
+  <div class="subtitle">Arqit Quantum (ARQQ) vs D-Wave Quantum (QBTS)</div>
+  <div class="date">研究报告 · 2026年5月11日</div>
+</div>
+
+<div class="container">
+
+<!-- SECTION 0: EXECUTIVE SUMMARY -->
+<div class="section">
+  <div class="section-title">执行摘要</div>
+  <div class="dual-col">
+    <div class="verdict-box verdict-arqq">
+      <h3>ARQQ — Arqit Quantum</h3>
+      <div class="score" style="color:#c62828;">$14.96</div>
+      <div style="font-size:11px;color:#888;">市值 $2.34亿</div>
+      <div class="desc">
+        量子安全加密软件公司，聚焦后量子密码学(PQC)迁移。FY2025 营收仅 $53万，但 H1 FY2026 初报 $62.5万（+830% YoY）。现金 $3698万，月均运营支出 $250万，跑道约12个月。极度早期阶段，需持续融资。
+      </div>
+      <div style="margin-top:10px;"><span class="badge badge-orange">高度投机</span></div>
+    </div>
+    <div class="verdict-box verdict-qbts">
+      <h3>QBTS — D-Wave Quantum</h3>
+      <div class="score" style="color:#1565c0;">$22.57</div>
+      <div style="font-size:11px;color:#888;">市值 $83.6亿</div>
+      <div class="desc">
+        量子计算硬件+软件综合平台，唯一的退火+门模型双平台提供商。FY2025 营收 $2459万（+179% YoY），毛利率 82.6%。现金 $8.84亿，负债仅 $4346万。2026年1月单月预定超 $3000万（超 FY2024+FY2025总和）。
+      </div>
+      <div style="margin-top:10px;"><span class="badge badge-blue">成长型标的</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 1: COMPANY OVERVIEWS -->
+<div class="section">
+  <div class="section-title">一、公司概览</div>
+
+  <div class="dual-col">
+    <div>
+      <h4 style="color:#c62828;font-size:14px;margin-bottom:10px;">Arqit Quantum (ARQQ)</h4>
+      <table class="compare-table" style="font-size:11px;">
+        <tr><td style="width:100px;">全称</td><td>Arqit Quantum Inc.</td></tr>
+        <tr><td>成立年份</td><td>2017年</td></tr>
+        <tr><td>总部</td><td>英国伦敦</td></tr>
+        <tr><td>交易所</td><td>NASDAQ</td></tr>
+        <tr><td>员工数</td><td>87人</td></tr>
+        <tr><td>业务定位</td><td>量子安全加密 (Quantum-Safe Encryption)</td></tr>
+      </table>
+      <p style="margin-top:10px;font-size:12px;line-height:1.8;">
+        Arqit 提供对称密钥协商加密平台，使任何网络设备、云机器或数据中心之间的通信链路都具备量子安全能力。核心产品为 <strong>QuantumCloud™</strong>（PaaS，占比~85%+收入）、<strong>NetworkSecure™</strong>（量子安全数据保护）和 <strong>Encryption Intelligence</strong>（密码发现与合规）。2025年5月收购 Ampliphae 产品组合和 AI 分析团队。
+      </p>
+    </div>
+    <div>
+      <h4 style="color:#1565c0;font-size:14px;margin-bottom:10px;">D-Wave Quantum (QBTS)</h4>
+      <table class="compare-table" style="font-size:11px;">
+        <tr><td style="width:100px;">全称</td><td>D-Wave Quantum Inc.</td></tr>
+        <tr><td>成立年份</td><td>1999年</td></tr>
+        <tr><td>总部</td><td>美国加州帕洛阿尔托（迁往佛罗里达博卡拉顿）</td></tr>
+        <tr><td>交易所</td><td>NYSE</td></tr>
+        <tr><td>员工数</td><td>388人</td></tr>
+        <tr><td>业务定位</td><td>退火量子计算 + 门模型量子计算 (Dual-Platform)</td></tr>
+      </table>
+      <p style="margin-top:10px;font-size:12px;line-height:1.8;">
+        D-Wave 是全球唯一一家同时提供 <strong>退火(Annealing)</strong> 和 <strong>门模型(Gate-Model)</strong> 双平台量子计算的公司。核心产品包括 <strong>Advantage™/Advantage2™</strong> 量子计算机、<strong>Leap™</strong> 量子云服务、<strong>Ocean SDK</strong>。超100家企业/政府/研究机构客户。2025年完成量子霸权里程碑，转向双平台战略。
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: FINANCIAL COMPARISON -->
+<div class="section">
+  <div class="section-title">二、财务对比分析</div>
+
+  <!-- Header Cards -->
+  <div class="compare-header">
+    <div class="label-cell">指标</div>
+    <div class="arqq-cell">
+      <div class="ticker">ARQQ</div>
+      <div class="price">$14.96</div>
+      <div class="mcap">市值 $2.34亿</div>
+    </div>
+    <div class="qbts-cell">
+      <div class="ticker">QBTS</div>
+      <div class="price">$22.57</div>
+      <div class="mcap">市值 $83.6亿</div>
+    </div>
+  </div>
+
+  <!-- Financial Data Table -->
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th style="width:160px;">财务指标</th>
+        <th>ARQQ</th>
+        <th>QBTS</th>
+        <th style="width:60px;">优势方</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>营业收入 (FY2025)</td>
+        <td class="arqq-val">$53万</td>
+        <td class="qbts-val">$2,459万</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+      <tr class="winner-qbts">
+        <td>营收同比增速</td>
+        <td class="arqq-val">+80.9%</td>
+        <td class="qbts-val">+178.5%</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+      <tr>
+        <td>H1 FY2026 营收（初报）</td>
+        <td class="arqq-val">~$62.5万 (+830% YoY)</td>
+        <td class="qbts-val">Q1待报（明日披露）</td>
+        <td style="text-align:center;"><span class="winner-tag tie">—</span></td>
+      </tr>
+      <tr class="winner-qbts">
+        <td>毛利率</td>
+        <td class="arqq-val">37.7%</td>
+        <td class="qbts-val">82.6%</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+      <tr>
+        <td>TTM净亏损</td>
+        <td class="arqq-val">-$3,534万</td>
+        <td class="qbts-val">-$3.55亿</td>
+        <td style="text-align:center;"><span class="winner-tag arqq">ARQQ</span></td>
+      </tr>
+      <tr class="winner-qbts">
+        <td>收入质量 (Opex/营收比)</td>
+        <td class="arqq-val">~56.6x (每赚$1花$56.6)</td>
+        <td class="qbts-val">~5.9x (每赚$1花$5.9)</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+      <tr>
+        <td>现金及等价物</td>
+        <td class="arqq-val">$3,698万</td>
+        <td class="qbts-val">$8.84亿</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+      <tr class="winner-qbts">
+        <td>总负债</td>
+        <td class="arqq-val">$72万（几乎零负债）</td>
+        <td class="qbts-val">$4,346万</td>
+        <td style="text-align:center;"><span class="winner-tag arqq">ARQQ</span></td>
+      </tr>
+      <tr>
+        <td>净现金头寸</td>
+        <td class="arqq-val">$3,626万</td>
+        <td class="qbts-val">$8.41亿</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+      <tr class="winner-qbts">
+        <td>经营性现金流</td>
+        <td class="arqq-val">-$2,955万</td>
+        <td class="qbts-val">未完全披露（预估 -$7,000~8,000万）</td>
+        <td style="text-align:center;"><span class="winner-tag arqq">ARQQ</span></td>
+      </tr>
+      <tr>
+        <td>每股收益 (EPS TTM)</td>
+        <td class="arqq-val">-$2.56</td>
+        <td class="qbts-val">-$1.11</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+      <tr class="winner-qbts">
+        <td>企业价值 (EV)</td>
+        <td class="arqq-val">$1.98亿</td>
+        <td class="qbts-val">$75.2亿</td>
+        <td style="text-align:center;"><span class="winner-tag tie">不同量级</span></td>
+      </tr>
+      <tr>
+        <td>EV/Revenue (TTM)</td>
+        <td class="arqq-val">373.4x</td>
+        <td class="qbts-val">305.8x</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+      <tr class="winner-qbts">
+        <td>市净率 (PB)</td>
+        <td class="arqq-val">8.40x</td>
+        <td class="qbts-val">9.50x</td>
+        <td style="text-align:center;"><span class="winner-tag arqq">ARQQ</span></td>
+      </tr>
+      <tr>
+        <td>贝塔 (Beta)</td>
+        <td class="arqq-val">2.34</td>
+        <td class="qbts-val">1.94</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+      <tr class="winner-qbts">
+        <td>年度股份稀释</td>
+        <td class="arqq-val" style="color:#c62828;">+172.5% (严重)</td>
+        <td class="qbts-val" style="color:#2e7d32;">~15% (可接受)</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+      <tr>
+        <td>分析师覆盖</td>
+        <td class="arqq-val">1人 (Strong Buy)</td>
+        <td class="qbts-val">15人 (Strong Buy)</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+      <tr class="winner-qbts">
+        <td>12个月目标价</td>
+        <td class="arqq-val">$60.00 (+301%)</td>
+        <td class="qbts-val">$32.53 (+44%)</td>
+        <td style="text-align:center;"><span class="winner-tag tie">不同预期</span></td>
+      </tr>
+      <tr>
+        <td>现金跑道</td>
+        <td class="arqq-val" style="color:#e65100;">~12个月（月烧$250万）</td>
+        <td class="qbts-val" style="color:#2e7d32;">&gt;3年（$8.84亿储备）</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+      <tr class="winner-qbts">
+        <td>营收规模 (TTM)</td>
+        <td class="arqq-val">$53万</td>
+        <td class="qbts-val">$2,459万</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Key Financial Ratio Visualization -->
+  <div style="margin-top:20px;">
+    <h4 class="section-subtitle">核心收入效率对比</h4>
+    <div class="dual-col">
+      <div>
+        <div style="margin:8px 0;">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;">
+            <span>ARQQ 营收 ($53万)</span>
+            <span style="color:#c62828;font-weight:700;">vs 运营支出 ($3,000万)</span>
+          </div>
+          <div class="score-bar-bg">
+            <div class="score-bar-fill arqq" style="width:1.8%;"></div>
+          </div>
+          <div style="font-size:10px;color:#888;margin-top:2px;">每$1营收对应$56.6运营支出</div>
+        </div>
+      </div>
+      <div>
+        <div style="margin:8px 0;">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;">
+            <span>QBTS 营收 ($2,459万)</span>
+            <span style="color:#1565c0;font-weight:700;">vs 运营支出 ($14,500万)</span>
+          </div>
+          <div class="score-bar-bg">
+            <div class="score-bar-fill qbts" style="width:17%;"></div>
+          </div>
+          <div style="font-size:10px;color:#888;margin-top:2px;">每$1营收对应$5.9运营支出</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: VALUATION COMPARISON -->
+<div class="section">
+  <div class="section-title">三、估值对比分析</div>
+
+  <div class="highlight-box">
+    <strong>⚠ 重要提示：</strong>两家公司目前均处于亏损状态，P/E 不可用，估值锚定需依赖 EV/Revenue、P/S、现金消耗率等替代指标。量子计算赛道整体处于商业化早期，估值中包含大量对未来增长的预期。
+  </div>
+
+  <table class="compare-table">
+    <thead>
+      <tr><th style="width:160px;">估值指标</th><th>ARQQ</th><th>QBTS</th><th style="width:60px;">优势方</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>EV / Revenue (TTM)</td>
+        <td class="arqq-val">373.4x</td>
+        <td class="qbts-val">305.8x</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+      <tr class="winner-qbts">
+        <td>EV / Forward Revenue (预估)</td>
+        <td class="arqq-val">~158x (基于~$125万)</td>
+        <td class="qbts-val">~153x (基于~$4,900万)</td>
+        <td style="text-align:center;"><span class="winner-tag tie">相近</span></td>
+      </tr>
+      <tr>
+        <td>市净率 (P/B)</td>
+        <td class="arqq-val">8.40x</td>
+        <td class="qbts-val">9.50x</td>
+        <td style="text-align:center;"><span class="winner-tag arqq">ARQQ</span></td>
+      </tr>
+      <tr class="winner-qbts">
+        <td>净现金 / 市值比率</td>
+        <td class="arqq-val">15.5% ($3,626万/$2.34亿)</td>
+        <td class="qbts-val">10.1% ($8.41亿/$83.6亿)</td>
+        <td style="text-align:center;"><span class="winner-tag arqq">ARQQ</span></td>
+      </tr>
+      <tr>
+        <td>PS Ratio (TTM)</td>
+        <td class="arqq-val">441.8x</td>
+        <td class="qbts-val">340.0x</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+      <tr class="winner-qbts">
+        <td>Forward PS (基于共识)</td>
+        <td class="arqq-val">~187x</td>
+        <td class="qbts-val">~170x</td>
+        <td style="text-align:center;"><span class="winner-tag tie">相近</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:16px;">
+    <h4 class="section-subtitle">估值倍数对比图</h4>
+    <div class="dual-col">
+      <div>
+        <div style="font-size:11px;font-weight:700;margin-bottom:6px;">EV/Revenue (TTM)</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:11px;color:#c62828;min-width:50px;">ARQQ</span>
+          <div class="score-bar-bg"><div class="score-bar-fill arqq" style="width:100%;"></div></div>
+          <span style="font-size:11px;font-weight:700;color:#c62828;min-width:50px;">373.4x</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+          <span style="font-size:11px;color:#1565c0;min-width:50px;">QBTS</span>
+          <div class="score-bar-bg"><div class="score-bar-fill qbts" style="width:82%;"></div></div>
+          <span style="font-size:11px;font-weight:700;color:#1565c0;min-width:50px;">305.8x</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;margin-bottom:6px;">Forward PS (预估)</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:11px;color:#c62828;min-width:50px;">ARQQ</span>
+          <div class="score-bar-bg"><div class="score-bar-fill arqq" style="width:100%;"></div></div>
+          <span style="font-size:11px;font-weight:700;color:#c62828;min-width:50px;">~187x</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+          <span style="font-size:11px;color:#1565c0;min-width:50px;">QBTS</span>
+          <div class="score-bar-bg"><div class="score-bar-fill qbts" style="width:91%;"></div></div>
+          <span style="font-size:11px;font-weight:700;color:#1565c0;min-width:50px;">~170x</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: TECHNOLOGY COMPARISON -->
+<div class="section">
+  <div class="section-title">四、技术与产品对比</div>
+
+  <table class="compare-table">
+    <thead>
+      <tr><th style="width:160px;">技术维度</th><th>ARQQ</th><th>QBTS</th><th style="width:60px;">优势方</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>核心技术</td>
+        <td class="arqq-val">对称密钥协商加密 (SKA)</td>
+        <td class="qbts-val">量子退火 + 门模型双平台</td>
+        <td style="text-align:center;"><span class="winner-tag tie">不同赛道</span></td>
+      </tr>
+      <tr class="winner-qbts">
+        <td>技术成熟度</td>
+        <td class="arqq-val" style="color:#e65100;">商业化早期（Pilot阶段）</td>
+        <td class="qbts-val" style="color:#2e7d32;">商用部署中（100+客户）</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+      <tr>
+        <td>产品形态</td>
+        <td class="arqq-val">纯软件/PaaS</td>
+        <td class="qbts-val">硬件+软件+云服务</td>
+        <td style="text-align:center;"><span class="winner-tag tie">不同模式</span></td>
+      </tr>
+      <tr class="winner-qbts">
+        <td>市场验证</td>
+        <td class="arqq-val" style="color:#e65100;">7个合同/12个Demo许可</td>
+        <td class="qbts-val" style="color:#2e7d32;">100+组织/30亿+量子计算秒</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+      <tr>
+        <td>专利/IP</td>
+        <td class="arqq-val">专有SKA专利组合</td>
+        <td class="qbts-val">退火量子计算专利领导者</td>
+        <td style="text-align:center;"><span class="winner-tag tie">各有优势</span></td>
+      </tr>
+      <tr class="winner-qbts">
+        <td>主要竞争壁垒</td>
+        <td class="arqq-val">NIST PQC标准替代风险</td>
+        <td class="qbts-val">专有退火技术+双平台优势</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+      <tr>
+        <td>行业竞争</td>
+        <td class="arqq-val">CRWD/FORT/PANW（网络安全巨头）</td>
+        <td class="qbts-val">IONQ/RGTI/QUBT（量子计算）</td>
+        <td style="text-align:center;"><span class="winner-tag tie">不同赛道</span></td>
+      </tr>
+      <tr class="winner-qbts">
+        <td>关键里程碑</td>
+        <td class="arqq-val">收购Ampliphae / IDC Innovator</td>
+        <td class="qbts-val">量子霸权 / 双平台启动 / FAU $2000万订单</td>
+        <td style="text-align:center;"><span class="winner-tag qbts">QBTS</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:16px;">
+    <h4 class="section-subtitle">技术路线差异</h4>
+    <div class="dual-col" style="gap:16px;">
+      <div style="padding:14px;background:#fff5f5;border-radius:8px;border:1px solid #ffcdd2;">
+        <h4 style="color:#c62828;font-size:13px;">ARQQ — 软件加密路线</h4>
+        <ul class="factor-list">
+          <li class="positive"><strong>优势：</strong>轻资产模式，无需硬件投入；边际成本低；可快速部署</li>
+          <li class="negative"><strong>劣势：</strong>面临开源PQC标准（NIST）的竞争；需证明付费意愿；客户决策周期长</li>
+          <li style="padding:6px 0 6px 20px;font-size:12px;color:#666;">核心问题：加密客户是否愿意为"量子安全"升级付费？</li>
+        </ul>
+      </div>
+      <div style="padding:14px;background:#e3f2fd;border-radius:8px;border:1px solid #90caf9;">
+        <h4 style="color:#1565c0;font-size:13px;">QBTS — 量子计算硬件路线</h4>
+        <ul class="factor-list">
+          <li class="positive"><strong>优势：</strong>退火技术在组合优化领域已有实际应用；双平台战略扩展TAM</li>
+          <li class="negative"><strong>劣势：</strong>重资本开支；门模型路线仍处早期；需持续大额研发投入</li>
+          <li style="padding:6px 0 6px 20px;font-size:12px;color:#666;">核心优势：唯一双平台提供商，退火产生现金流，门模型押注未来</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: BOOKINGS & COMMERCIAL TRACTION -->
+<div class="section">
+  <div class="section-title">五、商业进展与订单情况</div>
+
+  <div class="dual-col">
+    <div>
+      <h4 style="color:#c62828;font-size:13px;margin-bottom:8px;">ARQQ 商业进展</h4>
+      <div class="timeline">
+        <div class="timeline-item arqq">
+          <div class="date">FY2025 全年</div>
+          7个合同签约，包括2个多年期经常性收入合同
+        </div>
+        <div class="timeline-item arqq">
+          <div class="date">2025年5月</div>
+          收购 Ampliphae 产品组合，新增 Encryption Intelligence 业务线
+        </div>
+        <div class="timeline-item arqq">
+          <div class="date">2025年10-11月</div>
+          签署12个Demo/测试许可，激活3个新合同
+        </div>
+        <div class="timeline-item arqq">
+          <div class="date">FY2026 H1 (至2026年3月)</div>
+          初报营收 $62-63万（+830% YoY），超越FY2025全年
+        </div>
+        <div class="timeline-item arqq">
+          <div class="date">2026年4月</div>
+          与Vodafone合资企业Tomorrow Street 建立合作伙伴关系
+        </div>
+      </div>
+    </div>
+    <div>
+      <h4 style="color:#1565c0;font-size:13px;margin-bottom:8px;">QBTS 商业进展</h4>
+      <div class="timeline">
+        <div class="timeline-item qbts">
+          <div class="date">FY2025</div>
+          营收 $2,459万（+179%），毛利率82.6%
+        </div>
+        <div class="timeline-item qbts">
+          <div class="date">2025年</div>
+          实现量子霸权里程碑，启动门模型路线图
+        </div>
+        <div class="timeline-item qbts">
+          <div class="date">2026年1月</div>
+          <strong>单月预订超$3,000万</strong>，超越FY2024+FY2025总和
+        </div>
+        <div class="timeline-item qbts">
+          <div class="date">2026年Q1</div>
+          FAU $2,000万系统销售 + Fortune 100企业$1,000万许可协议
+        </div>
+        <div class="timeline-item qbts">
+          <div class="date">2026年6月1日</div>
+          计划在NYSE举办投资者日
+        </div>
+        <div class="timeline-item qbts">
+          <div class="date">近期</div>
+          与Davidson Tech/Anduril合作导弹防御量子应用（10x加速, 12%提升）
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6: RISK ANALYSIS -->
+<div class="section">
+  <div class="section-title">六、风险因素分析</div>
+
+  <div class="dual-col">
+    <div>
+      <h4 style="color:#c62828;font-size:13px;margin-bottom:10px;">ARQQ 核心风险</h4>
+      <div class="risk-box risk-high">
+        <strong>🔴 致命：跑道风险</strong><br>
+        现金仅 $3,698万，月烧$250万，跑道仅约12个月。若 FY2026 收入增长不及预期，将被迫稀释融资或寻求并购。
+      </div>
+      <div class="risk-box risk-high">
+        <strong>🔴 致命：商业可行性</strong><br>
+        FY2025 营收仅 $53万，远未验证产品-市场契合度。年运营亏损 $3,500万 vs $53万收入，经济模型不可持续。
+      </div>
+      <div class="risk-box risk-high">
+        <strong>🔴 致命：严重股权稀释</strong><br>
+        过去一年股份数暴增172.5%。现有股东权益被持续稀释，若继续融资将进一步恶化。
+      </div>
+      <div class="risk-box risk-mid">
+        <strong>🟡 关注：竞争威胁</strong><br>
+        NIST后量子密码标准（ML-KEM, ML-DSA等）为开源免费方案，可能大幅压缩Arqit付费方案的TAM。
+      </div>
+      <div class="risk-box risk-mid">
+        <strong>🟡 关注：客户集中度</strong><br>
+        收入依赖少数合同，单个合同取消将产生重大影响。客户多为政府/国防，采购周期长且不可预测。
+      </div>
+    </div>
+    <div>
+      <h4 style="color:#1565c0;font-size:13px;margin-bottom:10px;">QBTS 核心风险</h4>
+      <div class="risk-box risk-high">
+        <strong>🔴 致命：估值泡沫风险</strong><br>
+        $83.6亿市值对应 $2,459万营收，EV/Revenue 305.8x。即使以100% CAGR增长，也需要多年消化估值。
+      </div>
+      <div class="risk-box risk-high">
+        <strong>🔴 致命：盈利路径不明确</strong><br>
+        TTM净亏损 $3.55亿且持续扩大（+146.8% YoY）。高研发投入（$36.6M/季）何时产生正回报不确定。
+      </div>
+      <div class="risk-box risk-mid">
+        <strong>🟡 关注：技术路线不确定性</strong><br>
+        门模型量子计算全球仍在早期，D-Wave的门模型技术路线存在交付延迟或性能不及预期的风险。
+      </div>
+      <div class="risk-box risk-mid">
+        <strong>🟡 关注：竞争加剧</strong><br>
+        IONQ、Rigetti、Google、IBM等强敌环伺。D-Wave退火路线是否能在通用量子计算竞赛中长期立足存疑。
+      </div>
+      <div class="risk-box risk-mid">
+        <strong>🟡 关注：量子计算整体周期</strong><br>
+        量子计算板块受宏观情绪和AI资金分流影响大。若利率长期高企，成长股/概念股估值承压。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 7: COMPREHENSIVE SWOT -->
+<div class="section">
+  <div class="section-title">七、SWOT 综合对比</div>
+
+  <table class="compare-table">
+    <thead>
+      <tr><th style="width:80px;">维度</th><th>ARQQ</th><th>QBTS</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="font-weight:700;color:#2e7d32;">优势</td>
+        <td style="font-size:11px;">
+          ✅ 零负债，净现金 $3,626万<br>
+          ✅ H1 FY2026收入 +830%（低基数）<br>
+          ✅ 轻资产软件模式，边际成本低<br>
+          ✅ 后量子安全是确定性需求
+        </td>
+        <td style="font-size:11px;">
+          ✅ $8.84亿现金储备，跑道超3年<br>
+          ✅ FY2025营收+179%，毛利率82.6%<br>
+          ✅ 唯一退火+门模型双平台<br>
+          ✅ 100+企业/政府客户基础
+        </td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;color:#e65100;">劣势</td>
+        <td style="font-size:11px;">
+          ❌ 营收仅$53万，商业验证缺失<br>
+          ❌ 现金跑道仅12个月<br>
+          ❌ 股份稀释严重（+172.5%）<br>
+          ❌ 仅1名分析师覆盖
+        </td>
+        <td style="font-size:11px;">
+          ❌ 巨额亏损（$3.55亿 TTM）<br>
+          ❌ EV/Revenue 305.8x 估值极高<br>
+          ❌ 门模型路线图不确定性<br>
+          ❌ 重资产商业模式
+        </td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;color:#1565c0;">机会</td>
+        <td style="font-size:11px;">
+          🔵 全球PQC合规需求爆发<br>
+          🔵 电信/国防对量子安全加密刚需<br>
+          🔵 Encryption Intelligence新业务线<br>
+          🔵 英特尔合作拓展机密计算
+        </td>
+        <td style="font-size:11px;">
+          🔵 退火量子计算企业级应用加速<br>
+          🔵 门模型商业化打开新TAM<br>
+          🔵 国防/医疗/物流行业突破<br>
+          🔵 $30M+预订为FY2026奠定基础
+        </td>
+      </tr>
+      <tr>
+        <td style="font-weight:700;color:#c62828;">威胁</td>
+        <td style="font-size:11px;">
+          ⚠ NIST开源PQC标准免费替代<br>
+          ⚠ 网络安全巨头（CRWD/PANW）竞争<br>
+          ⚠ 融资困难或条款恶化<br>
+          ⚠ 客户采购周期延长
+        </td>
+        <td style="font-size:11px;">
+          ⚠ IONQ/RGTI/Google/IBM竞争<br>
+          ⚠ 量子计算是否达到市场预期<br>
+          ⚠ 宏观环境对成长股估值压制<br>
+          ⚠ 退火路线被门模型取代风险
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- SECTION 8: INVESTMENT CONCLUSION -->
+<div class="section">
+  <div class="section-title">八、投资结论与策略建议</div>
+
+  <div class="highlight-box" style="margin-bottom:20px;">
+    <strong>提示：</strong>本节基于公开数据的事实分析，不构成投资建议。量子计算赛道尚处商业化早期，波动性极高（ARQQ Beta 2.34, QBTS Beta 1.94），投资者应充分认识风险并控制仓位。
+  </div>
+
+  <div class="dual-col">
+    <div>
+      <div class="verdict-box verdict-arqq">
+        <h3>ARQQ 综合评估</h3>
+        <div class="score" style="color:#c62828;">D</div>
+        <div style="font-size:11px;color:#888;margin:4px 0;">评分等级 · 暂不参与</div>
+        <div class="desc" style="font-size:11px;text-align:left;">
+          <strong>理由：</strong>
+          <ul class="factor-list" style="margin-top:4px;">
+            <li style="padding:3px 0 3px 14px;font-size:11px;color:#333;">营收基础极薄弱（$53万），商业模型未验证</li>
+            <li style="padding:3px 0 3px 14px;font-size:11px;color:#333;">跑道仅12个月，面临严重稀释风险</li>
+            <li style="padding:3px 0 3px 14px;font-size:11px;color:#333;">EV/Revenue 373.4x，估值脱离基本面</li>
+            <li style="padding:3px 0 3px 14px;font-size:11px;color:#333;">H1 FY2026 +830%看似亮眼，但绝对体量仍极小</li>
+          </ul>
+        </div>
+        <div style="margin-top:8px;">
+          <span style="font-size:11px;font-weight:700;color:#c62828;">结论：高度投机，不建议参与</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="verdict-box verdict-qbts">
+        <h3>QBTS 综合评估</h3>
+        <div class="score" style="color:#1565c0;">B-</div>
+        <div style="font-size:11px;color:#888;margin:4px 0;">评分等级 · 观察/小仓位参与</div>
+        <div class="desc" style="font-size:11px;text-align:left;">
+          <strong>理由：</strong>
+          <ul class="factor-list" style="margin-top:4px;">
+            <li style="padding:3px 0 3px 14px;font-size:11px;color:#333;">营收高速增长（+179%），毛利率82.6%优秀</li>
+            <li style="padding:3px 0 3px 14px;font-size:11px;color:#333;">$8.84亿现金储备提供充足跑道</li>
+            <li style="padding:3px 0 3px 14px;font-size:11px;color:#333;">2026年1月预订爆量（$30M+）是重要催化剂</li>
+            <li style="padding:3px 0 3px 14px;font-size:11px;color:#333;">但EV/Revenue 305.8x和$3.55亿亏损仍需警惕</li>
+          </ul>
+        </div>
+        <div style="margin-top:8px;">
+          <span style="font-size:11px;font-weight:700;color:#1565c0;">结论：关注商业里程碑，等待更佳入场点</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Strategy -->
+  <div style="margin-top:20px;">
+    <h4 class="section-subtitle">策略框架</h4>
+    <table class="compare-table">
+      <thead>
+        <tr><th style="width:100px;">维度</th><th>ARQQ 策略</th><th>QBTS 策略</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:700;">仓位建议</td>
+          <td style="font-size:11px;color:#c62828;">🚫 不建议参与。待以下条件满足后重新评估：①连续2个季度收入破$100万 ②现金融资获得新注入 ③与任一大型客户签署大额年度合同</td>
+          <td style="font-size:11px;color:#1565c0;">📋 小仓位（<5%）或列入观察列表。若Q1 2026及全年收入指引超预期，可考虑建立2-3%试探仓位</td>
+        </tr>
+        <tr>
+          <td style="font-weight:700;">入场时机</td>
+          <td style="font-size:11px;">关注FY2026全年业绩（预计2026年12月）和融资公告。短期催化剂有限</td>
+          <td style="font-size:11px;">① 5月12日Q1 2026财报的催化剂 ② 6月1日NYSE投资者日 ③ 6月18日Qubits Europe 2026大会</td>
+        </tr>
+        <tr>
+          <td style="font-weight:700;">关键跟踪指标</td>
+          <td style="font-size:11px;">
+            • 季度收入 & 年化经常性收入<br>
+            • 现金余额 & 融资动态<br>
+            • 合同数量 & 客户增长<br>
+            • 运营费用控制
+          </td>
+          <td style="font-size:11px;">
+            • 季度预订 & 积压订单<br>
+            • 门模型路线图进展<br>
+            • 毛利率趋势<br>
+            • 运营亏损变化 & 现金消耗
+          </td>
+        </tr>
+        <tr>
+          <td style="font-weight:700;">时间窗口</td>
+          <td style="font-size:11px;">当前不适合参与。若能在2026年底前实现$200万+季度营收且现金充裕，可重新评估</td>
+          <td style="font-size:11px;">2026年下半年是关键验证期。若FY2026营收能接近$8,000万-1亿且亏损收窄，估值有望获得支撑</td>
+        </tr>
+        <tr>
+          <td style="font-weight:700;">风险控制</td>
+          <td style="font-size:11px;">主要风险：生存风险 + 股权稀释。止损信号：现金低于$1,500万或营收增速急剧放缓</td>
+          <td style="font-size:11px;">主要风险：估值风险 + 技术路线风险。止损信号：连续2个季度预订低于$1,000万或竞争对手重大突破</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 9: COMPARISON CHART -->
+<div class="section">
+  <div class="section-title">九、综合评分雷达图</div>
+
+  <div style="display:flex;justify-content:center;margin:10px 0;">
+    <svg width="500" height="380" viewBox="0 0 500 380" xmlns="http://www.w3.org/2000/svg">
+      <!-- Radar center: (250, 200) -->
+      <!-- Radius: 130 -->
+      <defs>
+        <linearGradient id="arqqGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#ef5350" stop-opacity="0.25"/>
+          <stop offset="100%" stop-color="#c62828" stop-opacity="0.15"/>
+        </linearGradient>
+        <linearGradient id="qbtsGrad" x1="1" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#42a5f5" stop-opacity="0.25"/>
+          <stop offset="100%" stop-color="#1565c0" stop-opacity="0.15"/>
+        </linearGradient>
+        <filter id="shadow">
+          <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+        </filter>
+      </defs>
+
+      <!-- Grid circles -->
+      <circle cx="250" cy="200" r="32.5" fill="none" stroke="#e0e0e0" stroke-width="1"/>
+      <circle cx="250" cy="200" r="65" fill="none" stroke="#e0e0e0" stroke-width="1"/>
+      <circle cx="250" cy="200" r="97.5" fill="none" stroke="#e0e0e0" stroke-width="1"/>
+      <circle cx="250" cy="200" r="130" fill="none" stroke="#ccc" stroke-width="1" stroke-dasharray="4,3"/>
+
+      <!-- Axis labels -->
+      <!-- D1: Business Scale (top, -90deg) -->
+      <text x="250" y="40" text-anchor="middle" font-size="11" font-weight="700" fill="#555">营收规模</text>
+      <!-- D2: Growth Rate (top-right, -30deg) -->
+      <text x="362" y="68" text-anchor="middle" font-size="11" font-weight="700" fill="#555">增长动力</text>
+      <!-- D3: Financial Health (bottom-right, 30deg) -->
+      <text x="368" y="335" text-anchor="middle" font-size="11" font-weight="700" fill="#555">财务健康</text>
+      <!-- D4: Valuation (bottom, 90deg) -->
+      <text x="250" y="370" text-anchor="middle" font-size="11" font-weight="700" fill="#555">估值合理性</text>
+      <!-- D5: Cash Runway (bottom-left, 150deg) -->
+      <text x="132" y="335" text-anchor="middle" font-size="11" font-weight="700" fill="#555">现金跑道</text>
+      <!-- D6: Commercial Traction (top-left, 210deg) -->
+      <text x="138" y="68" text-anchor="middle" font-size="11" font-weight="700" fill="#555">商业验证</text>
+
+      <!-- Axis lines -->
+      <!-- D1: -90deg: x=250, y=200-130=70 -->
+      <line x1="250" y1="200" x2="250" y2="70" stroke="#ccc" stroke-width="1"/>
+      <!-- D2: -30deg: cos=0.866, sin=0.5: x=250+130*0.866=362.6, y=200-130*0.5=135 -->
+      <line x1="250" y1="200" x2="362.6" y2="135" stroke="#ccc" stroke-width="1"/>
+      <!-- D3: 30deg: cos=0.866, sin=0.5: x=250+130*0.866=362.6, y=200+130*0.5=265 -->
+      <line x1="250" y1="200" x2="362.6" y2="265" stroke="#ccc" stroke-width="1"/>
+      <!-- D4: 90deg: x=250, y=200+130=330 -->
+      <line x1="250" y1="200" x2="250" y2="330" stroke="#ccc" stroke-width="1"/>
+      <!-- D5: 150deg: cos=-0.866, sin=0.5: x=250-130*0.866=137.4, y=200+130*0.5=265 -->
+      <line x1="250" y1="200" x2="137.4" y2="265" stroke="#ccc" stroke-width="1"/>
+      <!-- D6: 210deg: cos=-0.866, sin=-0.5: x=250-130*0.866=137.4, y=200-130*0.5=135 -->
+      <line x1="250" y1="200" x2="137.4" y2="135" stroke="#ccc" stroke-width="1"/>
+
+      <!-- ARQQ scores (scored out of 100, mapped to radius) -->
+      <!-- D1: 10/100 => r=13, x=250, y=187 -->
+      <!-- D2: 70/100 => r=91, x=362.6->328.8, y=135->154.5 -->
+      <!-- D3: 55/100 => r=71.5, x=331.9, y=235.8 -->
+      <!-- D4: 40/100 => r=52, x=250, y=252 -->
+      <!-- D5: 25/100 => r=32.5, x=221.9, y=216.3 -->
+      <!-- D6: 15/100 => r=19.5, x=233.1, y=190.3 -->
+      <polygon points="250,187 328.8,154.5 311.9,235.8 250,252 221.9,216.3 233.1,190.3"
+               fill="url(#arqqGrad)" stroke="#c62828" stroke-width="2" filter="url(#shadow)"/>
+
+      <!-- ARQQ data points -->
+      <circle cx="250" cy="187" r="4" fill="#c62828"/>
+      <circle cx="328.8" cy="154.5" r="4" fill="#c62828"/>
+      <circle cx="311.9" cy="235.8" r="4" fill="#c62828"/>
+      <circle cx="250" cy="252" r="4" fill="#c62828"/>
+      <circle cx="221.9" cy="216.3" r="4" fill="#c62828"/>
+      <circle cx="233.1" cy="190.3" r="4" fill="#c62828"/>
+
+      <!-- ARQQ score labels -->
+      <text x="260" y="183" font-size="10" fill="#c62828" font-weight="700">10</text>
+      <text x="335" y="155" font-size="10" fill="#c62828" font-weight="700">70</text>
+      <text x="318" y="252" font-size="10" fill="#c62828" font-weight="700">55</text>
+      <text x="255" y="268" font-size="10" fill="#c62828" font-weight="700">40</text>
+      <text x="215" y="228" font-size="10" fill="#c62828" font-weight="700">25</text>
+      <text x="225" y="188" font-size="10" fill="#c62828" font-weight="700">15</text>
+
+      <!-- QBTS scores -->
+      <!-- D1: 75/100 => r=97.5, x=250, y=102.5 -->
+      <!-- D2: 85/100 => r=110.5, x=345.6->345.6, y=200-55.25=144.75 -->
+      <!-- D3: 70/100 => r=91, x=250+78.81=328.8, y=200+45.5=245.5 -->
+      <!-- D4: 35/100 => r=45.5, x=250, y=200+45.5=245.5 -->
+      <!-- D5: 90/100 => r=117, x=250-101.3=148.7, y=200+58.5=258.5 -->
+      <!-- D6: 65/100 => r=84.5, x=250-73.2=176.8, y=200-42.25=157.75 -->
+      <polygon points="250,102.5 345.6,144.8 328.8,245.5 250,245.5 148.7,258.5 176.8,157.8"
+               fill="url(#qbtsGrad)" stroke="#1565c0" stroke-width="2" stroke-dasharray="6,3" filter="url(#shadow)"/>
+
+      <!-- QBTS data points -->
+      <circle cx="250" cy="102.5" r="4" fill="#1565c0"/>
+      <circle cx="345.6" cy="144.8" r="4" fill="#1565c0"/>
+      <circle cx="328.8" cy="245.5" r="4" fill="#1565c0"/>
+      <circle cx="250" cy="245.5" r="4" fill="#1565c0"/>
+      <circle cx="148.7" cy="258.5" r="4" fill="#1565c0"/>
+      <circle cx="176.8" cy="157.8" r="4" fill="#1565c0"/>
+
+      <!-- QBTS score labels -->
+      <text x="260" y="100" font-size="10" fill="#1565c0" font-weight="700">75</text>
+      <text x="350" y="150" font-size="10" fill="#1565c0" font-weight="700">85</text>
+      <text x="335" y="260" font-size="10" fill="#1565c0" font-weight="700">70</text>
+      <text x="255" y="260" font-size="10" fill="#1565c0" font-weight="700">35</text>
+      <text x="130" y="270" font-size="10" fill="#1565c0" font-weight="700">90</text>
+      <text x="160" y="155" font-size="10" fill="#1565c0" font-weight="700">65</text>
+
+      <!-- Legend -->
+      <rect x="60" y="345" width="12" height="12" fill="#c62828" rx="2"/>
+      <text x="78" y="355" font-size="11" fill="#555">ARQQ</text>
+      <rect x="150" y="345" width="12" height="12" fill="#1565c0" rx="2"/>
+      <text x="168" y="355" font-size="11" fill="#555">QBTS</text>
+    </svg>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+    <div style="padding:12px;background:#fff5f5;border-radius:6px;text-align:center;">
+      <div style="font-size:10px;color:#888;">ARQQ 综合评分</div>
+      <div style="font-size:20px;font-weight:900;color:#c62828;font-family:'Times New Roman',serif;">~31</div>
+      <div style="font-size:10px;color:#c62828;">等级 D · 暂不参与</div>
+      <div style="margin-top:6px;">
+        <span class="badge badge-orange">营收规模 10</span>
+        <span class="badge badge-green" style="margin-left:4px;">增长动力 70</span>
+        <span class="badge badge-orange" style="margin-left:4px;">财务健康 55</span>
+      </div>
+    </div>
+    <div style="padding:12px;background:#e3f2fd;border-radius:6px;text-align:center;">
+      <div style="font-size:10px;color:#888;">QBTS 综合评分</div>
+      <div style="font-size:20px;font-weight:900;color:#1565c0;font-family:'Times New Roman',serif;">~69</div>
+      <div style="font-size:10px;color:#1565c0;">等级 B- · 观察/小仓位</div>
+      <div style="margin-top:6px;">
+        <span class="badge badge-blue" style="margin-left:4px;">增长动力 85</span>
+        <span class="badge badge" style="background:#e0f7fa;color:#00695c;margin-left:4px;">现金跑道 90</span>
+        <span class="badge badge-orange" style="margin-left:4px;">估值 35</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:16px;font-size:11px;line-height:1.8;color:#555;">
+    <strong>评分说明：</strong>基于6个维度（营收规模、增长动力、财务健康、估值合理性、现金跑道、商业验证）的无权重综合评估。ARQQ在增长动力上表现突出（+830% YoY），但营收基数极小且跑道有限；QBTS在现金跑道和增长动力上领先，但估值极高和巨额亏损压低整体评分。
+  </div>
+</div>
+
+<!-- SECTION 10: FINAL VERDICT -->
+<div class="section" style="background:linear-gradient(135deg,#fafafa,#f5f5f5);border:1px solid #e0e0e0;">
+  <div class="section-title" style="border-left-color:#333;">十、总结与行动清单</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div style="padding:16px;background:#fff;border-radius:8px;border:1px solid #ffcdd2;">
+      <h4 style="color:#c62828;font-size:13px;margin-bottom:8px;">🔴 ARQQ — 行动清单</h4>
+      <ol style="padding-left:18px;font-size:11px;line-height:2;">
+        <li><strong>不参与</strong> — 商业模式未验证，现金跑道有限</li>
+        <li>将ARQQ列入<strong>投机观察列表</strong>，设置以下触发条件：</li>
+        <li style="list-style:none;padding-left:14px;">&nbsp;— 季度营收突破 $100万</li>
+        <li style="list-style:none;padding-left:14px;">&nbsp;— 获得知名战略投资者的融资</li>
+        <li style="list-style:none;padding-left:14px;">&nbsp;— 与政府/国防签署重大合同</li>
+        <li>关注2026年5月H1 FY2026完整财报和电话会议</li>
+        <li>关注年底前可能的融资轮次和条款</li>
+      </ol>
+    </div>
+    <div style="padding:16px;background:#fff;border-radius:8px;border:1px solid #90caf9;">
+      <h4 style="color:#1565c0;font-size:13px;margin-bottom:8px;">🔵 QBTS — 行动清单</h4>
+      <ol style="padding-left:18px;font-size:11px;line-height:2;">
+        <li><strong>积极跟踪</strong>明日5月12日Q1 2026财报</li>
+        <li>关注以下核心数据：营收 vs 预期、毛利率、预订指引</li>
+        <li style="list-style:none;padding-left:14px;">&nbsp;— 若营收超 $1,000万且预订指引强劲 &rarr; 考虑建仓</li>
+        <li>参加/关注6月1日NYSE投资者日</li>
+        <li>设定<strong>目标价 $28-32</strong>（当前$22.57，存在25-40%上行空间）</li>
+        <li><strong>止损线 $15</strong>（跌超33%重新评估核心逻辑）</li>
+        <li><strong>仓位上限：</strong>不超过组合的5%</li>
+      </ol>
+    </div>
+  </div>
+
+  <div style="margin-top:16px;padding:12px 16px;background:#fff8e1;border-radius:6px;font-size:11px;line-height:1.8;border:1px solid #ffe082;">
+    <strong>⚠ 行业级风险提示：</strong>量子计算板块整体处于商业化早期，具有极高不确定性。两大龙头合计市值不足$90亿，远低于市场对"下一个AI"的预期。当前板块估值包含大量远期乐观假设，任何技术瓶颈、资本紧缩或竞争加剧都可能引发大幅回调。建议以<strong>探索性仓位</strong>参与，严格控制风险暴露。
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div style="text-align:center;padding:30px 0 20px;font-size:10px;color:#999;">
+  <div style="font-family:'Times New Roman',serif;font-size:11px;font-weight:700;color:#555;margin-bottom:4px;">ARQQ vs QBTS · Quantum Computing Comparison Report</div>
+  <div>报告生成日期：2026年5月11日 · 数据来源：SEC Filing, StockAnalysis, SeekingAlpha, Tickeron, Quantum Computing Report</div>
+  <div style="margin-top:4px;">免责声明：本报告基于公开信息的事实分析，不构成投资建议。量子计算投资具有极高风险。</div>
+</div>
+
+</div>
+
+<!-- HuaStock: back-to-home button -->
+<a href="../../index.html" class="huastock-back-btn" target="_self">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+  </svg>
+  返回首页
+</a>
+<style>
+  .huastock-back-btn {
+    position: fixed !important;
+    bottom: 28px !important;
+    right: 28px !important;
+    z-index: 99999 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 10px 22px !important;
+    background: rgba(10, 22, 40, 0.75) !important;
+    color: #c9a84c !important;
+    border: 1px solid rgba(201, 168, 76, 0.25) !important;
+    border-radius: 999px !important;
+    font-family: "Inter", "Noto Sans SC", system-ui, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important;
+    transition: all 0.25s ease !important;
+    cursor: pointer !important;
+    user-select: none !important;
+  }
+  .huastock-back-btn:hover {
+    background: rgba(10, 22, 40, 0.95) !important;
+    border-color: rgba(201, 168, 76, 0.5) !important;
+    box-shadow: 0 6px 28px rgba(201, 168, 76, 0.18) !important;
+    transform: translateY(-2px) !important;
+  }
+  .huastock-back-btn svg {
+    transition: transform 0.2s ease !important;
+  }
+  .huastock-back-btn:hover svg {
+    transform: translateX(-3px) !important;
+  }
+</style>
+
+</body>
+</html>
