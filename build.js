@@ -88,7 +88,8 @@ function cleanTitle(title) {
 // ─── Description Extractor (first heading / meta description) ────────
 function extractDescription(filePath) {
   try {
-    const content = fs.readFileSync(filePath, 'utf-8');
+    let content = fs.readFileSync(filePath, 'utf-8');
+    content = decodeHtmlEntities(content);
     // Try meta description first
     const metaMatch = content.match(/<meta\s+name=["']description["']\s+content=["']([^"']*)["']/i);
     if (metaMatch) return metaMatch[1].trim();
@@ -101,12 +102,22 @@ function extractDescription(filePath) {
   }
 }
 
+// ─── HTML Entity Decoder ─────────────────────────────────────────────
+// Decodes HTML numeric character references (&#xHHHH; and &#DDDD;)
+// into their actual Unicode characters.
+function decodeHtmlEntities(str) {
+  return str.replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+            .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)));
+}
+
 // ─── Report date extractor ───────────────────────────────────────────
 // Extracts report date from HTML content with decreasing priority.
 // Prefers dates explicitly labeled as report/analysis dates.
 function extractReportDate(filePath) {
   try {
-    const content = fs.readFileSync(filePath, 'utf-8');
+    let content = fs.readFileSync(filePath, 'utf-8');
+    // Decode HTML entities so Chinese text patterns can match
+    content = decodeHtmlEntities(content);
 
     // Priority 1: Explicit <div class="date">...</div>
     const dateDivMatch = content.match(/<div\s+class=["']date["'][^>]*>([^<]*)<\/div>/i);
@@ -155,6 +166,15 @@ function parseDateStr(str) {
   if (m) return `${m[1]}.${String(Number(m[2])).padStart(2, '0')}.${String(Number(m[3])).padStart(2, '0')}`;
 
   return null;
+}
+
+// Formats a Date object into "YYYY.MM.DD" string
+function formatDate(date) {
+  if (!date) return '日期未知';
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}.${m}.${d}`;
 }
 
 // ─── Truncate ────────────────────────────────────────────────────────

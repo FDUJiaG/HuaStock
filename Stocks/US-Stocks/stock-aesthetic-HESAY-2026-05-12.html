@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>爱马仕(HESAY) 股票审美评分报告</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', 'Noto Serif SC', sans-serif; background: #f8f7f4; color: #1a1a2e; }
+.container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+.grade-a { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; }
+.grade-b { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+.grade-c { background: linear-gradient(135deg, #6b7280, #4b5563); color: white; }
+.grade-d { background: linear-gradient(135deg, #1f2937, #111827); color: white; }
+.card { background: white; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); overflow: hidden; }
+.dim-pass { border-left: 4px solid #22c55e; }
+.dim-partial { border-left: 4px solid #f59e0b; }
+.dim-fail { border-left: 4px solid #ef4444; }
+.badge-pass { background: #dcfce7; color: #166534; }
+.badge-partial { background: #fef3c7; color: #92400e; }
+.badge-fail { background: #fee2e2; color: #991b1b; }
+.progress-bar { height: 8px; border-radius: 4px; background: #e5e7eb; overflow: hidden; }
+.progress-bar .fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+.fill-high { background: linear-gradient(90deg, #22c55e, #16a34a); }
+.fill-medium { background: linear-gradient(90deg, #f59e0b, #d97706); }
+.fill-low { background: linear-gradient(90deg, #ef4444, #dc2626); }
+.positive { color: #dc2626; font-weight: 600; }
+.negative { color: #16a34a; font-weight: 600; }
+.catalyst-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
+.catalyst-item:last-child { border-bottom: none; }
+.catalyst-icon { font-size: 20px; flex-shrink: 0; }
+.catalyst-type { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.catalyst-type.high { background: #dcfce7; color: #166534; }
+.catalyst-type.medium { background: #fef3c7; color: #92400e; }
+.catalyst-timing { font-size: 12px; color: #6b7280; margin-top: 2px; }
+.risk-flag { display: flex; gap: 10px; padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; }
+.risk-flag.fatal { background: #fef2f2; border: 1px solid #fecaca; }
+.risk-flag.watch { background: #fffbeb; border: 1px solid #fde68a; }
+.risk-flag.info { background: #f0f9ff; border: 1px solid #bae6fd; }
+.flag-icon { font-size: 18px; flex-shrink: 0; }
+.flag-text { font-size: 14px; line-height: 1.6; }
+.verdict-buy { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; }
+.verdict-buy-cautious { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+.verdict-wait { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; }
+.verdict-watch { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
+.verdict-hold { background: linear-gradient(135deg, #6b7280, #4b5563); color: white; }
+.verdict-avoid { background: linear-gradient(135deg, #1f2937, #111827); color: white; }
+.no-dividend { color: #9ca3af; font-style: italic; }
+table { width: 100%; border-collapse: collapse; }
+th { background: #f9fafb; padding: 10px 12px; font-size: 13px; font-weight: 600; text-align: left; border-bottom: 2px solid #e5e7eb; }
+td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #f3f4f6; }
+tr.highlight { background: #fef2f2; }
+tr:hover { background: #f9fafb; }
+tr.highlight:hover { background: #fee2e2; }
+@media print { .no-print { display: none; } }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- Header -->
+<div style="text-align:center; padding: 32px 0 24px;">
+  <div style="font-size: 12px; color: #9ca3af; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;">Stock Aesthetic Checker</div>
+  <h1 style="font-family: 'Noto Serif SC', serif; font-size: 28px; font-weight: 900; margin-bottom: 4px;">爱马仕国际 · HESAY</h1>
+  <div style="font-size: 14px; color: #6b7280;">Hermès International S.C.A. · 奢侈品 · 法国巴黎泛欧交易所（ADR: OTC）</div>
+  <div style="margin-top: 8px; font-size: 13px; color: #9ca3af;">报告日期：2026-05-12 · 数据截止：2026-05-11</div>
+</div>
+
+<!-- Verdict Banner -->
+<div style="text-align:center; padding: 20px; margin-bottom: 24px;">
+  <div style="display:inline-block; padding: 16px 40px; border-radius: 12px; min-width: 300px;">
+    <div style="font-size: 14px; margin-bottom: 4px;">综合评分</div>
+    <div style="font-size: 64px; font-weight: 900; margin: 8px 0;">56.4</div>
+    <div style="display:inline-block; padding: 4px 24px; border-radius: 6px; font-size: 20px; font-weight: 700;">C级</div>
+    <div style="margin-top: 8px; font-size: 14px;">⚠️ 暂不推荐 — 高壁垒+低回报，品牌护城河极深但估值溢价显著</div>
+  </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="card" style="padding: 20px; margin-bottom: 24px;">
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; text-align:center;">
+    <div><div style="font-size: 11px; color: #9ca3af; margin-bottom: 4px;">最新股价 (RMS.PA)</div><div style="font-size: 22px; font-weight: 700;">€1,606.50</div></div>
+    <div><div style="font-size: 11px; color: #9ca3af; margin-bottom: 4px;">总市值</div><div style="font-size: 22px; font-weight: 700;">€1,684亿</div></div>
+    <div><div style="font-size: 11px; color: #9ca3af; margin-bottom: 4px;">PE (TTM)</div><div style="font-size: 22px; font-weight: 700; color:#ef4444;">37.30x</div></div>
+    <div><div style="font-size: 11px; color: #9ca3af; margin-bottom: 4px;">股息率</div><div style="font-size: 22px; font-weight: 700;">1.08%</div></div>
+    <div><div style="font-size: 11px; color: #9ca3af; margin-bottom: 4px;">52周涨跌幅</div><div style="font-size: 22px; font-weight: 700; color:#16a34a;">-34.51%</div></div>
+    <div><div style="font-size: 11px; color: #9ca3af; margin-bottom: 4px;">ROE</div><div style="font-size: 22px; font-weight: 700; color:#dc2626;">25.21%</div></div>
+  </div>
+</div>
+
+<!-- Radar Chart & Grade Summary -->
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+  <div class="card" style="padding: 24px;">
+    <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">多维雷达图</h2>
+    <svg viewBox="-40 -10 440 360" style="width:100%; max-width:420px; margin:0 auto;">
+      <!-- ===================================================== -->
+      <!-- 正六边形雷达图 - 中心点(170,155) 半径130px  viewBox放大  -->
+      <!-- 轴角(从正上方顺时针): D1=90° D2=30° D3=-30°            -->
+      <!--                    D4=-90° D5=-150° D6=150°           -->
+      <!-- ===================================================== -->
+      <!-- 100% 网格 (r=130) -->
+      <polygon points="170,25 282.58,90 282.58,220 170,285 57.42,220 57.42,90" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+      <!-- 75% 网格 (r=97.5) -->
+      <polygon points="170,57.5 254.44,106.25 254.44,203.75 170,252.5 85.56,203.75 85.56,106.25" fill="none" stroke="#e5e7eb" stroke-width="0.8"/>
+      <!-- 50% 网格 (r=65) -->
+      <polygon points="170,90 226.29,122.5 226.29,187.5 170,220 113.71,187.5 113.71,122.5" fill="none" stroke="#e5e7eb" stroke-width="0.8"/>
+      <!-- 25% 网格 (r=32.5) -->
+      <polygon points="170,122.5 198.15,138.75 198.15,171.25 170,187.5 141.85,171.25 141.85,138.75" fill="none" stroke="#e5e7eb" stroke-width="0.8" stroke-dasharray="3,3"/>
+      
+      <!-- 轴线（从中心到顶点） -->
+      <line x1="170" y1="155" x2="170" y2="25" stroke="#d1d5db" stroke-width="0.5"/>
+      <line x1="170" y1="155" x2="282.58" y2="90" stroke="#d1d5db" stroke-width="0.5"/>
+      <line x1="170" y1="155" x2="282.58" y2="220" stroke="#d1d5db" stroke-width="0.5"/>
+      <line x1="170" y1="155" x2="170" y2="285" stroke="#d1d5db" stroke-width="0.5"/>
+      <line x1="170" y1="155" x2="57.42" y2="220" stroke="#d1d5db" stroke-width="0.5"/>
+      <line x1="170" y1="155" x2="57.42" y2="90" stroke="#d1d5db" stroke-width="0.5"/>
+      
+      <!-- 数据多边形 -->
+      <!-- D1(75) D2(17) D3(100) D4(15) D5(45) D6(95) -->
+      <polygon points="170,57.5 189.14,143.95 282.58,220 170,174.5 119.34,184.25 63.05,93.25" fill="rgba(220,38,38,0.15)" stroke="#dc2626" stroke-width="2"/>
+      
+      <!-- 数据点 -->
+      <circle cx="170" cy="57.5" r="4.5" fill="#dc2626"/>
+      <circle cx="189.14" cy="143.95" r="4.5" fill="#dc2626"/>
+      <circle cx="282.58" cy="220" r="4.5" fill="#dc2626"/>
+      <circle cx="170" cy="174.5" r="4.5" fill="#dc2626"/>
+      <circle cx="119.34" cy="184.25" r="4.5" fill="#dc2626"/>
+      <circle cx="63.05" cy="93.25" r="4.5" fill="#dc2626"/>
+      
+      <!-- 维度标签 (字号12) -->
+      <text x="170" y="14" text-anchor="middle" font-size="12" font-weight="600" fill="#374151">D1 内部人增持</text>
+      <text x="286" y="88" text-anchor="start" font-size="12" font-weight="600" fill="#374151">D2 股息+回购</text>
+      <text x="286" y="224" text-anchor="start" font-size="12" font-weight="600" fill="#374151">D3 竞争优势</text>
+      <text x="170" y="302" text-anchor="middle" font-size="12" font-weight="600" fill="#374151">D4 市盈率</text>
+      <text x="53" y="224" text-anchor="end" font-size="12" font-weight="600" fill="#374151">D5 成长动能</text>
+      <text x="53" y="88" text-anchor="end" font-size="12" font-weight="600" fill="#374151">D6 财务健康</text>
+      
+      <!-- 分数标签 (字号11) -->
+      <text x="178" y="55" font-size="11" font-weight="700" fill="#dc2626">75</text>
+      <text x="196" y="142" font-size="11" font-weight="700" fill="#dc2626">17</text>
+      <text x="290" y="218" font-size="11" font-weight="700" fill="#dc2626">100</text>
+      <text x="178" y="179" font-size="11" font-weight="700" fill="#dc2626">15</text>
+      <text x="112" y="189" font-size="11" font-weight="700" fill="#dc2626">45</text>
+      <text x="56" y="92" font-size="11" font-weight="700" fill="#dc2626">95</text>
+    </svg>
+  </div>
+  <div class="card" style="padding: 24px;">
+    <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">评分综合表</h2>
+    <table>
+      <thead>
+        <tr><th>维度</th><th>权重</th><th>得分</th><th>加权得分</th><th>状态</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>D1 内部人增持</td><td>12%</td><td>75</td><td>9.0</td><td><span class="badge-pass" style="padding:2px 8px; border-radius:4px; font-size:12px;">通过</span></td></tr>
+        <tr><td>D2 股息+回购</td><td>20%</td><td>17</td><td>3.4</td><td><span class="badge-fail" style="padding:2px 8px; border-radius:4px; font-size:12px;">未通过</span></td></tr>
+        <tr><td>D3 竞争优势</td><td>28%</td><td>100</td><td>28.0</td><td><span class="badge-pass" style="padding:2px 8px; border-radius:4px; font-size:12px;">通过</span></td></tr>
+        <tr><td>D4 市盈率</td><td>20%</td><td>15</td><td>3.0</td><td><span class="badge-fail" style="padding:2px 8px; border-radius:4px; font-size:12px;">未通过</span></td></tr>
+        <tr><td>D5 成长动能</td><td>12%</td><td>45</td><td>5.4</td><td><span class="badge-partial" style="padding:2px 8px; border-radius:4px; font-size:12px;">部分通过</span></td></tr>
+        <tr><td>D6 财务健康</td><td>8%</td><td>95</td><td>7.6</td><td><span class="badge-pass" style="padding:2px 8px; border-radius:4px; font-size:12px;">通过</span></td></tr>
+        <tr style="font-weight:700; background:#f9fafb;"><td colspan="2">总分</td><td>—</td><td>56.4</td><td><span class="badge-partial" style="padding:2px 8px; border-radius:4px; font-size:12px;">C级</span></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px; font-size:12px; color:#9ca3af;">通过 3/6 维度 · 部分通过 1/6 · 未通过 2/6</div>
+  </div>
+</div>
+
+<!-- Data Verification -->
+<div class="card" style="padding: 20px; margin-bottom: 24px;">
+  <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">数据核查 · <span style="color:#22c55e; font-weight:600;">通过</span></h2>
+  <div style="font-size: 13px; color: #6b7280; line-height: 1.8;">
+    ✅ 公司信息核对一致（Hermès International S.C.A. / RMS.PA / HESAY）<br>
+    ✅ PE计算核对：37.30x = €1,606.50 / €43.07（EPS）— 误差0.1%内<br>
+    ✅ 股息与年报数据一致 — €18.00/股，派息率37.68%<br>
+    ✅ FCF覆盖率计算：FCF €38.8亿 / 股息€19.0亿 ≈ 2.04x — 良好覆盖<br>
+    ✅ 可比公司数据均为2025财年同期<br>
+    ✅ 数据新鲜度：2025年报（2026年2月发布）及2026Q1（2026年4月发布）— 均符合3个月内要求<br>
+  </div>
+</div>
+
+<!-- Dimension Details -->
+<!-- D1: Insider Holdings -->
+<div class="card dim-pass" style="padding: 24px; margin-bottom: 16px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+    <h2 style="font-size: 18px; font-weight: 700;">D1 内部人增持 <span style="font-size:13px; font-weight:400; color:#6b7280; margin-left:8px;">权重 12%</span></h2>
+    <div><span class="badge-pass" style="padding:4px 14px; border-radius:6px; font-size:13px; font-weight:600;">通过 | 75分</span></div>
+  </div>
+  <div class="progress-bar" style="margin-bottom: 12px;"><div class="fill fill-high" style="width:75%"></div></div>
+  <div style="font-size: 14px; line-height: 1.8; color: #374151;">
+    <strong>家族控股体系，稳定且无质押</strong><br><br>
+    <strong>实际控制/内部人持股：</strong>爱马仕家族合计持有公司约66.7%股权和超过76%投票权，构成绝对控制。这种家族控制结构在奢侈品行业极为罕见且稳固，既防敌意收购，又保障长期战略连续性。<br><br>
+    <strong>近期增持行为：</strong>家族持股比例长期稳定，未出现大规模增持或减持。2010-2014年曾通过控股实体H51抵御LVMH的敌意收购，此后控制权进一步巩固。法国法律允许的"忠诚投票权"(double voting rights)进一步强化了家族控制。<br><br>
+    <strong>质押情况：</strong>家族持股无质押，零质押率。<br><br>
+    <strong>管理层持股：</strong>执行董事长Axel Dumas（第六代家族成员）及CEO家族成员均持有大量股票，管理层利益与股东高度一致。<br><br>
+    <strong>评分依据：</strong>虽无近期公开市场增持，但家族控制结构极其稳固（>65%），零质押，管理层大额持股，构成A股审美标准下的核心正面信号。
+  </div>
+</div>
+
+<!-- D2: Dividend + Buyback -->
+<div class="card dim-fail" style="padding: 24px; margin-bottom: 16px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+    <h2 style="font-size: 18px; font-weight: 700;">D2 股息+回购回报 <span style="font-size:13px; font-weight:400; color:#6b7280; margin-left:8px;">权重 20%</span></h2>
+    <div><span class="badge-fail" style="padding:4px 14px; border-radius:6px; font-size:13px; font-weight:600;">未通过 | 17分</span></div>
+  </div>
+  <div class="progress-bar" style="margin-bottom: 12px;"><div class="fill fill-low" style="width:17%"></div></div>
+  <div style="font-size: 14px; line-height: 1.8; color: #374151;">
+    <strong>低股息率，回购规模有限</strong><br><br>
+    <strong>股息率：</strong>年股息€18.00/股，按€1,606.50股价计算仅1.08%。2024年曾派发€26.00（含€10特别股息），2025年恢复常规水平。派息率37.68%，在奢侈品中属中等水平。<br><br>
+    <strong>回购计划：</strong>获授权最多回购50万股。按当前股价约€1,607计算，上限约€8亿（占市值约0.48%）。但实际执行规模有限。<br><br>
+    <strong>FCF覆盖率：</strong>自由现金流€38.8亿，年度股息约€19亿（按105.6M股×€18），覆盖率2.04x，现金流覆盖充裕。<br><br>
+    <strong>累计派现募资比：</strong>公司几乎无外部融资历史，所有资本回报均来自内生现金流。<br><br>
+    <strong>评分依据：</strong>股东总回报率约1.3-1.5%（股息+回购），在A股审美标准下偏低。低股息率是爱马仕作为成长型奢侈品牌的固有特征——利润多用于再投资（产能扩张、门店翻新、供应链垂直整合）。FCF充裕但回报率低仍是客观评分依据。
+  </div>
+</div>
+
+<!-- D3: Competitive Advantage -->
+<div class="card dim-pass" style="padding: 24px; margin-bottom: 16px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+    <h2 style="font-size: 18px; font-weight: 700;">D3 竞争优势 <span style="font-size:13px; font-weight:400; color:#6b7280; margin-left:8px;">权重 28%</span></h2>
+    <div><span class="badge-pass" style="padding:4px 14px; border-radius:6px; font-size:13px; font-weight:600;">通过 | 100分</span></div>
+  </div>
+  <div class="progress-bar" style="margin-bottom: 12px;"><div class="fill fill-high" style="width:100%"></div></div>
+  <div style="font-size: 14px; line-height: 1.8; color: #374151;">
+    <strong>全球奢侈品行业最深的护城河</strong><br><br>
+    <strong>定量对比（满分50→50）：</strong>
+  </div>
+  <table style="margin-top:8px;">
+    <thead>
+      <tr><th>指标</th><th>爱马仕</th><th>LVMH</th><th>开云集团</th><th>历峰集团</th></tr>
+    </thead>
+    <tbody>
+      <tr class="highlight"><td>毛利率</td><td class="positive">~71%</td><td>~66%</td><td>~72%</td><td>~65%</td></tr>
+      <tr class="highlight"><td>营业利润率</td><td class="positive">41.0%</td><td>22.0%</td><td>~10%</td><td>~18%</td></tr>
+      <tr class="highlight"><td>ROE</td><td class="positive">25.2%</td><td>~20%</td><td>~8%</td><td>~12%</td></tr>
+      <tr class="highlight"><td>营收增速(2025)</td><td class="positive">+9%</td><td>-1%</td><td>-10%+</td><td>+3%</td></tr>
+      <tr class="highlight"><td>ROIC</td><td class="positive">43.3%</td><td>~15%</td><td>~5%</td><td>~10%</td></tr>
+    </tbody>
+  </table>
+  <div style="font-size: 13px; color: #6b7280; margin: 8px 0 12px;">红色表示优于可比公司均值。数据来源：2025年报/NeoData。</div>
+  <div style="font-size: 14px; line-height: 1.8; color: #374151;">
+    <strong>定性护城河（满分49→50）：</strong><br>
+    ✅ <strong>品牌护城河：</strong>180+年历史，全球最顶级的奢侈品牌之一 —— <strong>7/7</strong><br>
+    ✅ <strong>稀缺性溢价：</strong>手工制作、产能受限、供不应求—— Birkins/Kelly包的等候名单本身就是营销工具 —— <strong>7/7</strong><br>
+    ✅ <strong>定价权：</strong>每年6-8%提价能力，客户对价格极度不敏感 —— <strong>7/7</strong><br>
+    ✅ <strong>垂直整合：</strong>自有供应链（皮具工坊、丝巾印刷、瓷器工坊），品质可控 —— <strong>7/7</strong><br>
+    ✅ <strong>客户忠诚度：</strong>全球最高端客群，极低价格弹性 —— <strong>7/7</strong><br>
+    ✅ <strong>文化资产：</strong>家族传承工艺，184年老字号 —— <strong>7/7</strong><br>
+    ✅ <strong>壁垒不可复制：</strong>竞争对手无法在短期内复制品牌历史和工匠网络 —— <strong>7/7</strong><br><br>
+    <strong>地域风险调整：</strong>海外收入占比69%（亚洲52%、美洲19%），中国相关42%。未发现明确的汇率对冲策略披露，但高端消费品牌对汇率波动的传导能力极强。维持 -0 调整。<br><br>
+    <strong>评分依据：</strong>在所有可比奢侈品集团中，爱马仕的盈利能力指标均处于绝对领先地位，且差距巨大。这是全球范围内最强大且最持久的品牌护城河之一。
+  </div>
+</div>
+
+<!-- D4: PE -->
+<div class="card dim-fail" style="padding: 24px; margin-bottom: 16px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+    <h2 style="font-size: 18px; font-weight: 700;">D4 TTM市盈率 <span style="font-size:13px; font-weight:400; color:#6b7280; margin-left:8px;">权重 20%</span></h2>
+    <div><span class="badge-fail" style="padding:4px 14px; border-radius:6px; font-size:13px; font-weight:600;">未通过 | 15分</span></div>
+  </div>
+  <div class="progress-bar" style="margin-bottom: 12px;"><div class="fill fill-low" style="width:15%"></div></div>
+  <div style="font-size: 14px; line-height: 1.8; color: #374151;">
+    <strong>绝对PE仍处高位，但已接近历史低位</strong><br><br>
+    <strong>当前PE(TTM)：37.30x</strong> | 5年高：68.9x (2021) | 5年低：47.5x (2025.12)<br>
+    <strong>行业均值PE：</strong>LVMH ~22x, 开云 ~15x, 历峰 ~20x → 权重均值约20x<br><br>
+    <strong>PE绝对估值判定：</strong>37.30x对应的分数为15分（30-40x区间）<br>
+    ✅ 历史分位调整：当前PE(37.3)低于5年最低(47.5)，处于历史底部20%分位 → <strong>+5</strong><br>
+    ❌ 行业比较：显著高于行业均值20x → <strong>-5</strong><br><br>
+    <strong>底部分析：</strong>2026年股价自高点(-34.5%)大幅回调，PE从68x压缩至37x，创5年新低。对于一家拥有行业最佳盈利能力（41%营业利润率）的公司而言，这种PE压缩反映了市场对奢侈品行业中国需求放缓的整体担忧，而非公司基本面恶化。<br><br>
+    <strong>横向对比提示：</strong>爱马仕的历史估值溢价有其合理性——其利润率是LVMH的近2倍、开云集团的4倍。但绝对PE 37.3x在A股价值投资框架下仍然偏高，这也是本维度低分的核心原因。
+  </div>
+</div>
+
+<!-- D5: Growth Momentum -->
+<div class="card dim-partial" style="padding: 24px; margin-bottom: 16px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+    <h2 style="font-size: 18px; font-weight: 700;">D5 成长动能 <span style="font-size:13px; font-weight:400; color:#6b7280; margin-left:8px;">权重 12%</span></h2>
+    <div><span class="badge-partial" style="padding:4px 14px; border-radius:6px; font-size:13px; font-weight:600;">部分通过 | 45分</span></div>
+  </div>
+  <div class="progress-bar" style="margin-bottom: 12px;"><div class="fill fill-medium" style="width:45%"></div></div>
+  <div style="font-size: 14px; line-height: 1.8; color: #374151;">
+    <strong>增速放缓但仍优于同行</strong><br><br>
+    <strong>5A 最新季度表现（满分25→15）：</strong>2026Q1营收€41亿，固定汇率+6%。皮具+9.4%维持健康增长，但时装(+0.4%)和香水(+0.2%)接近停滞，手表继续下滑(-3.7%)。较2025全年(+9%)增速放缓，但远优于LVMH(-1%有机增长)。<br><br>
+    <strong>5B 未来增长预期（满分25→10）：</strong>分析师一致预期未来2年收入CAGR约6-8%，盈利增长略快于收入（得益于运营杠杆）。爱马仕为保持稀缺性主动控制产能增长(年约6-7%)，这是增长天花板，也是定价权基础。<br><br>
+    <strong>5C 行业景气度（满分25→12）：</strong>全球奢侈品市场2025年整体疲软，LVMH营收-5%，开云-10%+。但爱马仕凭借超高净值客群定位（不受宏观波动影响的顶层消费者）表现出明显韧性。中国高净值消费者信心修复是潜在反转催化剂。<br><br>
+    <strong>5D 渗透率与成长空间（满分25→8）：</strong>奢侈品在成熟市场已高度饱和。爱马仕的增长驱动来自：（1）每年6-7%的提价；（2）新兴市场（印度、东南亚、中东）扩张；（3）品类扩展（珠宝、家居、美妆）。天花板有限但有提价权支撑。<br><br>
+    <strong>综合判断：</strong>爱马仕的增长是"慢而稳"型，确定性远高于爆发性。其41%营业利润率既是对增长天花板的补偿，也是行业最核心的竞争力体现。
+  </div>
+</div>
+
+<!-- D6: Financial Health -->
+<div class="card dim-pass" style="padding: 24px; margin-bottom: 16px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+    <h2 style="font-size: 18px; font-weight: 700;">D6 财务健康与筹码结构 <span style="font-size:13px; font-weight:400; color:#6b7280; margin-left:8px;">权重 8%</span></h2>
+    <div><span class="badge-pass" style="padding:4px 14px; border-radius:6px; font-size:13px; font-weight:600;">通过 | 95分</span></div>
+  </div>
+  <div class="progress-bar" style="margin-bottom: 12px;"><div class="fill fill-high" style="width:95%"></div></div>
+  <div style="font-size: 14px; line-height: 1.8; color: #374151;">
+    <strong>极致的财务健康，行业最强资产负债表</strong><br><br>
+    <strong>6A 有息负债率（满分50→50+10=50）：</strong>有息负债€23.46亿，股东权益€188.46亿，有息负债率12.4%。净现金€98.93亿（现金€122.39亿-总债务€23.46亿），实质上为净现金公司。流动比率4.99x，速动比率3.99x，几乎无需外部融资。<br><br>
+    <strong>6B 股东数量趋势（满分50→50）：</strong>爱马仕家族控股66.7%（投票权>76%），流通盘仅33.3%。机构投资者持有流通盘的大部分。稳定的股东结构意味着几乎没有筹码分散风险。<br><br>
+    <strong>关键财务数据：</strong><br>
+    · 资产负债率：22.5%（€54.77亿/€243.22亿）<br>
+    · ROE：25.21% | ROIC：43.29%<br>
+    · 经营现金流：€56.07亿（2025）→ 现金转化率高<br>
+    · 自由现金流：€38.80亿（2025）<br>
+    · 库存管理卓越：营收增长9%的同时库存同比下降<br><br>
+    <strong>评分依据：</strong>财务安全性是所有上市公司中最高梯队。"净现金+高ROIC+极低负债"的三位一体组合极为罕见。唯一扣分项是ADR交易的流动性略低于欧洲主板。
+  </div>
+</div>
+
+<!-- Risk Flags -->
+<div class="card" style="padding: 24px; margin-bottom: 24px;">
+  <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">风险警示</h2>
+  
+  <div class="risk-flag watch">
+    <span class="flag-icon">🟡</span>
+    <span class="flag-text"><strong>奢侈品周期下行风险：</strong>全球高端消费放缓正在向超高端传导。虽然爱马仕定位最顶层客群，但中国高净值人群消费信心若持续低迷，亚太（除日本）增长（2025年仅+4.9%）可能进一步承压。</span>
+  </div>
+  
+  <div class="risk-flag watch">
+    <span class="flag-icon">🟡</span>
+    <span class="flag-text"><strong>估值溢价收缩风险：</strong>当前PE 37.3x虽创5年新低，但在利率环境和奢侈品行业整体放缓背景下，估值溢价可能进一步压缩。若PE跌至30x，对应股价约€1,292（下行20%）。</span>
+  </div>
+  
+  <div class="risk-flag watch">
+    <span class="flag-icon">🟡</span>
+    <span class="flag-text"><strong>入门级品类持续疲软：</strong>香水美妆(-7.6%)和腕表(-1.5%)连续两年下滑，反映中高端消费者消费力减弱。虽然这两块业务收入占比仅7%，但它们是吸引未来核心客户的"入口"品类。</span>
+  </div>
+  
+  <div class="risk-flag info">
+    <span class="flag-icon">🔵</span>
+    <span class="flag-text"><strong>汇率波动影响：</strong>欧元走强对2025年营收造成约€5.15亿负面影响（约3%）。2026Q1进一步受€3亿汇率损失，导致名义营收同比-1%。约42%营收来自亚太（不含日本）——人民币/欧元汇率是重要变量。</span>
+  </div>
+  
+  <div class="risk-flag info">
+    <span class="flag-icon">🔵</span>
+    <span class="flag-text"><strong>关税与贸易摩擦风险：</strong>美国关税政策对欧洲奢侈品出口的影响尚未完全显现。若美国对欧洲加征关税，将直接冲击爱马仕在美洲19%的营收区间。</span>
+  </div>
+</div>
+
+<!-- Investment Conclusion -->
+<div class="card" style="padding: 24px; margin-bottom: 24px; border: 2px solid #e5e7eb;">
+  <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">投资结论与估值</h2>
+
+  <!-- PE Fair Calculation -->
+  <div style="background: #f9fafb; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+    <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">合理市盈率推导</h3>
+    <div style="font-size: 13px; line-height: 1.8;">
+      <strong>输入：</strong>PE中位数5年(58.2) × 30% + PE 25分位(49.0) × 15% + 行业均值(20.0) × 25% + PEG推演(8×0.8=6.4) × 30% = 17.46 + 7.35 + 5.0 + 1.92 = <strong>31.73</strong><br>
+      <strong>上下限约束：</strong>中位数58.2×0.6=34.92（下限）~ 58.2×1.2=69.84（上限）<br>
+      <strong>最终合理PE：</strong>max(31.73, 34.92) = <strong>34.92x</strong>
+    </div>
+  </div>
+
+  <!-- Key Prices -->
+  <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px;">
+    <div style="background: #fef2f2; padding: 16px; border-radius: 8px; text-align:center;">
+      <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px;">当前股价</div>
+      <div style="font-size: 24px; font-weight: 700;">€1,606.50</div>
+      <div style="font-size: 12px; color: #9ca3af;">2026-05-11 收盘</div>
+    </div>
+    <div style="background: #f0f9ff; padding: 16px; border-radius: 8px; text-align:center;">
+      <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px;">合理价值</div>
+      <div style="font-size: 24px; font-weight: 700;">€1,504</div>
+      <div style="font-size: 12px; color: #9ca3af;">PE 34.92x × EPS €43.07</div>
+    </div>
+    <div style="background: #f0fdf4; padding: 16px; border-radius: 8px; text-align:center;">
+      <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px;">建议买入价</div>
+      <div style="font-size: 24px; font-weight: 700; color: #16a34a;">€1,053</div>
+      <div style="font-size: 12px; color: #9ca3af;">安全边际30%</div>
+    </div>
+  </div>
+
+  <div style="text-align:center; padding: 16px; background: #f9fafb; border-radius: 8px; margin-bottom: 16px;">
+    <div style="font-size: 13px; color: #6b7280; margin-bottom: 4px;">当前价位上行空间</div>
+    <div style="font-size: 20px; font-weight: 700; color: #16a34a;">-6.4%</div>
+    <div style="font-size: 12px; color: #9ca3af;">目标价与当前价差</div>
+  </div>
+
+  <div style="display: flex; gap: 16px; align-items: center; padding: 16px; background: #1f2937; border-radius: 12px; color: white;">
+    <div style="font-size: 36px;">⚠️</div>
+    <div>
+      <div style="font-size: 18px; font-weight: 700;">暂不推荐</div>
+      <div style="font-size: 13px; opacity: 0.8; margin-top: 4px;">C级（56.4分）— 爱马仕拥有全球最深的品牌护城河、最强奢侈品财务指标，但当前PE(37.3x)虽有历史回落，绝对估值仍偏高。建议等待PE回落至30x以下（约€1,292）时纳入观察。若以CAGR 8%计算，当前价位对应的PEG = 4.7x，远高于价值投资舒适区。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Catalysts -->
+<div class="card" style="padding: 24px; margin-bottom: 24px;">
+  <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">事件催化因子</h2>
+  
+  <div class="catalyst-item">
+    <span class="catalyst-icon">📋</span>
+    <div>
+      <span class="catalyst-type high">中影响</span>
+      <strong>2026年上半年财报</strong> — 预计7月底发布，验证增速是否企稳
+      <div class="catalyst-timing">预计时间：2026年7月</div>
+    </div>
+  </div>
+  
+  <div class="catalyst-item">
+    <span class="catalyst-icon">📋</span>
+    <div>
+      <span class="catalyst-type high">高影响</span>
+      <strong>可比同行财报周期</strong> — LVMH/开云/历峰后续季报将验证奢侈品行业拐点
+      <div class="catalyst-timing">持续跟踪</div>
+    </div>
+  </div>
+  
+  <div class="catalyst-item">
+    <span class="catalyst-icon">📋</span>
+    <div>
+      <span class="catalyst-type medium">中影响</span>
+      <strong>中国高净值消费复苏信号</strong> — 作为42%收入来源的最重要单一市场
+      <div class="catalyst-timing">持续跟踪</div>
+    </div>
+  </div>
+  
+  <div class="catalyst-item">
+    <span class="catalyst-icon">📋</span>
+    <div>
+      <span class="catalyst-type medium">中影响</span>
+      <strong>美国关税政策落地</strong> — 若对欧洲奢侈品豁免或降低税率，将是直接利好
+      <div class="catalyst-timing">不确定</div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div style="text-align:center; padding: 24px 0; font-size: 12px; color: #9ca3af;">
+  <p>本报告基于公开信息生成，仅供研究参考，不构成投资建议。</p>
+  <p>数据来源：Hermès年报/季报 · EuroNext Paris · NeoData · 公司公告 | 报告生成时间：2026-05-12 09:09 GMT+8</p>
+  <p style="margin-top:4px;">Stock Aesthetic Checker v1.0 · 六大维度评分体系</p>
+</div>
+
+</div>
+
+<!-- HuaStock: back-to-home button -->
+<a href="../../index.html" class="huastock-back-btn" target="_self">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+  </svg>
+  返回首页
+</a>
+<style>
+  .huastock-back-btn {
+    position: fixed !important;
+    bottom: 28px !important;
+    right: 28px !important;
+    z-index: 99999 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 10px 22px !important;
+    background: rgba(10, 22, 40, 0.75) !important;
+    color: #c9a84c !important;
+    border: 1px solid rgba(201, 168, 76, 0.25) !important;
+    border-radius: 999px !important;
+    font-family: "Inter", "Noto Sans SC", system-ui, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important;
+    transition: all 0.25s ease !important;
+    cursor: pointer !important;
+    user-select: none !important;
+  }
+  .huastock-back-btn:hover {
+    background: rgba(10, 22, 40, 0.95) !important;
+    border-color: rgba(201, 168, 76, 0.5) !important;
+    box-shadow: 0 6px 28px rgba(201, 168, 76, 0.18) !important;
+    transform: translateY(-2px) !important;
+  }
+  .huastock-back-btn svg {
+    transition: transform 0.2s ease !important;
+  }
+  .huastock-back-btn:hover svg {
+    transform: translateX(-3px) !important;
+  }
+</style>
+
+</body>
+</html>

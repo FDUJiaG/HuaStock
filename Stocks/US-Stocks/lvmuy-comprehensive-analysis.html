@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LVMUY - 路易威登ADR综合深度分析报告</title>
+<style>
+  :root {
+    --primary: #1a73e8;
+    --success: #34a853;
+    --warning: #fbbc04;
+    --danger: #ea4335;
+    --bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --text: #202124;
+    --text-secondary: #5f6368;
+    --border: #e0e0e0;
+    --shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
+    --radius: 12px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans SC', 'Microsoft YaHei', -apple-system, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6; padding: 20px;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+
+  .header {
+    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+    color: white; border-radius: var(--radius); padding: 32px; margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+  .header h1 { font-size: 28px; margin-bottom: 8px; }
+  .header .subtitle { opacity: 0.85; font-size: 14px; }
+  .header .meta { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; font-size: 13px; opacity: 0.9; }
+  .header .meta span { background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; }
+  .header .badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; font-weight: 600; margin-left: 8px; }
+  .badge.van Gogh { background: #FFD700; color: #000; }
+
+  .grade-banner {
+    display: flex; align-items: center; gap: 20px;
+    background: var(--card-bg); border-radius: var(--radius); padding: 24px 32px;
+    margin-bottom: 24px; box-shadow: var(--shadow);
+  }
+  .grade-circle {
+    width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 36px; font-weight: 700; color: white; flex-shrink: 0;
+  }
+  .grade-circle.grade-a { background: var(--success); }
+  .grade-circle.grade-b { background: var(--primary); }
+  .grade-circle.grade-c { background: var(--warning); }
+  .grade-circle.grade-d { background: var(--danger); }
+  .grade-info h2 { font-size: 20px; }
+  .grade-info .score { font-size: 14px; color: var(--text-secondary); }
+  .grade-info .verdict { font-size: 13px; margin-top: 4px; color: var(--text-secondary); }
+  .action-advice { display: inline-block; margin-top: 8px; padding: 4px 14px; border-radius: 16px; font-size: 13px; font-weight: 600; color: white; }
+  .action-advice.grade-a { background: var(--success); }
+  .action-advice.grade-b { background: var(--primary); }
+  .action-advice.grade-c { background: #e65100; }
+  .action-advice.grade-d { background: var(--danger); }
+
+  .card { background: var(--card-bg); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow); }
+  .card h3 { font-size: 16px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .card h4 { font-size: 14px; margin: 12px 0 8px 0; color: var(--primary); }
+
+  .radar-container { display: flex; justify-content: center; padding: 20px 0; }
+
+  .criterion { border-left: 4px solid var(--border); padding: 16px 20px; margin-bottom: 16px; border-radius: 0 8px 8px 0; background: #fafafa; }
+  .criterion.pass { border-left-color: var(--success); }
+  .criterion.partial { border-left-color: var(--warning); }
+  .criterion.fail { border-left-color: var(--danger); }
+  .criterion .criterion-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .criterion .criterion-title { font-weight: 600; font-size: 15px; }
+  .criterion .criterion-badge { font-size: 12px; padding: 2px 10px; border-radius: 12px; font-weight: 600; }
+  .criterion.pass .criterion-badge { background: #e6f4ea; color: var(--success); }
+  .criterion.partial .criterion-badge { background: #fef7e0; color: #b06000; }
+  .criterion.fail .criterion-badge { background: #fce8e6; color: var(--danger); }
+  .criterion .criterion-detail { font-size: 13px; color: var(--text-secondary); line-height: 1.8; }
+  .criterion .criterion-detail strong { color: var(--text); }
+
+  .score-bar { height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden; margin-top: 8px; }
+  .score-bar-fill { height: 100%; border-radius: 5px; min-width: 28px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; font-size: 10px; color: white; font-weight: 700; }
+  .score-bar-fill.high { background: var(--success); }
+  .score-bar-fill.medium { background: var(--warning); }
+  .score-bar-fill.low { background: var(--danger); }
+  .score-bar-wrapper { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .score-bar-wrapper .score-bar { flex: 1; }
+  .score-bar-wrapper .score-label { font-size: 12px; color: var(--text-secondary); white-space: nowrap; }
+
+  .dividend-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .dividend-table th { background: #f1f3f4; padding: 10px 12px; text-align: center; font-weight: 600; border-bottom: 2px solid var(--border); }
+  .dividend-table td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+  .dividend-table .positive { color: #cf1322; font-weight: 600; }
+  .dividend-table .negative { color: #3f8600; }
+  .dividend-table tfoot td { font-size: 11px; color: #999; padding: 8px 12px; background: #fafafa; }
+
+  .peer-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .peer-table th { background: #f1f3f4; padding: 10px 12px; text-align: center; font-weight: 600; border-bottom: 2px solid var(--border); }
+  .peer-table td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+  .peer-table tr.highlight { background: #e8f0fe; font-weight: 600; }
+  .peer-table .positive { color: #cf1322; font-weight: 600; }
+  .peer-table .negative { color: #3f8600; }
+  .peer-table tfoot td { font-size: 11px; color: #999; padding: 8px 12px; background: #fafafa; text-align: left; }
+
+  .risk-flag { display: flex; align-items: flex-start; gap: 8px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+  .risk-flag:last-child { border-bottom: none; }
+  .risk-flag .flag-icon { font-size: 16px; flex-shrink: 0; }
+  .risk-flag .flag-text { color: var(--text-secondary); }
+  .risk-flag .flag-text strong { color: var(--text); }
+  .risk-flag.fatal { border-left: 3px solid #d32f2f; background: #fff5f5; padding: 10px 12px; margin-bottom: 8px; border-radius: 0 6px 6px 0; }
+  .risk-flag.watch { border-left: 3px solid #f57c00; background: #fff8e1; padding: 10px 12px; margin-bottom: 8px; border-radius: 0 6px 6px 0; }
+  .risk-flag.info { border-left: 3px solid var(--primary); background: #e8f0fe; padding: 10px 12px; margin-bottom: 8px; border-radius: 0 6px 6px 0; }
+
+  .catalyst-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+  .catalyst-item:last-child { border-bottom: none; }
+  .catalyst-icon { font-size: 16px; flex-shrink: 0; }
+  .catalyst-type { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; margin-right: 4px; }
+  .catalyst-type.high { background: #fce8e6; color: var(--danger); }
+  .catalyst-type.medium { background: #fef7e0; color: #b06000; }
+  .catalyst-type.low { background: #e8f0fe; color: var(--primary); }
+
+  .invest-conclusion {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: white; border-radius: var(--radius); padding: 28px 32px; margin-bottom: 20px; box-shadow: var(--shadow);
+  }
+  .invest-conclusion h3 { color: white; border-bottom-color: rgba(255,255,255,0.2); }
+  .verdict-banner { display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 10px; margin-bottom: 20px; font-size: 20px; font-weight: 700; }
+  .verdict-banner.watch { background: rgba(251,188,4,0.15); border: 2px solid var(--warning); color: #fdd835; }
+  .price-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+  .price-card { background: rgba(255,255,255,0.1); border-radius: 10px; padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.15); }
+  .price-card .price-label { font-size: 12px; opacity: 0.8; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+  .price-card .price-value { font-size: 32px; font-weight: 800; }
+  .price-card .price-note { font-size: 11px; opacity: 0.65; margin-top: 6px; }
+  .price-card.buy-card { background: rgba(52,168,83,0.15); border-color: rgba(52,168,83,0.4); }
+  .price-card.target-card { background: rgba(66,133,244,0.15); border-color: rgba(66,133,244,0.4); }
+  .price-card.buy-card .price-value { color: #81c784; }
+  .price-card.target-card .price-value { color: #90caf9; }
+  .price-card.fair-card .price-value { color: #ffcc80; }
+
+  .upside-bar { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; background: rgba(255,255,255,0.08); margin-bottom: 16px; }
+  .upside-bar .upside-label { font-size: 13px; opacity: 0.8; }
+  .upside-bar .upside-value { font-size: 24px; font-weight: 800; }
+  .upside-value.positive { color: #81c784; }
+  .upside-value.negative { color: #ef9a9a; }
+
+  .position-advice { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; }
+  .position-advice.none { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+
+  .valuation-note { margin-top: 16px; padding: 12px 16px; background: rgba(255,255,255,0.06); border-radius: 8px; font-size: 12px; line-height: 1.8; opacity: 0.8; }
+  .valuation-note strong { opacity: 1; }
+
+  .conclusion-text { font-size: 14px; line-height: 2; color: rgba(255,255,255,0.9); padding: 16px 20px; background: rgba(255,255,255,0.06); border-radius: 8px; margin-top: 16px; }
+
+  .footer { text-align: center; font-size: 12px; color: var(--text-secondary); padding: 20px 0; margin-top: 20px; border-top: 1px solid var(--border); }
+
+  .section-label { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; margin-bottom: 8px; }
+  .section-label.aesthetic { background: #e8f0fe; color: var(--primary); }
+  .section-label.earnings { background: #fce8e6; color: var(--danger); }
+  .section-label.deep { background: #e6f4ea; color: var(--success); }
+
+  .fin-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+  .fin-table th { background: #f1f3f4; padding: 8px 12px; text-align: center; font-weight: 600; border-bottom: 2px solid var(--border); }
+  .fin-table td { padding: 8px 12px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+  .fin-table .positive { color: #cf1322; font-weight: 600; }
+  .fin-table .negative { color: #3f8600; }
+  .fin-table tr.highlight-row { background: #fff8e1; }
+
+  .dimension-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; }
+  .dimension-item { padding: 6px 10px; border-radius: 6px; background: #f5f5f5; }
+
+  .text-sm { font-size: 12px; }
+  .mt-2 { margin-top: 8px; }
+  .mb-2 { margin-bottom: 8px; }
+  .hidden { display: none; }
+
+  @media (max-width: 640px) {
+    .price-cards { grid-template-columns: 1fr; }
+    .dimension-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>LVMUY &#xff08;&#x8def;&#x6613;&#x5a01;&#x767b; ADR&#xff09;&#x7efc;&#x5408;&#x6df1;&#x5ea6;&#x5206;&#x6790;&#x62a5;&#x544a;</h1>
+    <div class="subtitle">&#x5962;&#x4f88;&#x54c1; &#x00b7; LVMH Mo&#x00eb;t Hennessy Louis Vuitton SE &#x00b7; &#x7f8e;&#x56fd;&#x7c89;&#x5355;&#x5e02;&#x573a;&#x4ea4;&#x6613; &#x00b7; &#x5206;&#x6790;&#x65e5;&#x671f;&#xff1a;2026-05-12</div>
+    <div class="meta">
+      <span>&#x6700;&#x65b0;&#x4ef7;&#xff1a;$107.11</span>
+      <span>&#x603b;&#x5e02;&#x503c;&#xff1a;$2,646&#x4ebf;</span>
+      <span>PE(TTM)&#xff1a;20.86x</span>
+      <span>&#x80a1;&#x606f;&#x7387;&#xff1a;1.96%</span>
+      <span>&#x7efc;&#x5408;&#x8bc4;&#x5206;&#xff1a;62/100</span>
+    </div>
+    <div class="meta">
+      <span>&#x884c;&#x4e1a;&#xff1a;&#x5962;&#x4f88;&#x54c1;&#xff08;&#x5168;&#x7403;&#x6700;&#x5927;&#x5962;&#x4f88;&#x54c1;&#x96c6;&#x56e2;&#xff09;</span>
+      <span>&#x57fa;&#x7840;&#x5238;&#xff1a;MC:FP (Euronext Paris)</span>
+    </div>
+  </div>
+
+  <!-- Grade Banner -->
+  <div class="grade-banner">
+    <div class="grade-circle grade-b">B</div>
+    <div class="grade-info">
+      <h2>&#x7eb3;&#x5165;&#x89c2;&#x5bdf;/&#x7b49;&#x5f85;&#x65f6;&#x673a; &#x2014; &#x5f53;&#x524d;&#x4e0d;&#x662f;&#x6700;&#x4f73;&#x4e70;&#x70b9;</h2>
+      <div class="score">&#x7efc;&#x5408;&#x5f97;&#x5206; 62/100 | 2/6 &#x9879;&#x901a;&#x8fc7;</div>
+      <div class="verdict"><strong>&#x4f18;&#x52bf;&#xff1a;</strong>&#x65e0;&#x53ef;&#x6bd4;&#x62df;&#x7684;&#x54c1;&#x724c;&#x62a4;&#x57ce;&#x6cb3;&#x3001;&#x5b9e;&#x63a7;&#x4eba;&#x5927;&#x89c4;&#x6a21;&#x589e;&#x6301;&#x3001;&#x5f3a;&#x52b2;&#x81ea;&#x7531;&#x73b0;&#x91d1;&#x6d41; | <strong>&#x52a3;&#x52bf;&#xff1a;</strong>&#x8425;&#x6536;&#+&#x5229;&#x6da6;&#x53cc;&#x964d;&#x3001;&#x884c;&#x4e1a;&#x5468;&#x671f;&#x5411;&#x4e0b;</div>
+      <div class="action-advice grade-b">&#x7eb3;&#x5165;&#x89c2;&#x5bdf;/&#x7b49;&#x5f85;&#x65f6;&#x673a;</div>
+    </div>
+  </div>
+
+  <!-- Section 1: Stock Aesthetic Checker (审美评分) -->
+  <div class="card">
+    <h3><span class="section-label aesthetic">&#x5ba1;&#x7f8e;&#x8bc4;&#x5206;</span> &#x2605; &#x516d;&#x7ef4;&#x8bc4;&#x5206;&#x603b;&#x89c8;</h3>
+
+    <div class="radar-container">
+      <svg width="320" height="320" viewBox="0 0 320 320">
+        <!-- 六边形网格 — 六轴角度: D1(底)-90°, D2(右下)-30°, D3(右上)30°, D4(顶)90°, D5(左上)150°, D6(左下)210° -->
+        <polygon points="160,280 263.9,220 263.9,100 160,40 56.1,100 56.1,220" fill="none" stroke="#e0e0e0" stroke-width="1"/>
+        <polygon points="160,250 237.9,205 237.9,115 160,70 82.1,115 82.1,205" fill="none" stroke="#e0e0e0" stroke-width="0.5"/>
+        <polygon points="160,220 212.0,190 212.0,130 160,100 108.0,130 108.0,190" fill="none" stroke="#e0e0e0" stroke-width="0.5"/>
+        <polygon points="160,190 186.0,175 186.0,145 160,130 134.0,145 134.0,175" fill="none" stroke="#e0e0e0" stroke-width="0.5"/>
+        <!-- D1: Insider - top (95) -->
+        <!-- D2: Dividend - top-right (48) -->
+        <!-- D3: Competitive - bottom-right (72) -->
+        <!-- D4: PE - bottom (65) -->
+        <!-- D5: Growth - bottom-left (30) -->
+        <!-- D6: Health - top-left (55) -->
+        <!-- Points: angle - D1:-90deg, D2:-30deg, D3:30deg, D4:90deg, D5:150deg, D6:210deg -->
+        <!-- D1(95): x=160+120*0.95*cos(-90)=160, y=160-120*0.95*sin(-90)=160-(-114)=274 -->
+        <!-- D2(48): x=160+120*0.48*cos(-30)=160+57.6*0.866=209.9, y=160-57.6*sin(-30)=160-(-28.8)=188.8 -->
+        <!-- D3(72): x=160+120*0.72*cos(30)=160+86.4*0.866=234.8, y=160-86.4*sin(30)=160-43.2=116.8 -->
+        <!-- D4(65): x=160+120*0.65*cos(90)=160, y=160-78*1=82 -->
+        <!-- D5(30): x=160+120*0.30*cos(150)=160-36*0.866=128.8, y=160-36*0.5=142 -->
+        <!-- D6(55): x=160+120*0.55*cos(210)=160-66*0.866=102.8, y=160-(-66*0.5)=160+33=193 -->
+        <polygon points="160,274 209.9,188.8 234.8,116.8 160,82 128.8,142 102.8,193" fill="rgba(26,115,232,0.15)" stroke="#1a73e8" stroke-width="2"/>
+        <circle cx="160" cy="274" r="4" fill="#1a73e8"/>
+        <circle cx="209.9" cy="188.8" r="4" fill="#1a73e8"/>
+        <circle cx="234.8" cy="116.8" r="4" fill="#1a73e8"/>
+        <circle cx="160" cy="82" r="4" fill="#1a73e8"/>
+        <circle cx="128.8" cy="142" r="4" fill="#1a73e8"/>
+        <circle cx="102.8" cy="193" r="4" fill="#1a73e8"/>
+        <!-- Labels -->
+        <text x="160" y="290" text-anchor="middle" font-size="12" fill="#555">D1 内部人增持 95</text>
+        <text x="235" y="195" text-anchor="middle" font-size="12" fill="#555">D2 股息+回购 48</text>
+        <text x="260" y="115" text-anchor="middle" font-size="12" fill="#555">D3 竞争优势 72</text>
+        <text x="160" y="75" text-anchor="middle" font-size="12" fill="#555">D4 市盈率 65</text>
+        <text x="105" y="138" text-anchor="end" font-size="12" fill="#555">D5 成长动能 30</text>
+        <text x="80" y="200" text-anchor="end" font-size="12" fill="#555">D6 财务健康 55</text>
+      </svg>
+    </div>
+
+    <div class="dimension-grid">
+      <div class="dimension-item"><strong>D1: 内部人增持</strong> (12%) &#xff1a;95 &#x5206; <span style="color:#34a853;">&#x2605; PASS</span></div>
+      <div class="dimension-item"><strong>D2: &#x80a1;&#x606f;+&#x56de;&#x8d2d;</strong> (20%) &#xff1a;48 &#x5206; <span style="color:#fbbc04;">&#x25d0; PARTIAL</span></div>
+      <div class="dimension-item"><strong>D3: &#x7ade;&#x4e89;&#x4f18;&#x52bf;</strong> (28%) &#xff1a;72 &#x5206; <span style="color:#34a853;">&#x2605; PASS</span></div>
+      <div class="dimension-item"><strong>D4: TTM&#x5e02;&#x76c8;&#x7387;</strong> (20%) &#xff1a;65 &#x5206; <span style="color:#fbbc04;">&#x25d0; PARTIAL</span></div>
+      <div class="dimension-item"><strong>D5: &#x6210;&#x957f;&#x52a8;&#x80fd;</strong> (12%) &#xff1a;30 &#x5206; <span style="color:#ea4335;">&#x2716; FAIL</span></div>
+      <div class="dimension-item"><strong>D6: &#x8d22;&#x52a1;&#x5065;&#x5eb7;</strong> (8%) &#xff1a;55 &#x5206; <span style="color:#fbbc04;">&#x25d0; PARTIAL</span></div>
+    </div>
+  </div>
+
+  <!-- Dimensions Detail -->
+  <!-- D1 -->
+  <div class="card">
+    <h3>&#x1f50d; &#x7ef4;&#x5ea6;&#x4e00;&#xff1a;&#x5185;&#x90e8;&#x4eba;&#x589e;&#x6301;&#xff08;&#x6743;&#x91cd; 12%&#xff09;</h3>
+    <div class="criterion pass">
+      <div class="criterion-header">
+        <span class="criterion-title">&#x8fd1;3&#x5e74;&#x5185;&#x90e8;&#x4eba;&#x51c0;&#x589e;&#x6301;&#xff08;&#x5b9e;&#x63a7;&#x4eba;/&#x7ba1;&#x5c42;/&#x5458;&#x5de5;&#x6301;&#x80a1;&#xff09;</span>
+        <span class="criterion-badge">&#x901a;&#x8fc7;</span>
+      </div>
+      <div class="criterion-detail">
+        <strong>&#x8bc4;&#x5206;&#xff1a;95/100</strong><br><br>
+        <strong>&#x8bc4;&#x4ef7;&#xff1a;</strong>&#x4f18;&#x79c0;&#x3002;LVMH &#x8463;&#x4e8b;&#x957f;&#x517c; CEO Bernard Arnault &#x4e8e;2025&#x5e74;&#x81f3;2026&#x5e74;&#x521d;&#x5927;&#x89c4;&#x6a21;&#x589e;&#x6301;&#xff0c;&#x662e;&#x793a;&#x5f3a;&#x70c8;&#x4fe1;&#x5fc3;&#x3002;<br><br>
+        <strong>&#x5177;&#x4f53;&#x6570;&#x636e;&#xff1a;</strong><br>
+        &#x2022; 2025&#x5e74;&#xff1a;Arnault &#x901a;&#x8fc7;&#x63a7;&#x80a1;&#x516c;&#x53f8;&#x7d2f;&#x8ba1;&#x8d2d;&#x5165;&#x7ea6; 14&#x4ebf;&#x6b27;&#x5143; LVMH &#x80a1;&#x7968;&#xff08;&#x7ea6; $15&#x4ebf;&#xff09;<br>
+        &#x2022; 2026&#x5e74;1-2&#x6708;&#xff1a;&#x8ffd;&#x52a0;&#x8d2d;&#x5165;&#x7ea6; 4.07&#x4ebf;&#x6b27;&#x5143;&#xff08;&#x7ea6; $4.4&#x4ebf;&#xff09;<br>
+        &#x2022; &#x76ee;&#x6807;&#xff1a;&#x5c06;&#x6301;&#x80a1;&#x6bd4;&#x4f8b;&#x63d0;&#x5347;&#x81f3; 50% &#x4ee5;&#x4e0a;&#xff08;2024&#x5e74;&#x5e95;&#x4e3a; 49% &#x80a1;&#x672c;/64.8% &#x6295;&#x7968;&#x6743;&#xff09;<br>
+        &#x2022; &#x5458;&#x5de5;&#x6301;&#x80a1;&#x8ba1;&#x5212;&#xff1a;2024&#x5e74;&#x63a8;&#x51fa;&#x56fd;&#x9645;&#x96c7;&#x5458;&#x53c2;&#x80a1;&#x8ba1;&#x5212;&#xff0c;&#x8986;&#x76d6;&#x5168;&#x7403; 70% &#x5458;&#x5de5;<br>
+        &#x2022; &#x8d28;&#x62bc;&#x7387;&#xff1a;&#x63a7;&#x80a1;&#x80a1;&#x4e1c;&#x96f6;&#x8d28;&#x62bc;<br><br>
+        <strong>&#x8bc4;&#x5206;&#x8be6;&#x89e3;&#xff1a;</strong>&#x5b9e;&#x63a7;&#x4eba;&#x7ea7;&#x522b;&#xff08;1.0x&#x7cfb;&#x6570;&#xff09;&#x3001;&#x589e;&#x6301;&#x89c4;&#x6a21;&#x7ea6; $19.4&#x4ebf;/&#x5e02;&#x503c; $2,646&#x4ebf; = 0.73% &#x2192; scale=11&#x3001;&#x4e24;&#x7c7b;&#x4e70;&#x5bb6;&#xff08;&#x63a7;&#x5236;&#x4eba;+&#x5458;&#x5de5;&#x6301;&#x80a1;&#xff09;&#x3001;&#x8fd1;&#x671f;&#x8d2d;&#x4e70;&#x96c6;&#x4e2d;&#x5728;1-3&#x6708;&#x5185;&#x3001;5+&#x6b21;&#x4e8b;&#x4ef6;&#x3001;&#x96f6;&#x8d28;&#x62bc;&#x3002;
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill high" style="width:95%">95&#x5206;</div></div>
+        <span class="score-label">11.4/12 &#x52a0;&#x6743;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- D2 -->
+  <div class="card">
+    <h3>&#x1f4b0; &#x7ef4;&#x5ea6;&#x4e8c;&#xff1a;&#x80a1;&#x606f;+&#x56de;&#x8d2d;&#x62a5;&#x916c;&#x7387;&#xff08;&#x6743;&#x91cd; 20%&#xff09;</h3>
+    <div class="criterion partial">
+      <div class="criterion-header">
+        <span class="criterion-title">&#x80a1;&#x606f;&#x7387; + &#x56de;&#x8d2d;&#x6ce8;&#x9500;&#x62a5;&#x916c;&#x7387;&#xff08;FCF&#x9a8c;&#x8bc1;&#xff09;</span>
+        <span class="criterion-badge">&#x90e8;&#x5206;&#x901a;&#x8fc7;</span>
+      </div>
+      <div class="criterion-detail">
+        <strong>&#x8bc4;&#x5206;&#xff1a;48/100</strong><br><br>
+        <strong>&#x80a1;&#x606f;&#x6536;&#x76ca;&#xff1a;</strong>&#x5f53;&#x524d;&#x80a1;&#x606f;&#x7387;&#x7ea6; 1.96%&#xff08;2025&#x5e74;&#x6bcf;&#x80a1;&#x6d3e;&#x606f; $2.12&#xff09;&#x3002;&#x80a1;&#x606f;&#x6bcf;&#x5e74;&#x7a33;&#x6b65;&#x589e;&#x957f;&#xff1a;2023&#xff1a;$1.99 &#x2192; 2024&#xff1a;$2.02 &#x2192; 2025&#xff1a;$2.12&#xff0c;&#x8fde;&#x7eed;&#x591a;&#x5e74;&#x7a33;&#x5b9a;&#x6d3e;&#x606f;&#x3002;<br><br>
+        <strong>&#x56de;&#x8d2d;&#x6ce8;&#x9500;&#xff1a;</strong>&#x516c;&#x53f8;&#x56de;&#x8d2d;&#x89c4;&#x6a21;&#x6709;&#x9650;&#xff0c;&#x4e3b;&#x8981;&#x662f;&#x5b9e;&#x63a7;&#x4eba;&#x4e2a;&#x4eba;&#x589e;&#x6301;&#x3002;2025&#x5e74;LVMH&#x5ba3;&#x5e03;&#x63d0;&#x8bae;&#x6d3e;&#x53d1;&#x5e74;&#x5ea6;&#x80a1;&#x606f;&#x6bcf;&#x80a1;13&#x6b27;&#x5143;&#xff08;&#x539f;&#x80a1;&#xff09;&#x3002;<br><br>
+        <strong>FCF &#x8986;&#x76d6;&#x80fd;&#x529b;&#xff1a;</strong>&#x6781;&#x4f73;&#x3002;2025&#x5e74;&#x81ea;&#x7531;&#x73b0;&#x91d1;&#x6d41; $17.0B&#xff0c;&#x662f;&#x80a1;&#x606f;&#x652f;&#x51fa; $1.69B &#x7684; 10x&#x3002;&#x7ecf;&#x8425;&#x73b0;&#x91d1;&#x6d41; $21.3B&#xff0c;&#x8d44;&#x672c;&#x652f;&#x51fa; $4.3B&#xff0c;&#x73b0;&#x91d1;&#x521b;&#x9020;&#x80fd;&#x529b;&#x6781;&#x5f3a;&#x3002;<br><br>
+        <strong>&#x5236;&#x7ea6;&#x56e0;&#x7d20;&#xff1a;</strong>&#x80a1;&#x606f;&#x7387;&#x4ec5; 1.96%&#xff08;&#x201c;&#x5ba1;&#x7f8e;&#x201d;&#x89c6;&#x89d2;&#x4e0b;&#x504f;&#x4f4e;&#xff09;&#xff1b;&#x516c;&#x53f8;&#x56de;&#x8d2d;&#x6ce8;&#x9500;&#x89c4;&#x6a21;&#x4e0d;&#x5927;&#x3002;
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill medium" style="width:48%">48&#x5206;</div></div>
+        <span class="score-label">9.6/20 &#x52a0;&#x6743;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dividend Table -->
+  <div class="card">
+    <h3>&#x1f4c5; &#x5206;&#x7ea2;&#x5386;&#x53f2;</h3>
+    <table class="dividend-table">
+      <thead>
+        <tr>
+          <th>&#x8d22;&#x5e74;</th>
+          <th>&#x6bcf;&#x80a1;&#x5206;&#x7ea2;(&#x7f8e;&#x5143;)</th>
+          <th>&#x80a1;&#x606f;&#x7387;(%)</th>
+          <th>&#x5206;&#x7ea2;&#x652f;&#x4ed8;&#x7387;</th>
+          <th>&#x81ea;&#x7531;&#x73b0;&#x91d1;&#x6d41;(&#x4ebf;&#x7f8e;&#x5143;)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2025</td>
+          <td class="positive">$2.12</td>
+          <td>1.96%</td>
+          <td>43.0%</td>
+          <td class="positive">$169.8</td>
+        </tr>
+        <tr>
+          <td>2024</td>
+          <td class="positive">$2.02</td>
+          <td>1.89%</td>
+          <td>37.2%</td>
+          <td class="positive">$153.8</td>
+        </tr>
+        <tr>
+          <td>2023</td>
+          <td class="positive">$1.99</td>
+          <td>1.86%</td>
+          <td>30.4%</td>
+          <td class="positive">$125.4</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr><td colspan="5">&#x80a1;&#x606f;&#x7387;&#x57fa;&#x4e8e;&#x5f53;&#x524d;&#x80a1;&#x4ef7; $107.11 &#x8ba1;&#x7b97;&#x3002;&#x6570;&#x636e;&#x6765;&#x6e90;&#xff1a;NeoData&#x3002;</td></tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- D3 -->
+  <div class="card">
+    <h3>&#x1f3c6; &#x7ef4;&#x5ea6;&#x4e09;&#xff1a;&#x7ade;&#x4e89;&#x4f18;&#x52bf;&#xff08;&#x6743;&#x91cd; 28%&#xff09;</h3>
+    <div class="criterion pass">
+      <div class="criterion-header">
+        <span class="criterion-title">&#x4ea7;&#x54c1;&#x5728;&#x53ef;&#x6bd4;&#x516c;&#x53f8;&#x4e2d;&#x5177;&#x6709;&#x7ade;&#x4e89;&#x4f18;&#x52bf;</span>
+        <span class="criterion-badge">&#x901a;&#x8fc7;</span>
+      </div>
+      <div class="criterion-detail">
+        <strong>&#x8bc4;&#x5206;&#xff1a;72/100</strong><br><br>
+        <strong>&#x5b9a;&#x6027;&#x8bc4;&#x4ef7;&#xff1a;</strong>&#x5168;&#x7403;&#x6700;&#x5927;&#x5962;&#x4f88;&#x54c1;&#x96c6;&#x56e2;&#xff0c;&#x62e5;&#x6709; 75+ &#x4e2a;&#x9876;&#x7ea7;&#x5962;&#x4f88;&#x54c1;&#x724c;&#xff08;Louis Vuitton&#x3001;Dior&#x3001;Tiffany&#x3001;Bulgari&#x3001;Hennessy&#x3001;Mo&#x00eb;t &amp; Chandon&#x3001;Sephora &#x7b49;&#xff09;&#x3002;&#x5168;&#x7403; 6,280+ &#x5bb6;&#x95e8;&#x5e97;&#x3002;&#x54c1;&#x724c;&#x62a4;&#x57ce;&#x6cb3;&#x65e0;&#x53ef;&#x6bd4;&#x62df;&#xff08;Veblen &#x6548;&#x5e94;&#x3001;&#x5386;&#x53f2;&#x6587;&#x5316;&#x6c89;&#x6dc0;&#x3001;&#x5c0f;&#x4f17;&#x5de5;&#x827a;&#x3001;&#x5168;&#x7403;&#x4f9b;&#x5e94;&#x94fe;&#xff09;&#x3002;<br><br>
+        <strong>&#x5b9a;&#x91cf;&#x5bf9;&#x6bd4;&#xff08;&#x4e0e;&#x7231;&#x9a6c;&#+&#x5386;&#x5cf0;&#x96c6;&#x56e2;&#xff09;&#xff1a;</strong><br>
+        &#x2022; &#x6bdb;&#x5229;&#x7387;: LVMH 66.2% vs Herm&#x00e8;s 66.6% vs Richemont 66.6% &#x2192; &#x5dee;&#x8ddd;&#x4e0d;&#x5927;<br>
+        &#x2022; &#x51c0;&#x5229;&#x7387;: LVMH 13.5% vs Herm&#x00e8;s 28.3% vs Richemont 17.6% &#x2192; &#x4f4e;&#x4e8e;&#x540c;&#x884c;&#xff08;&#x591a;&#x5143;&#x5316;&#x7ecf;&#x8425;&#x62c9;&#x4f4e;&#x6574;&#x4f53;&#x5229;&#x6da6;&#x7387;&#xff09;<br>
+        &#x2022; ROE: LVMH 16.5% vs Herm&#x00e8;s 25.5% vs Richemont 17.6% &#x2192; &#x4e0b;&#x964d;&#x4e2d;<br>
+        &#x2022; &#x89c4;&#x6a21;: LVMH $91.2B vs Herm&#x00e8;s $18.1B vs Richemont $23.0B &#x2192; &#x7edd;&#x5bf9;&#x4f18;&#x52bf;<br><br>
+        <strong>&#x7ade;&#x4e89;&#x62a4;&#x57ce;&#x6cb3;&#x8bc4;&#x4f30;&#xff1a;</strong>&#x54c1;&#x724c;&#x6743;&#x76ca;+&#x89c4;&#x6a21;&#x7ecf;&#x6d4e;+&#x5206;&#x9500;&#x7f51;&#x7edc;+&#x5b9a;&#x4ef7;&#x6743;+&#x4f9b;&#x5e94;&#x94fe; = 6/7 &#x7ef4;&#x5ea6;&#x9ad8;&#x5206;&#x3002;&#x6d77;&#x5916;&#x6536;&#x5165;&#x6bd4;&#x4f8b;&#x9ad8;&#xff08;&#x8d85;&#x8fc7; 70%&#xff09;&#xff0c;&#x6709;&#x6c47;&#x7387;&#x5bf9;&#x51b2;&#x3002;
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill high" style="width:72%">72&#x5206;</div></div>
+        <span class="score-label">20.2/28 &#x52a0;&#x6743;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Peer Comparison -->
+  <div class="card">
+    <h3>&#x1f4c8; &#x53ef;&#x6bd4;&#x516c;&#x53f8;&#x8d22;&#x52a1;&#x6307;&#x6807;&#x5bf9;&#x6bd4;&#xff08;2025&#x8d22;&#x5e74;&#xff09;</h3>
+    <table class="peer-table">
+      <thead>
+        <tr>
+          <th>&#x516c;&#x53f8;</th>
+          <th>&#x6bdb;&#x5229;&#x7387;</th>
+          <th>&#x51c0;&#x5229;&#x7387;</th>
+          <th>ROE</th>
+          <th>&#x8425;&#x6536;&#x589e;&#x901f;</th>
+          <th>TTM PE</th>
+          <th>&#x80a1;&#x606f;&#x7387;</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="highlight">
+          <td><strong>LVMH (LVMUY)</strong></td>
+          <td>66.2%</td>
+          <td class="negative">13.5%</td>
+          <td class="negative">16.5%</td>
+          <td class="negative">-0.4%</td>
+          <td class="positive">20.9x</td>
+          <td>2.0%</td>
+        </tr>
+        <tr>
+          <td>Herm&#x00e8;s (HESAY)</td>
+          <td>66.6%</td>
+          <td class="positive">28.3%</td>
+          <td class="positive">25.5%</td>
+          <td class="positive">+10.1%</td>
+          <td class="negative">51.2x</td>
+          <td>1.2%</td>
+        </tr>
+        <tr>
+          <td>Richemont (CFRUY)</td>
+          <td>66.6%</td>
+          <td class="positive">17.6%</td>
+          <td class="positive">17.6%</td>
+          <td class="positive">+2.8%</td>
+          <td>~24x</td>
+          <td>1.0%</td>
+        </tr>
+        <tr>
+          <td>Kering (PPRUY)</td>
+          <td>~65%</td>
+          <td class="negative">~8%</td>
+          <td class="negative">~10%</td>
+          <td class="negative">-12%</td>
+          <td>~25x</td>
+          <td>~3%</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr><td colspan="7">&#x7ea2;&#x8272;&#x6570;&#x503c;&#x8868;&#x793a;&#x4f18;&#x4e8e;&#x53ef;&#x6bd4;&#x516c;&#x53f8;&#x5747;&#x503c;&#xff0c;&#x7eff;&#x8272;&#x8868;&#x793a;&#x52a3;&#x4e8e;&#x5747;&#x503c;&#x3002;&#x6570;&#x636e;&#x6765;&#x6e90;&#xff1a;NeoData&#xff0c;&#x622a;&#x81f3; 2025-12-31&#x3002;</td></tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- D4 -->
+  <div class="card">
+    <h3>&#x1f4d0; &#x7ef4;&#x5ea6;&#x56db;&#xff1a;TTM&#x5e02;&#x76c8;&#x7387;&#xff08;&#x6743;&#x91cd; 20%&#xff09;</h3>
+    <div class="criterion partial">
+      <div class="criterion-header">
+        <span class="criterion-title">TTM &#x5e02;&#x76c8;&#x7387; 20.86x</span>
+        <span class="criterion-badge">&#x90e8;&#x5206;&#x901a;&#x8fc7;</span>
+      </div>
+      <div class="criterion-detail">
+        <strong>&#x8bc4;&#x5206;&#xff1a;65/100</strong><br><br>
+        <strong>&#x5f53;&#x524d;PE&#xff1a;20.86x</strong>&#xff0c;&#x5904;&#x4e8e;&#x5386;&#x53f2;&#x4f4e;&#x4f4d;&#x533a;&#x95f4;&#x3002;&#x5386;&#x53f2;PE&#x8303;&#x56f4;&#xff08;&#x8fd1;&#x4e94;&#x5e74;&#xff09;&#xff1a;24x-58x&#x3002;<br><br>
+        <strong>&#x5386;&#x53f2;&#x5bf9;&#x6bd4;&#xff1a;</strong><br>
+        &#x2022; 2025&#x5e74;&#x65b9;&#x5e74;&#x62a5;PE&#xff1a;30.57x&#xff08;&#x80a1;&#x4ef7; $150.81&#x65f6;&#xff09;<br>
+        &#x2022; 2024&#x5e74;&#x5e74;&#x62a5;PE&#xff1a;24.04x<br>
+        &#x2022; 2023&#x5e74;&#x5e74;&#x62a5;PE&#xff1a;24.76x<br>
+        &#x2022; 2021&#x5e74;&#x5e74;&#x62a5;PE&#xff1a;29.29x<br>
+        &#x2022; 2020&#x5e74;&#x5e74;&#x62a5;PE&#xff1a;58.60x<br>
+        &#x2022; 5&#x5e74;&#x6700;&#x9ad8;&#x70b9; $192.08&#xff08;2023-07&#xff09;&#xff0c;&#x6700;&#x4f4e;&#x70b9; $98.76&#xff08;2025-06&#xff09;<br><br>
+        <strong>&#x884c;&#x4e1a;&#x5bf9;&#x6bd4;&#xff1a;</strong><br>
+        &#x2022; Herm&#x00e8;s (HESAY)&#xff1a;51.2x PE&#xff08;&#x660e;&#x663e;&#x9ad8;&#x4f30;&#xff09;<br>
+        &#x2022; LVMH &#x5f53;&#x524d; 20.86x &#x4f4e;&#x4e8e;&#x884c;&#x4e1a;&#x5747;&#x503c;&#xff0c;&#x53ef;&#x80fd;&#x53cd;&#x6620;&#x5e02;&#x573a;&#x5bf9;&#x5962;&#x4f88;&#x54c1;&#x5468;&#x671f;&#x4e0b;&#x884c;&#x7684;&#x62c5;&#x5fe7;<br><br>
+        <strong>&#x5224;&#x65ad;&#xff1a;</strong>PE&#x5904;&#x4e8e;&#x5386;&#x53f2;&#x4f4e;&#x4f4d;&#xff0c;&#x4f46;&#x5f53;&#x524d;&#x76c8;&#x5229;&#x627f;&#x538b;&#x610f;&#x5473;&#x7740;&#x4f4e;PE&#x53ef;&#x80fd;&#x662f;&#x201c;&#x4f4e;&#x4f30;&#x9669;&#x8bc1;&#x201d;&#x800c;&#x975e;&#x201c;&#x4f4e;&#x4f30;&#x673a;&#x4f1a;&#x201d;&#x3002;&#x9700;&#x7b49;&#x5f85;&#x76c8;&#x5229;&#x5e95;&#x90e8;&#x786e;&#x8ba4;&#x540e;&#x518d;&#x8bc4;&#x4f30;&#x3002;
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill medium" style="width:65%">65&#x5206;</div></div>
+        <span class="score-label">13.0/20 &#x52a0;&#x6743;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- D5 -->
+  <div class="card">
+    <h3>&#x1f680; &#x7ef4;&#x5ea6;&#x4e94;&#xff1a;&#x6210;&#x957f;&#x52a8;&#x80fd;&#xff08;&#x6743;&#x91cd; 12%&#xff09;</h3>
+    <div class="criterion fail">
+      <div class="criterion-header">
+        <span class="criterion-title">&#x4e1a;&#x7ee9;&#x8d8b;&#x52bf; &#x00b7; &#x589e;&#x957f;&#x9884;&#x671f; &#x00b7; &#x884c;&#x4e1a;&#x666f;&#x6c14;&#x5ea6; &#x00b7; &#x6e17;&#x900f;&#x7387;</span>
+        <span class="criterion-badge">&#x672a;&#x901a;&#x8fc7;</span>
+      </div>
+      <div class="criterion-detail">
+        <strong>&#x8bc4;&#x5206;&#xff1a;30/100</strong><br><br>
+        <strong>5A &#x6700;&#x65b0;&#x4e1a;&#x7ee9;&#x8d8b;&#x52bf;&#xff08;0-25&#xff09;&#xff1a;8</strong><br>
+        &#x2022; 2025&#x5e74;&#x8425;&#x6536; $91.20B&#xff0c;&#x540c;&#x6bd4;-0.44%&#xff08;2024&#x5e74; -1.65%&#xff0c;2023&#x5e74; +11.92%&#xff09;<br>
+        &#x2022; 2025&#x5e74;&#x5f52;&#x6bcd;&#x51c0;&#x5229;&#x6da6; $12.28B&#xff0c;&#x540c;&#x6bd4;-9.57%&#xff08;2024&#x5e74; -17.25%&#xff0c;2023&#x5e74; +10.83%&#xff09;<br>
+        &#x2022; &#x8425;&#x4e1a;&#x5229;&#x6da6;&#x7387; 21.88%&#xff0c;&#x540c;&#x6bd4;&#x4e0b;&#x964d; 1.2pct<br>
+        &#x2022; &#x4e0b;&#x534a;&#x5e74;&#x4e1a;&#x7ee9;&#x663e;&#x793a;&#x6539;&#x5584;&#xff08;&#x62a5;&#x544a;&#x79f0;&#x4e9a;&#x6d32;&#x5e02;&#x573a;Q3/Q4 &#x8f6c;&#x6b63;&#xff09;<br><br>
+        <strong>5B &#x672a;&#x6765;&#x589e;&#x957f;&#x9884;&#x671f;&#xff08;0-25&#xff09;&#xff1a;10</strong><br>
+        &#x2022; 23&#x5bb6;&#x673a;&#x6784;&#x76ee;&#x6807;&#x4ef7;&#x5747;&#x4ef7; $137.87&#xff0c;&#x6700;&#x9ad8; $159.42&#xff0c;&#x6700;&#x4f4e; $107.36<br>
+        &#x2022; 64% &#x673a;&#x6784;&#x7ed9;&#x4e88;&#x4e70;&#x5165;/&#x589e;&#x6301;&#x8bc4;&#x7ea7;&#xff0c;36% &#x6301;&#x6709;<br>
+        &#x2022; S&amp;P Global Market Intelligence&#xff1a;2025&#x5e74;&#x4e1a;&#x7ee9;&#x5c0f;&#x5e45;&#x8d85;&#x9884;&#x671f;&#xff0c;&#x4f46;2026&#x5e74;&#x8425;&#x6536;&#x9884;&#x6d4b;&#x88ab;&#x4e0b;&#x8c03;<br><br>
+        <strong>5C &#x884c;&#x4e1a;&#x666f;&#x6c14;&#x5ea6;&#xff08;0-25&#xff09;&#xff1a;5</strong><br>
+        &#x2022; &#x5168;&#x7403;&#x5962;&#x4f88;&#x54c1;&#x5e02;&#x573a;&#x5904;&#x4e8e;&#x4e0b;&#x884c;&#x5468;&#x671f;&#xff08;post-COVID &#x7206;&#x53d1;&#x53cd;&#x5e94;&#x540e;&#x56de;&#x8c03;&#xff09;<br>
+        &#x2022; &#x4e9a;&#x592a;&#x5e02;&#x573a;&#xff08;&#x4e0d;&#x542b;&#x65e5;&#x672c;&#xff09;&#x8425;&#x6536;&#x540c;&#x6bd4;&#x4e0b;&#x964d; 11%&#xff08;2025Q1&#xff09;<br>
+        &#x2022; &#x4e2d;&#x56fd;&#x5e02;&#x573a;&#x9700;&#x6c42;&#x4f4e;&#x8ff7;&#xff0c;&#x5173;&#x7a0e;&#x95ee;&#x9898;&#x5f71;&#x54cd;&#x5a01;&#x58eb;&#x5fcc;&#x5e72;&#x5099;&#x9500;&#x552e;<br>
+        &#x2022; Fitch BMI &#x9884;&#x6d4b;2026&#x5e74;&#x5962;&#x4f88;&#x54c1;&#x5e02;&#x573a;&#x53ef;&#x80fd;&#x5c0f;&#x5e45;&#x590d;&#x82cf;<br><br>
+        <strong>5D &#x6e17;&#x900f;&#x7387;&#x7a7a;&#x95f4;&#xff08;0-25&#xff09;&#xff1a;7</strong><br>
+        &#x2022; &#x6210;&#x719f;&#x5e02;&#x573a;&#xff08;&#x6b27;&#x7f8e;&#xff09;&#x5962;&#x4f88;&#x54c1;&#x6e17;&#x900f;&#x7387;&#x8f83;&#x9ad8;&#x3001;&#x589e;&#x957f;&#x7a7a;&#x95f4;&#x6709;&#x9650;<br>
+        &#x2022; &#x65b0;&#x5174;&#x5e02;&#x573a;&#xff08;&#x4e2d;&#x56fd;&#x3001;&#x5370;&#x5ea6;&#x3001;&#x97e9;&#x56fd;&#xff09;&#x4ecd;&#x6709;&#x4e0a;&#x5347;&#x7a7a;&#x95f4;&#xff0c;&#x4f46;&#x77ed;&#x671f;&#x627f;&#x538b;<br>
+        &#x2022; &#x516c;&#x53f8;&#x5e03;&#x5c40;&#x97e9;&#x56fd;&#x5e02;&#x573a;&#x4f5c;&#x4e3a;&#x65b0;&#x589e;&#x957f;&#x652f;&#x70b9;
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill low" style="width:30%">30&#x5206;</div></div>
+        <span class="score-label">3.6/12 &#x52a0;&#x6743;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- D6 -->
+  <div class="card">
+    <h3>&#x1f6e1;&#xfe0f; &#x7ef4;&#x5ea6;&#x516d;&#xff1a;&#x8d22;&#x52a1;&#x5065;&#x5eb7;&#x4e0e;&#x7c6c;&#x7801;&#x7ed3;&#x6784;&#xff08;&#x6743;&#x91cd; 8%&#xff09;</h3>
+    <div class="criterion partial">
+      <div class="criterion-header">
+        <span class="criterion-title">&#x6709;&#x606f;&#x8d1f;&#x503a;&#x7387; &#x00b7; &#x80a1;&#x4e1c;&#x6237;&#x6570;&#x53d8;&#x5316;&#x8d8b;&#x52bf;</span>
+        <span class="criterion-badge">&#x90e8;&#x5206;&#x901a;&#x8fc7;</span>
+      </div>
+      <div class="criterion-detail">
+        <strong>&#x8bc4;&#x5206;&#xff1a;55/100</strong><br><br>
+        <strong>6A &#x6709;&#x606f;&#x8d1f;&#x503a;&#x7387;&#xff08;0-50&#xff09;&#xff1a;35</strong><br>
+        &#x2022; &#x8d44;&#x4ea7;&#x8d1f;&#x503a;&#x7387; 51.46%&#xff0c;&#x5904;&#x4e8e;&#x5408;&#x7406;&#x8303;&#x56f4;<br>
+        &#x2022; &#x957f;&#x671f;&#x501f;&#x6b3e; $30.3B&#xff0c;&#x73b0;&#x91d1; $15.9B &#x2192; &#x51c0;&#x8d1f;&#x503a;&#x72b6;&#x6001;&#xff0c;&#x4f46;&#x50b5;&#x52a1;&#x6c34;&#x5e73;&#x53ef;&#x63a7;&#xff08;&#x8d1f;&#x503a;/EBITDA &#x4ec5; 1.55%&#xff09;<br>
+        &#x2022; &#x901f;&#x52a8;&#x6bd4;&#x7387; 0.83&#xff0c;&#x6d41;&#x52a8;&#x6bd4;&#x7387; 1.58&#xff0c;&#x77ed;&#x671f;&#x507f;&#x503a;&#x80fd;&#x529b;&#x826f;&#x597d;<br>
+        &#x2022; &#x5e74;&#x5229;&#x606f;&#x4fdd;&#x969c;&#x500d;&#x6570;: &#x7ecf;&#x8425;&#x5229;&#x6da6; $19.95B / &#x8d22;&#x52a1;&#x8d39;&#x7528; &#x2192; &#x8986;&#x76d6;&#x80fd;&#x529b;&#x5f3a;<br><br>
+        <strong>6B &#x80a1;&#x4e1c;&#x6237;&#x6570;&#x8d8b;&#x52bf;&#xff08;0-50&#xff09;&#xff1a;20</strong><br>
+        &#x2022; ADR &#x80a1;&#x4e1c;&#x6570;&#x636e;&#x6709;&#x9650;&#xff0c;&#x4f46;Arnault &#x5bb6;&#x65cf;&#x63a7;&#x80a1;&#x7ea6; 50% &#x610f;&#x5473;&#x7740;&#x6d41;&#x52a8;&#x80a1;&#x6709;&#x9650;<br>
+        &#x2022; &#x673a;&#x6784;&#x6301;&#x80a1;&#x6bd4;&#x4f8b;&#x8f83;&#x9ad8;&#xff08;&#x5168;&#x7403;&#x9876;&#x7ea7;&#x57fa;&#x91d1;&#x5747;&#x6709;&#x6301;&#x4ed3;&#xff09;<br>
+        &#x2022; YTD &#x80a1;&#x4ef7;&#x8dcc;&#x5e45; -28.14% &#x53cd;&#x6620;&#x4e86;&#x5e02;&#x573a;&#x5bf9;&#x4e1a;&#x7ee9;&#x7684;&#x62c5;&#x5fe7;
+      </div>
+      <div class="score-bar-wrapper">
+        <div class="score-bar"><div class="score-bar-fill medium" style="width:55%">55&#x5206;</div></div>
+        <span class="score-label">4.4/8 &#x52a0;&#x6743;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Catalyst Events -->
+  <div class="card">
+    <h3>&#x23f0; &#x8fd1;&#x671f;&#x50ac;&#x5316;&#x5242;&#x770b;&#x70b9;</h3>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">&#x1f4c9;</span>
+      <div>
+        <span class="catalyst-type high">&#x9ad8;&#x5f71;&#x54cd;</span>
+        <strong>2026&#x5e74;&#x4e00;&#x5b63;&#x62a5;</strong> &#x2014; 4&#x6708;24&#x65e5;&#x53d1;&#x5e03;&#xff0c;&#x6570;&#x636e;&#x662f;&#x5426;&#x663e;&#x793a;&#x590d;&#x82cf;&#x8ff9;&#x8c61;
+        <div class="catalyst-timing">&#x9884;&#x8ba1;&#x65f6;&#x95f4;&#xff1a;2026-04-24</div>
+      </div>
+    </div>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">&#x1f3f0;</span>
+      <div>
+        <span class="catalyst-type medium">&#x4e2d;&#x5f71;&#x54cd;</span>
+        <strong>&#x4e2d;&#x56fd;&#x5e02;&#x573a;&#x590d;&#x82cf;&#x52a8;&#x6001;</strong> &#x2014; LV&#x4e2d;&#x56fd;&#x6362;&#x5e05;&#x3001;&#x4e0a;&#x6d77;&#x65b0;&#x65d7;&#x8230;&#x5e97;&#x5f00;&#x4e1a;&#xff0c;&#x5173;&#x6ce8;&#x5ba2;&#x6d41;&#x56de;&#x6696;&#x60c5;&#x51b5;
+        <div class="catalyst-timing">&#x6301;&#x7eed;&#x8ddf;&#x8e2a;</div>
+      </div>
+    </div>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">&#x1f3b0;</span>
+      <div>
+        <span class="catalyst-type medium">&#x4e2d;&#x5f71;&#x54cd;</span>
+        <strong>Arnault &#x7ee7;&#x7eed;&#x589e;&#x6301;&#x81f3; 50%+</strong> &#x2014; &#x8981;&#x6c42;&#x63a7;&#x80a1;&#x6295;&#x7968;&#x6743;&#x8d85;&#x8fc7;&#x534a;&#x6570;&#x7684;&#x8fdb;&#x5c55;
+        <div class="catalyst-timing">&#x9884;&#x8ba1;&#x5b8c;&#x6210;&#xff1a;2026&#x5e74;&#x5185;</div>
+      </div>
+    </div>
+    <div class="catalyst-item">
+      <span class="catalyst-icon">&#x1f3e2;</span>
+      <div>
+        <span class="catalyst-type high">&#x9ad8;&#x5f71;&#x54cd;</span>
+        <strong>&#x8d44;&#x4ea7;&#x7626;&#x8eab;&#x8fdb;&#x5c55;</strong> &#x2014; &#x51fa;&#x552e;Marc Jacobs&#x3001;Make Up For Ever&#x3001;Fresh&#x7b49;&#x975e;&#x6838;&#x5fc3;&#x54c1;&#x724c;&#xff0c;&#x53ef;&#x80fd;&#x56de;&#x7b3c;&#x6570;&#x5341;&#x4ebf;&#x6b27;&#x5143;
+        <div class="catalyst-timing">&#x8fdb;&#x884c;&#x4e2d;</div>
+      </div>
+    </div>
+    <div class="text-sm" style="color:var(--text-secondary); margin-top:8px;">&#x6ce8;&#xff1a;&#x50ac;&#x5316;&#x5242;&#x4ec5;&#x4f9b;&#x4fe1;&#x606f;&#x53c2;&#x8003;&#xff0c;&#x4e0d;&#x5f71;&#x54cd;&#x5ba1;&#x7f8e;&#x8bc4;&#x5206;&#x3002;</div>
+  </div>
+
+  <!-- Risk Flags -->
+  <div class="card">
+    <h3>&#x26a0;&#xfe0f; &#x98ce;&#x9669;&#x63d0;&#x793a;</h3>
+    <div class="risk-flag watch">
+      <span class="flag-icon">&#x1f7e1;</span>
+      <span class="flag-text"><strong>&#x5962;&#x4f88;&#x54c1;&#x5468;&#x671f;&#x7ee7;&#x7eed;&#x4e0b;&#x884c;&#xff1a;</strong>&#x4e2d;&#x56fd;&#x5e02;&#x573a;&#x9700;&#x6c42;&#x6062;&#x590d;&#x4e0d;&#x786e;&#x5b9a;&#x6027;&#x3001;&#x7f8e;&#x56fd;&#x5173;&#x7a0e;&#x653f;&#x7b56;&#x5f71;&#x54cd;&#x3001;&#x6c47;&#x7387;&#x6ce2;&#x52a8;&#xff08;&#x7f8e;&#x5143;&#x5f3a;&#x52bf;&#x4f1a;&#x538b;&#x5236;&#x6b27;&#x5143;&#x8ba1;&#x4ef7;&#x6536;&#x5165;&#xff09;</span>
+    </div>
+    <div class="risk-flag watch">
+      <span class="flag-icon">&#x1f7e1;</span>
+      <span class="flag-text"><strong>&#x76c8;&#x5229;&#x538b;&#x529b;&#x6301;&#x7eed;&#xff1a;</strong>&#x5df2;&#x8fde;&#x7eed;&#x4e24;&#x5e74;&#x51c0;&#x5229;&#x6da6;&#x4e0b;&#x964d;&#xff08;2024&#x5e74;-17.3%&#x3001;2025&#x5e74;-9.6%&#xff09;&#xff0c;&#x6bdb;&#x5229;&#x7387;&#x4ece;68.8%&#x964d;&#x81f3;66.2%</span>
+    </div>
+    <div class="risk-flag watch">
+      <span class="flag-icon">&#x1f7e1;</span>
+      <span class="flag-text"><strong>&#x8d44;&#x4ea7;&#x7626;&#x8eab;&#x98ce;&#x9669;&#xff1a;</strong>&#x5927;&#x89c4;&#x6a21;&#x51fa;&#x552e;&#x975e;&#x6838;&#x5fc3;&#x54c1;&#x724c;&#x53ef;&#x80fd;&#x77ed;&#x671f;&#x5f71;&#x54cd;&#x8425;&#x6536;&#xff0c;&#x4f46;&#x4e2d;&#x671f;&#x5229;&#x597d;&#x8d44;&#x672c;&#x6548;&#x7387;</span>
+    </div>
+    <div class="risk-flag info">
+      <span class="flag-icon">&#x1f535;</span>
+      <span class="flag-text"><strong>&#x4eba;&#x4e8b;&#x53d8;&#x52a8;&#x8fc7;&#x6e21;&#x671f;&#xff1a;</strong>LV&#x4e2d;&#x56fd;&#x3001;Rimowa&#x3001;Fendi&#x3001;Kenzo &#x591a;&#x4e2a;&#x54c1;&#x724c;&#x6362;&#x5e05;&#xff0c;&#x7ba1;&#x7406;&#x5c42;&#x8fc7;&#x6e21;&#x671f;&#x53ef;&#x80fd;&#x5f71;&#x54cd;&#x6267;&#x884c;&#x529b;</span>
+    </div>
+    <div class="risk-flag info">
+      <span class="flag-icon">&#x1f535;</span>
+      <span class="flag-text"><strong>&#x6570;&#x636e;&#x5b89;&#x5168;&#x4e8b;&#x4ef6;&#xff1a;</strong>Dior&#x4e2d;&#x56fd;&#x5ba2;&#x6237;&#x6570;&#x636e;&#x6cc4;&#x9732;&#x4e8b;&#x4ef6;&#xff08;2025&#x5e74;5&#x6708;&#xff09;&#xff0c;&#x53ef;&#x80fd;&#x77ed;&#x671f;&#x5f71;&#x54cd;&#x54c1;&#x724c;&#x58f0;&#x8a89;</span>
+    </div>
+  </div>
+
+  <!-- Investment Conclusion -->
+  <div class="invest-conclusion">
+    <h3>&#x1f3af; &#x6295;&#x8d44;&#x7ed3;&#x8bba;</h3>
+    <div class="verdict-banner watch">
+      <span class="verdict-emoji">&#x1f441;&#xfe0f;</span>
+      <div>
+        <div class="verdict-text">&#x89c2;&#x5bdf;&#x4e3b;&#x8981;</div>
+        <div class="verdict-sub">&#x5ba1;&#x7f8e;&#x8bc4;&#x5206;&#x5c1a;&#x53ef;&#x4f46;&#x6709;&#x98ce;&#x9669;&#xff0c;&#x5efa;&#x8bae;&#x6301;&#x7eed;&#x8ddf;&#x8e2a;&#x89c2;&#x5bdf;</div>
+      </div>
+    </div>
+
+    <div class="price-cards">
+      <div class="price-card buy-card">
+        <div class="price-label">&#x5efa;&#x8bae;&#x4e70;&#x5165;&#x4ef7;</div>
+        <div class="price-value">$85-95</div>
+        <div class="price-note">&#x5b89;&#x5168;&#x8fb9;&#x9645; 20%</div>
+      </div>
+      <div class="price-card target-card">
+        <div class="price-label">12&#x4e2a;&#x6708;&#x76ee;&#x6807;&#x4ef7;</div>
+        <div class="price-value">$120-130</div>
+        <div class="price-note">&#x5408;&#x7406;PE: 22-24x</div>
+      </div>
+      <div class="price-card fair-card">
+        <div class="price-label">&#x5408;&#x7406;&#x4ef7;&#x503c;</div>
+        <div class="price-value">~$120</div>
+        <div class="price-note">&#x5f53;&#x524d;&#x4ef7;: $107.11</div>
+      </div>
+    </div>
+
+    <div class="upside-bar">
+      <span class="upside-label">&#x8f83;&#x5f53;&#x524d;&#x4ef7;&#x6f5c;&#x5728;&#x4e0a;&#x6da8;&#x7a7a;&#x95f4;</span>
+      <span class="upside-value" id="upsideValue">~+15%</span>
+    </div>
+
+    <div class="position-advice none">
+      <span>&#x1f4d0;</span>
+      <span>&#x6682;&#x4e0d;&#x5f00;&#x4ed3;&#xff0c;&#x6301;&#x7eed;&#x8ddf;&#x8e2a;</span>
+    </div>
+
+    <div class="valuation-note">
+      <strong>&#x4f30;&#x503c;&#x8bf4;&#x660e;&#xff1a;</strong>&#x5f53;&#x524d;PE(TTM) 20.86x&#xff0c;&#x5904;&#x4e8e;5&#x5e74;&#x5386;&#x53f2;&#x4f4e;&#x4f4d;&#x3002;&#x8003;&#x8651;&#x5386;&#x53f2;PE&#x4e2d;&#x6792; 24-25x&#x3001;&#x884c;&#x4e1a;&#x5747;&#x503c; 25-30x&#x3001;&#x53ca;&#x5f53;&#x524d;&#x76c8;&#x5229;&#x627f;&#x538b;&#x7684;&#x60c5;&#x51b5;&#xff0c;&#x5408;&#x7406;PE&#x5728; 22-24x&#x4e4b;&#x95f4;&#x3002;&#x5bf9;&#x5e94;&#x5408;&#x7406;&#x4ef7;&#x503c; $120-130&#x3002;&#x5b89;&#x5168;&#x4e70;&#x5165;&#x4ef7;&#x9700;&#x8003;&#x8651; 20% &#x5b89;&#x5168;&#x8fb9;&#x9645;&#xff0c;&#x5373; $85-95&#x3002;
+    </div>
+
+    <div class="conclusion-text">
+      <strong>&#x7efc;&#x5408;&#x8bc4;&#x4ef7;&#xff08;62&#x5206;/B&#x7ea7;&#xff09;: </strong>LVMH&#x62e5;&#x6709;&#x5168;&#x7403;&#x6700;&#x5f3a;&#x7684;&#x5962;&#x4f88;&#x54c1;&#x724c;&#x77e9;&#x9635;&#x548c;&#x65e0;&#x53ef;&#x6bd4;&#x62df;&#x7684;&#x7ade;&#x4e89;&#x62a4;&#x57ce;&#x6cb3;&#xff0c;&#x5b9e;&#x63a7;&#x4eba;Arnault&#x5927;&#x89c4;&#x6a21;&#x589e;&#x6301;&#x663e;&#x793a;&#x5f3a;&#x70c8;&#x4fe1;&#x5fc3;&#x3002;&#x7136;&#x800c;&#xff0c;&#x516c;&#x53f8;&#x5f53;&#x524d;&#x9762;&#x4e34;&#x5962;&#x4f88;&#x54c1;&#x5468;&#x671f;&#x4e0b;&#x884c;&#x3001;&#x8425;&#x6536;&#x548c;&#x5229;&#x6da6;&#x8fde;&#x7eed;&#x4e24;&#x5e74;&#x4e0b;&#x964d;&#x3001;&#x4e2d;&#x56fd;&#x5e02;&#x573a;&#x9700;&#x6c42;&#x4f4e;&#x8ff7;&#x7b49;&#x591a;&#x91cd;&#x6311;&#x6218;&#x3002;PE&#x5904;&#x4e8e;&#x5386;&#x53f2;&#x4f4e;&#x4f4d;&#xff0c;&#x4f46;&#x201c;&#x4f4e;&#x4f30;&#x9669;&#x8bc1;&#x201d;&#x9700;&#x8981;&#x7b49;&#x5f85;&#x76c8;&#x5229;&#x5e95;&#x90e8;&#x786e;&#x8ba4;&#x3002;<br><br>
+      &#x5efa;&#x8bae;&#x6682;&#x4e0d;&#x5f00;&#x4ed3;&#xff0c;&#x5c06;LVMUY&#x7eb3;&#x5165;&#x89c2;&#x5bdf;&#x6e05;&#x5355;&#x3002;&#x91cd;&#x70b9;&#x8ddf;&#x8e2a;&#xff1a;1&#xff09;2026Q1&#x4e1a;&#x7ee9;&#x662f;&#x5426;&#x663e;&#x793a;&#x590d;&#x82cf;&#x8ff9;&#x8c61;&#xff1b;2&#xff09;&#x4e2d;&#x56fd;&#x5e02;&#x573a;&#x53d8;&#x5316;&#xff08;&#x7279;&#x522b;&#x662f;&#x5173;&#x7a0e;&#x653f;&#x7b56;&#xff09;&#xff1b;3&#xff09;&#x8d44;&#x4ea7;&#x7626;&#x8eab;&#x8fdb;&#x5c55;&#x53ca;&#x56de;&#x7b3c;&#x8d44;&#x91d1;&#x7528;&#x9014;&#x3002;<br><br>
+      &#x82e5;&#x80a1;&#x4ef7;&#x56de;&#x8c03;&#x81f3; $85-95 &#x533a;&#x95f4;&#xff0c;&#x540c;&#x65f6;&#x4e1a;&#x7ee9;&#x5e95;&#x90e8;&#x786e;&#x8ba4;&#xff0c;&#x53ef;&#x8003;&#x8651;&#x5c0f;&#x4ed3;&#x4f4d;&#x5065;&#x4ed3;&#x3002;
+    </div>
+  </div>
+
+  <!-- Section 2: Earnings Review (业绩点评) -->
+  <div class="card">
+    <h3><span class="section-label earnings">&#x4e1a;&#x7ee9;&#x70b9;&#x8bc4;</span> &#x1f4ca; 2025&#x8d22;&#x5e74;&#x4e1a;&#x7ee9;&#x56de;&#x987e;</h3>
+
+    <h4>&#x4e00;&#x3001;&#x6838;&#x5fc3;&#x8d22;&#x52a1;&#x6570;&#x636e;</h4>
+    <table class="fin-table">
+      <thead>
+        <tr>
+          <th>&#x6307;&#x6807;</th>
+          <th>2023</th>
+          <th>2024</th>
+          <th>2025</th>
+          <th>&#x53d8;&#x5316;&#x8d8b;&#x52bf;</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>&#x8425;&#x4e1a;&#x6536;&#x5165;(&#x4ebf;&#x7f8e;&#x5143;)</td>
+          <td>$93.14</td>
+          <td>$91.60</td>
+          <td>$91.20</td>
+          <td class="negative">&#x4e0b;&#x964d;</td>
+        </tr>
+        <tr>
+          <td>&#x540c;&#x6bd4;&#x589e;&#x901f;</td>
+          <td class="positive">+11.92%</td>
+          <td class="negative">-1.65%</td>
+          <td class="negative">-0.44%</td>
+          <td class="negative">&#x6536;&#x7f29;</td>
+        </tr>
+        <tr>
+          <td>&#x5f52;&#x6bcd;&#x51c0;&#x5229;&#x6da6;(&#x4ebf;&#x7f8e;&#x5143;)</td>
+          <td>$16.40</td>
+          <td>$13.58</td>
+          <td>$12.28</td>
+          <td class="negative">&#x4e0b;&#x964d;</td>
+        </tr>
+        <tr>
+          <td>&#x540c;&#x6bd4;&#x589e;&#x901f;</td>
+          <td class="positive">+10.83%</td>
+          <td class="negative">-17.25%</td>
+          <td class="negative">-9.57%</td>
+          <td class="negative">&#x4e0b;&#x964d;</td>
+        </tr>
+        <tr>
+          <td>&#x6bdb;&#x5229;&#x7387;</td>
+          <td class="positive">68.80%</td>
+          <td>67.03%</td>
+          <td>66.24%</td>
+          <td class="negative">&#x538b;&#x7f29;</td>
+        </tr>
+        <tr>
+          <td>&#x51c0;&#x5229;&#x7387;</td>
+          <td class="positive">17.61%</td>
+          <td>14.82%</td>
+          <td>13.46%</td>
+          <td class="negative">&#x4e0b;&#x964d;</td>
+        </tr>
+        <tr>
+          <td>ROE</td>
+          <td class="positive">25.99%</td>
+          <td>19.77%</td>
+          <td>16.46%</td>
+          <td class="negative">&#x4e0b;&#x964d;</td>
+        </tr>
+        <tr class="highlight-row">
+          <td><strong>&#x81ea;&#x7531;&#x73b0;&#x91d1;&#x6d41;(&#x4ebf;&#x7f8e;&#x5143;)</strong></td>
+          <td class="positive">$125.4</td>
+          <td class="positive">$153.8</td>
+          <td class="positive">$169.8</td>
+          <td class="positive">&#x589e;&#x957f;</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>&#x4e8c;&#x3001;&#x4e1a;&#x52a1;&#x677f;&#x5757;&#x5206;&#x6790;</h4>
+    <table class="fin-table">
+      <thead>
+        <tr>
+          <th>&#x677f;&#x5757;</th>
+          <th>2025&#x6536;&#x5165;(&#x4ebf;&#x7f8e;&#x5143;)</th>
+          <th>&#x5360;&#x6bd4;</th>
+          <th>YoY</th>
+          <th>&#x70b9;&#x8bc4;</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>&#x65f6;&#x88c5;&#x4e0e;&#x76ae;&#x5177;</td>
+          <td>$425.70</td>
+          <td>46.7%</td>
+          <td class="negative">-8%</td>
+          <td>&#x6838;&#x5fc3;&#x5229;&#x6da6;&#x6765;&#x6e90;&#xff0c;&#x4f46;&#x6536;&#x5165;&#x4e0b;&#x964d;&#x663e;&#x8457;&#xff0c;&#x8425;&#x4e1a;&#x5229;&#x6da6;&#x7387;&#x4ecd;&#x7ef4;&#x6301;35%&#x884c;&#x4e1a;&#x9ad8;&#x4f4d;</td>
+        </tr>
+        <tr>
+          <td>&#x7cbe;&#x54c1;&#x96f6;&#x552e;(Sephora/DFS)</td>
+          <td>$206.27</td>
+          <td>22.6%</td>
+          <td class="positive">&#x5c0f;&#x5e45;&#x6b63;&#x589e;&#x957f;</td>
+          <td>Sephora&#x4e1a;&#x7ee9;&#x4eae;&#x773c;&#xff0c;&#x6210;&#x4e3a;&#x589e;&#x957f;&#x4eae;&#x70b9;</td>
+        </tr>
+        <tr>
+          <td>&#x73e0;&#x5b9d;&#x4e0e;&#x624b;&#x8868;</td>
+          <td>$116.81</td>
+          <td>12.8%</td>
+          <td class="negative">-1%</td>
+          <td>Tiffany Q4&#x8868;&#x73b0;&#x4eae;&#x773c;&#xff0c;&#x6709;&#x673a;&#x589e;&#x957f;+3%</td>
+        </tr>
+        <tr>
+          <td>&#x9999;&#x6c34;&#x5316;&#x5986;&#x54c1;</td>
+          <td>$79.76</td>
+          <td>8.8%</td>
+          <td class="negative">-3%</td>
+          <td>&#x51c0;&#x5229;&#x6da6;&#x9006;&#x52bf;&#x589e;&#x957f;+8%&#xff0c;&#x6210;&#x4e3a;&#x5229;&#x6da6;&#x4fdd;&#x62a4;&#x6491;</td>
+        </tr>
+        <tr>
+          <td>&#x8461;&#x8404;&#x9152;&#x4e0e;&#x70c8;&#x9152;</td>
+          <td>$60.40</td>
+          <td>6.6%</td>
+          <td class="negative">-9%</td>
+          <td>&#x53d7;&#x4e2d;&#x56fd;&#x5e02;&#x573a;&#x5173;&#x7a0e;&#x95ee;&#x9898;&#x5f71;&#x54cd;&#xff0c;&#x4e0b;&#x964d;&#x6700;&#x4e3a;&#x4e25;&#x91cd;</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>&#x4e09;&#x3001;&#x6295;&#x8d44;&#x5efa;&#x8bae;&#x4e0e;&#x5173;&#x6ce8;&#x70b9;</h4>
+    <div style="font-size:13px; color:var(--text-secondary); line-height:1.8;">
+      <p><strong>&#x6574;&#x4f53;&#x5224;&#x65ad;&#xff1a;</strong>2025&#x5e74;&#x4e1a;&#x7ee9;&#x7b26;&#x5408;&#x9884;&#x671f;&#xff0c;&#x4f46;&#x76c8;&#x5229;&#x6307;&#x6807;&#x7ee7;&#x7eed;&#x627f;&#x538b;&#x3002;&#x5e02;&#x573a;&#x5df2;&#x5145;&#x5206;&#x5b9a;&#x4ef7;&#x4e86;&#x5468;&#x671f;&#x4e0b;&#x884c;&#xff0c;&#x4f46;&#x590d;&#x82cf;&#x65f6;&#x95f4;&#x70b9;&#x4ecd;&#x4e0d;&#x786e;&#x5b9a;&#x3002;</p>
+      <p><strong>&#x6838;&#x5fc3;&#x8ddf;&#x8e2a;&#x6307;&#x6807;&#xff1a;</strong></p>
+      <ol>
+        <li>&#x65f6;&#x88c5;&#x76ae;&#x5177;&#x90e8;&#x95e8;&#x6709;&#x673a;&#x589e;&#x957f;&#x7387;&#x662f;&#x5426;&#x8f6c;&#x6b63;</li>
+        <li>&#x4e2d;&#x56fd;&#x5e02;&#x573a;&#x590d;&#x82cf;&#x8282;&#x594f;&#xff08;&#x5c24;&#x5176;&#x662f;&#x4e0b;&#x534a;&#x5e74;&#x8d8b;&#x52bf;&#x662f;&#x5426;&#x6301;&#x7eed;&#xff09;</li>
+        <li>&#x6bdb;&#x5229;&#x7387;&#x8d8b;&#x52bf;&#xff08;&#x662f;&#x5426;&#x7a33;&#x5b9a;&#x5728; 65% &#x4ee5;&#x4e0a;&#xff09;</li>
+        <li>&#x8d44;&#x4ea7;&#x7626;&#x8eab;&#x56de;&#x7b3c;&#x8d44;&#x91d1;&#x89c4;&#x6a21;&#x53ca;&#x7528;&#x9014;</li>
+        <li>&#x6c47;&#x7387;&#x6ce2;&#x52a8;&#x5bf9;&#x6536;&#x5165;&#x7684;&#x5f71;&#x54cd;</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Section 3: 30-Dimension Deep Analysis Summary -->
+  <div class="card">
+    <h3><span class="section-label deep">&#x6df1;&#x5ea6;&#x5206;&#x6790;</span> &#x1f50d; 30&#x7ef4;&#x5ea6;&#x6cd5;&#x56fd;&#x8bba;&#x5206;&#x6790;&#x6458;&#x8981;</h3>
+    <div style="font-size:13px; color:var(--text-secondary); line-height:1.8;">
+
+    <h4>&#x6a21;&#x5757;&#x4e00;&#xff1a;&#x4e1a;&#x52a1;&#x53ef;&#x7406;&#x89e3;&#x6027;&#x4e0e;&#x884c;&#x4e1a;&#x5438;&#x5f15;&#x529b;</h4>
+    <p><strong>&#x8bc4;&#x4ef7;&#xff1a;&#x4f18;</strong> &#x5962;&#x4f88;&#x54c1;&#x884c;&#x4e1a;&#x7406;&#x89e3;&#x95e8;&#x69db;&#x4f4e;&#xff0c;&#x9ad8;&#x6bdb;&#x5229;&#x7387;&#x3001;&#x5f3a;&#x5b9a;&#x4ef7;&#x6743;&#x3001;&#x5468;&#x671f;&#x6027;&#x8f83;&#x4f4e;&#xff08;&#x76f8;&#x6bd4;&#x5546;&#x54c1;/&#x5236;&#x9020;&#x4e1a;&#xff09;&#x3002;&#x884c;&#x4e1a;&#x62a4;&#x57ce;&#x6cb3;&#x6781;&#x9ad8;&#xff08;&#x54c1;&#x724c;&#x6587;&#x5316;&#x3001;&#x5386;&#x53f2;&#x6c89;&#x6dc0;&#x3001;&#x5de5;&#x827a;&#x6280;&#x827a;&#xff09;&#x3002;</p>
+
+    <h4>&#x6a21;&#x5757;&#x4e8c;&#xff1a;&#x5546;&#x4e1a;&#x6a21;&#x5f0f;&#x4e0e;&#x5ba2;&#x6237;&#x5206;&#x6790;</h4>
+    <p><strong>&#x8bc4;&#x4ef7;&#xff1a;&#x4f18;</strong> &#x591a;&#x54c1;&#x724c;&#x3001;&#x591a;&#x7ebf;&#x4e1a;&#x6001;&#x96c6;&#x56e2;&#xff0c;&#x76f4;&#x8425;&#x6bd4;&#x4f8b;&#x9ad8;&#xff0c;&#x5ba2;&#x6237;&#x5fe0;&#x8bda;&#x5ea6;&#x9ad8;&#xff08;&#x5962;&#x4f88;&#x54c1;&#x6d88;&#x8d39;&#x8005;&#x5bf9;&#x4ef7;&#x683c;&#x654f;&#x611f;&#x5ea6;&#x4f4e;&#xff09;&#x3002;&#x52a8;&#x6001;&#x7ec4;&#x5408;&#x7b56;&#x7565;&#xff08;&#x6536;&#x8d2d;&#x65b0;&#x54c1;&#x724c;/&#x51fa;&#x552e;&#x975e;&#x6838;&#x5fc3;&#x8d44;&#x4ea7;&#xff09;&#x4f18;&#x5316;&#x8d44;&#x6e90;&#x914d;&#x7f6e;&#x3002;</p>
+
+    <h4>&#x6a21;&#x5757;&#x4e09;&#xff1a;&#x7ade;&#x4e89;&#x4f18;&#x52bf;&#x4e0e;&#x884c;&#x4e1a;&#x683c;&#x5c40;</h4>
+    <p><strong>&#x8bc4;&#x4ef7;&#xff1a;&#x4f18;</strong> &#x5168;&#x7403;&#x5962;&#x4f88;&#x54c1;&#x884c;&#x4e1a;&#x62e4;&#x5934;&#xff0c;&#x5e02;&#x573a;&#x4efd;&#x989d;&#x7ea6; 20%+&#x3002;&#x54c1;&#x724c;&#x77e9;&#x9635;&#x8986;&#x76d6;&#x6240;&#x6709;&#x5962;&#x4f88;&#x54c1;&#x7c7b;&#x76ee;&#x3002;&#x5efa;&#x7acb;&#x4e86;&#x65e0;&#x53ef;&#x6bd4;&#x62df;&#x7684;&#x89c4;&#x6a21;&#x3001;&#x5206;&#x9500;&#x3001;&#x4f9b;&#x5e94;&#x94fe;&#x62a4;&#x57ce;&#x6cb3;&#x3002;</p>
+
+    <h4>&#x6a21;&#x5757;&#x56db;&#xff1a;&#x8d22;&#x52a1;&#x8d28;&#x91cf;&#x4e0e;&#x8d44;&#x672c;&#x6548;&#x7387;</h4>
+    <p><strong>&#x8bc4;&#x4ef7;&#xff1a;&#x826f;&#xff08;&#x8d8b;&#x52bf;&#x4e0b;&#x964d;&#xff09;</strong> &#x8d22;&#x52a1;&#x8d28;&#x91cf;&#x4ecd;&#x7a33;&#x5065;&#xff0c;&#x4f46;ROE&#x4ece; 2023&#x5e74;&#x7684; 26% &#x4e0b;&#x964d;&#x81f3; 16.5%&#xff0c;&#x6bdb;&#x5229;&#x7387;&#x4e0b;&#x964d; 2.6pct&#x3002;&#x73b0;&#x91d1;&#x521b;&#x9020;&#x80fd;&#x529b;&#x6781;&#x5f3a;&#xff08;FCF $17B/yr&#xff09;&#x3002;&#x8d44;&#x4ea7;&#x8d1f;&#x503a;&#x7387; 51%&#xff0c;&#x5904;&#x4e8e;&#x5408;&#x7406;&#x8303;&#x56f4;&#x3002;</p>
+
+    <h4>&#x6a21;&#x5757;&#x4e94;&#xff1a;&#x7ba1;&#x7406;&#x5c42;&#x8bc4;&#x4f30;&#x4e0e;&#x516c;&#x53f8;&#x6cbb;&#x7406;</h4>
+    <p><strong>&#x8bc4;&#x4ef7;&#xff1a;&#x4f18;</strong> Bernard Arnault &#x4e3a;&#x4e1a;&#x754c;&#x4f20;&#x5947;&#xff0c;40&#x5e74;&#x5c06;LVMH&#x4ece;&#x5c0f;&#x96c6;&#x56e2;&#x53d1;&#x5c55;&#x4e3a;&#x5168;&#x7403;&#x6700;&#x5927;&#x5962;&#x4f88;&#x54c1;&#x5de5;&#x5e1d;&#x56fd;&#x3002;&#x5bb6;&#x65cf;&#x63a7;&#x80a1;&#x7a33;&#x5b9a;&#xff08;&#x5373;&#x5c06;&#x8d85;&#x8fc7; 50%&#xff09;&#xff0c;&#x7ba1;&#x7406;&#x5c42;&#x66ff;&#x8865;&#x79e9;&#x5e8f;&#x826f;&#x597d;&#x3002;</p>
+
+    <h4>&#x6a21;&#x5757;&#x516d;&#xff1a;&#x5e76;&#x8d2d;&#x3001;&#x589e;&#x957f;&#x4e0e;&#x4f30;&#x503c;</h4>
+    <p><strong>&#x8bc4;&#x4ef7;&#xff1a;&#x4e2d;&#x6027;</strong> &#x53d1;&#x5c55;&#x6218;&#x7565;&#x4ece;&#x201c;&#x4e70;&#x4e70;&#x4e70;&#x201d;&#x8f6c;&#x5411;&#x201c;&#x5356;&#x5356;&#x5356;&#x201d;&#xff0c;&#x805a;&#x7126;&#x6838;&#x5fc3;&#x54c1;&#x724c;&#x3002;&#x77ed;&#x671f;&#x589e;&#x957f;&#x52a8;&#x80fd;&#x4e0d;&#x8db3;&#xff0c;&#x4f46;&#x4e2d;&#x671f;&#x8d44;&#x672c;&#x6548;&#x7387;&#x53ef;&#x671f;&#x6539;&#x5584;&#x3002;&#x5f53;&#x524d;PE&#x5904;&#x4e8e;&#x5386;&#x53f2;&#x4f4e;&#x4f4d;&#x3002;</p>
+
+    <p style="margin-top:12px; padding:12px; background:#f5f5f5; border-radius:8px;">
+      <strong>&#x7efc;&#x5408;&#x8bc4;&#x4ef7;&#xff1a;</strong>LVMH&#x662f;&#x4e00;&#x5bb6;&#x57fa;&#x672c;&#x9762;&#x4f18;&#x79c0;&#x4f46;&#x77ed;&#x671f;&#x627f;&#x538b;&#x7684;&#x5962;&#x4f88;&#x54c1;&#x5de8;&#x5934;&#x3002;&#x7ade;&#x4e89;&#x62a4;&#x57ce;&#x6cb3;&#x3001;&#x7ba1;&#x7406;&#x5c42;&#x8d28;&#x91cf;&#x548c;&#x8d22;&#x52a1;&#x5065;&#x5eb7;&#x5ea6;&#x4f7f;&#x5f97;&#x5b83;&#x5728;&#x5468;&#x671f;&#x4e0b;&#x884c;&#x4e2d;&#x5177;&#x6709;&#x5f3a;&#x5f39;&#x6027;&#x3002;&#x5f53;&#x524d;&#x6700;&#x5927;&#x7684;&#x95ee;&#x9898;&#x662f;&#x589e;&#x957f;&#x95ee;&#x9898;&#xff0c;&#x9700;&#x8981;&#x7b49;&#x5f85;&#x5962;&#x4f88;&#x54c1;&#x5468;&#x671f;&#x590d;&#x82cf;&#x7684;&#x4fe1;&#x53f7;&#x3002;
+    </p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    &#x672c;&#x62a5;&#x544a;&#x57fa;&#x4e8e; NeoData &#x516c;&#x5f00;&#x6570;&#x636e;&#x81ea;&#x52a8;&#x751f;&#x6210;&#xff0c;&#x4ec5;&#x4f9b;&#x7814;&#x7a76;&#x53c2;&#x8003;&#xff0c;&#x4e0d;&#x6784;&#x6210;&#x4efb;&#x4f55;&#x6295;&#x8d44;&#x5efa;&#x8bae;&#x3002;<br>
+    &#x6295;&#x8d44;&#x6709;&#x98ce;&#x9669;&#xff0c;&#x5165;&#x5e02;&#x9700;&#x8c28;&#x614e;&#x3002;<br>
+    &#x6570;&#x636e;&#x66f4;&#x65b0;&#x65f6;&#x95f4;&#xff1a;2026-05-11 | &#x62a5;&#x544a;&#x751f;&#x6210;&#x65f6;&#x95f4;&#xff1a;2026-05-12 09:41 CST
+  </div>
+</div>
+<script>
+  const upsideEl = document.getElementById('upsideValue');
+  if (upsideEl) {
+    const val = parseFloat(upsideEl.textContent.replace(/[~+%]/g, ''));
+    upsideEl.classList.add(val > 5 ? 'positive' : val < -5 ? 'negative' : 'neutral');
+  }
+</script>
+
+<!-- HuaStock: back-to-home button -->
+<a href="../../index.html" class="huastock-back-btn" target="_self">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+  </svg>
+  返回首页
+</a>
+<style>
+  .huastock-back-btn {
+    position: fixed !important;
+    bottom: 28px !important;
+    right: 28px !important;
+    z-index: 99999 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 10px 22px !important;
+    background: rgba(10, 22, 40, 0.75) !important;
+    color: #c9a84c !important;
+    border: 1px solid rgba(201, 168, 76, 0.25) !important;
+    border-radius: 999px !important;
+    font-family: "Inter", "Noto Sans SC", system-ui, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important;
+    transition: all 0.25s ease !important;
+    cursor: pointer !important;
+    user-select: none !important;
+  }
+  .huastock-back-btn:hover {
+    background: rgba(10, 22, 40, 0.95) !important;
+    border-color: rgba(201, 168, 76, 0.5) !important;
+    box-shadow: 0 6px 28px rgba(201, 168, 76, 0.18) !important;
+    transform: translateY(-2px) !important;
+  }
+  .huastock-back-btn svg {
+    transition: transform 0.2s ease !important;
+  }
+  .huastock-back-btn:hover svg {
+    transform: translateX(-3px) !important;
+  }
+</style>
+
+</body>
+</html>
